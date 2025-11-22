@@ -409,7 +409,7 @@
                             <!-- Suggestions for tier models -->
                             <div 
                               v-if="showTierModelSuggestions[String(tierName)] && getTierFilteredModels(String(tierName)).length > 0" 
-                              class="absolute z-20 w-full mt-1 bg-gray-900 border border-gray-500/20 rounded shadow-xl max-h-48 overflow-y-auto"
+                              class="absolute z-20 w-full mt-1 bg-black border border-gray-500/20 rounded shadow-xl max-h-48 overflow-y-auto"
                             >
                               <div
                                 v-for="model in getTierFilteredModels(String(tierName))"
@@ -591,7 +591,7 @@
                       <!-- Suggestions Dropdown -->
                       <div 
                         v-if="showModelSuggestions && filteredModelSuggestions.length > 0" 
-                        class="absolute z-10 w-full mt-1 bg-gray-900 border border-gray-500/20 rounded-lg shadow-xl max-h-60 overflow-y-auto"
+                        class="absolute z-10 w-full mt-1 bg-black border border-gray-500/20 rounded-lg shadow-xl max-h-60 overflow-y-auto"
                       >
                         <div
                           v-for="model in filteredModelSuggestions"

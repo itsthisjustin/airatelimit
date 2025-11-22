@@ -22,8 +22,18 @@ export class XAIProviderService {
     } catch (error) {
       console.error('xAI API error:', {
         status: error.response?.status,
+        message: error.response?.data?.error?.message,
       });
-      throw new BadGatewayException('Failed to communicate with AI service');
+      
+      // Pass through xAI error messages (e.g., invalid model, auth errors)
+      const errorMessage = error.response?.data?.error?.message || 'Failed to communicate with AI service';
+      const errorCode = error.response?.data?.error?.code || 'provider_error';
+      
+      throw new BadGatewayException({
+        error: errorCode,
+        message: errorMessage,
+        provider: 'xai',
+      });
     }
   }
 
@@ -70,8 +80,18 @@ export class XAIProviderService {
     } catch (error) {
       console.error('xAI streaming error:', {
         status: error.response?.status,
+        message: error.response?.data?.error?.message,
       });
-      throw new BadGatewayException('Failed to stream from AI service');
+      
+      // Pass through error messages for better debugging
+      const errorMessage = error.response?.data?.error?.message || 'Failed to stream from AI service';
+      const errorCode = error.response?.data?.error?.code || 'provider_error';
+      
+      throw new BadGatewayException({
+        error: errorCode,
+        message: errorMessage,
+        provider: 'xai',
+      });
     }
   }
 }

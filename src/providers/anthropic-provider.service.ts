@@ -52,8 +52,18 @@ export class AnthropicProviderService {
     } catch (error) {
       console.error('Anthropic API error:', {
         status: error.response?.status,
+        message: error.response?.data?.error?.message,
       });
-      throw new BadGatewayException('Failed to communicate with AI service');
+      
+      // Pass through Anthropic error messages (e.g., invalid model, auth errors)
+      const errorMessage = error.response?.data?.error?.message || 'Failed to communicate with AI service';
+      const errorType = error.response?.data?.error?.type || 'provider_error';
+      
+      throw new BadGatewayException({
+        error: errorType,
+        message: errorMessage,
+        provider: 'anthropic',
+      });
     }
   }
 
@@ -128,8 +138,18 @@ export class AnthropicProviderService {
     } catch (error) {
       console.error('Anthropic streaming error:', {
         status: error.response?.status,
+        message: error.response?.data?.error?.message,
       });
-      throw new BadGatewayException('Failed to stream from AI service');
+      
+      // Pass through error messages for better debugging
+      const errorMessage = error.response?.data?.error?.message || 'Failed to stream from AI service';
+      const errorType = error.response?.data?.error?.type || 'provider_error';
+      
+      throw new BadGatewayException({
+        error: errorType,
+        message: errorMessage,
+        provider: 'anthropic',
+      });
     }
   }
 }

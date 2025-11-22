@@ -19,12 +19,22 @@ export class OpenAIProviderService {
 
       return response.data;
     } catch (error) {
-      // PRIVACY: Don't expose OpenAI errors or keys
+      // PRIVACY: Log without exposing prompts, but pass through helpful errors
       console.error('OpenAI API error:', {
         status: error.response?.status,
-        // Don't log error details that may contain prompts
+        message: error.response?.data?.error?.message,
       });
-      throw new BadGatewayException('Failed to communicate with AI service');
+      
+      // Pass through provider error message (e.g., invalid model, rate limits)
+      // These errors help users fix configuration issues
+      const errorMessage = error.response?.data?.error?.message || 'Failed to communicate with AI service';
+      const errorCode = error.response?.data?.error?.code || 'provider_error';
+      
+      throw new BadGatewayException({
+        error: errorCode,
+        message: errorMessage,
+        provider: 'openai',
+      });
     }
   }
 
@@ -70,8 +80,18 @@ export class OpenAIProviderService {
     } catch (error) {
       console.error('OpenAI streaming error:', {
         status: error.response?.status,
+        message: error.response?.data?.error?.message,
       });
-      throw new BadGatewayException('Failed to stream from AI service');
+      
+      // Pass through provider error message for better debugging
+      const errorMessage = error.response?.data?.error?.message || 'Failed to stream from AI service';
+      const errorCode = error.response?.data?.error?.code || 'provider_error';
+      
+      throw new BadGatewayException({
+        error: errorCode,
+        message: errorMessage,
+        provider: 'openai',
+      });
     }
   }
 }

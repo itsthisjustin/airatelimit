@@ -537,6 +537,31 @@ View per-model usage in the analytics tab:
 - Most popular models
 - Cost optimization insights
 
+### Model Name Validation
+
+**UI Autocomplete:**
+- Dashboard provides autocomplete with 40+ known models
+- Filters as you type (OpenAI, Anthropic, Google, xAI)
+- Shows warnings for unrecognized model names
+- Still allows custom/new model names
+
+**Runtime Validation:**
+- Model validation happens at the **provider level** (OpenAI, Anthropic, etc.)
+- Invalid model names return clear error messages from the provider
+- Example: `"The model 'gpt-4o-typo' does not exist"`
+- This ensures you always get accurate validation without us needing to maintain model lists
+
+**Why Provider-Side Validation:**
+- New models released constantly
+- Users may have access to beta models
+- Support for fine-tuned models with custom IDs
+- Provider is the source of truth
+
+**Best Practice:**
+- Use autocomplete to avoid typos
+- Test with a single request first
+- Provider errors are passed through to help debug
+
 ## Rule Engine
 
 Create smart limits in the dashboard:

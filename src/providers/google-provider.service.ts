@@ -57,8 +57,18 @@ export class GoogleProviderService {
     } catch (error) {
       console.error('Google Gemini API error:', {
         status: error.response?.status,
+        message: error.response?.data?.error?.message,
       });
-      throw new BadGatewayException('Failed to communicate with AI service');
+      
+      // Pass through Google error messages (e.g., invalid model, quota exceeded)
+      const errorMessage = error.response?.data?.error?.message || 'Failed to communicate with AI service';
+      const errorCode = error.response?.data?.error?.code || 'provider_error';
+      
+      throw new BadGatewayException({
+        error: String(errorCode),
+        message: errorMessage,
+        provider: 'google',
+      });
     }
   }
 
@@ -135,8 +145,18 @@ export class GoogleProviderService {
     } catch (error) {
       console.error('Google Gemini streaming error:', {
         status: error.response?.status,
+        message: error.response?.data?.error?.message,
       });
-      throw new BadGatewayException('Failed to stream from AI service');
+      
+      // Pass through error messages for better debugging
+      const errorMessage = error.response?.data?.error?.message || 'Failed to stream from AI service';
+      const errorCode = error.response?.data?.error?.code || 'provider_error';
+      
+      throw new BadGatewayException({
+        error: String(errorCode),
+        message: errorMessage,
+        provider: 'google',
+      });
     }
   }
 }
