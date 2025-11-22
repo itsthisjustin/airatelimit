@@ -62,23 +62,68 @@ export class EmailService {
         to: email,
         subject,
         html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2>${heading}</h2>
-            <p>${description}</p>
-            <p style="margin: 30px 0;">
-              <a href="${magicLink}" 
-                 style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
-                ${buttonText}
-              </a>
-            </p>
-            <p style="color: #666; font-size: 14px;">
-              Or copy and paste this link into your browser:<br>
-              <code style="background-color: #8ec5ff; font-weight: bold; padding: 8px; display: inline-block; margin-top: 8px;">${magicLink}</code>
-            </p>
-            <p style="color: #999; font-size: 12px; margin-top: 40px;">
-              If you didn't request this email, you can safely ignore it.
-            </p>
-          </div>
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+          </head>
+          <body style="margin: 0; padding: 0; background-color: #f5f5f5;">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f5f5f5;">
+              <tr>
+                <td align="center" style="padding: 40px 20px;">
+                  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
+                    <!-- Header -->
+                    <tr>
+                      <td style="padding: 40px 40px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-family: Arial, sans-serif; font-weight: 600;">
+                          AI Ratelimit
+                        </h1>
+                      </td>
+                    </tr>
+                    
+                    <!-- Content -->
+                    <tr>
+                      <td style="padding: 40px;">
+                        <h2 style="margin: 0 0 16px; color: #1a1a1a; font-size: 20px; font-family: Arial, sans-serif; font-weight: 600;">
+                          ${heading}
+                        </h2>
+                        <p style="margin: 0 0 24px; color: #4a5568; font-size: 16px; line-height: 24px; font-family: Arial, sans-serif;">
+                          ${description}
+                        </p>
+                        
+                        <!-- Button -->
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                          <tr>
+                            <td align="center" style="padding: 20px 0;">
+                              <a href="${magicLink}" 
+                                 style="display: inline-block; background-color: #2563eb; color: #ffffff; font-size: 16px; font-weight: 600; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-family: Arial, sans-serif;">
+                                ${buttonText}
+                              </a>
+                            </td>
+                          </tr>
+                        </table>
+                        
+                        <p style="margin: 24px 0 0; color: #718096; font-size: 14px; line-height: 20px; font-family: Arial, sans-serif;">
+                          This link will expire in <strong>15 minutes</strong> for security reasons.
+                        </p>
+                      </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                      <td style="padding: 30px 40px; background-color: #f7fafc; border-top: 1px solid #e2e8f0;">
+                        <p style="margin: 0; color: #a0aec0; font-size: 12px; line-height: 18px; font-family: Arial, sans-serif;">
+                          If you didn't request this email, you can safely ignore it.
+                        </p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </body>
+          </html>
         `,
       });
 
