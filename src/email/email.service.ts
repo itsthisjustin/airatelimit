@@ -134,7 +134,7 @@ export class EmailService {
                               <!-- Security Note -->
                               <div style="background: rgba(107, 163, 232, 0.12); padding: 16px 20px; border-radius: 6px;">
                                 <p style="margin: 0; color: #6ba3e8; font-size: 13px; line-height: 20px;">
-                                  <strong>Security:</strong> This link expires in 15 minutes
+                                  This link expires in 15 minutes.
                                 </p>
                               </div>
                             </td>
@@ -156,7 +156,7 @@ export class EmailService {
                     <tr>
                       <td style="padding-top: 32px; text-align: center;">
                         <p style="margin: 0; color: #4a4a4a; font-size: 11px; line-height: 16px;">
-                          © ${new Date().getFullYear()} AI Ratelimit. Built for developers.
+                          © ${new Date().getFullYear()} Treadie, Inc. Built for developers.
                         </p>
                       </td>
                     </tr>
