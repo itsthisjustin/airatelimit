@@ -79,10 +79,8 @@ export class ProjectsService {
 
     const updateData: any = { ...dto };
     
-    // Update baseUrl if provider changed
-    if (dto.provider && dto.provider !== project.provider) {
-      updateData.baseUrl = this.getDefaultBaseUrl(dto.provider);
-    }
+    // Provider cannot be changed after creation
+    delete updateData.provider;
     
     if (dto.limitExceededResponse) {
       updateData.limitExceededResponse = JSON.stringify(

@@ -385,7 +385,6 @@ const handleUpdate = async () => {
   try {
     const payload: any = {
       name: editForm.value.name,
-      provider: editForm.value.provider,
       limitType: editForm.value.limitType,
     }
 

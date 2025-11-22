@@ -5,9 +5,10 @@ export class UpdateProjectDto {
   @IsString()
   name?: string;
 
-  @IsOptional()
-  @IsIn(['openai', 'anthropic', 'google', 'xai'])
-  provider?: 'openai' | 'anthropic' | 'google' | 'xai';
+  // Provider cannot be changed after creation
+  // @IsOptional()
+  // @IsIn(['openai', 'anthropic', 'google', 'xai'])
+  // provider?: 'openai' | 'anthropic' | 'google' | 'xai';
 
   @IsOptional()
   @IsString()
