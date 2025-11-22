@@ -21,6 +21,7 @@ export default defineNuxtConfig({
     port: 3001,
   },
 
-  ssr: false,
+  // Enable SSR for production deployment
+  ssr: true,
 })
 
