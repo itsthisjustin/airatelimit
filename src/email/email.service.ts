@@ -21,30 +21,44 @@ export class EmailService {
     }
   }
 
-  async sendMagicLink(email: string, magicLink: string): Promise<void> {
+  async sendMagicLink(email: string, magicLink: string, isNewUser: boolean = false): Promise<void> {
     if (this.isProduction && this.resend) {
-      await this.sendViaResend(email, magicLink);
+      await this.sendViaResend(email, magicLink, isNewUser);
     } else {
-      this.logMagicLinkToConsole(email, magicLink);
+      this.logMagicLinkToConsole(email, magicLink, isNewUser);
     }
   }
 
-  private async sendViaResend(email: string, magicLink: string): Promise<void> {
+  private async sendViaResend(email: string, magicLink: string, isNewUser: boolean): Promise<void> {
     try {
       const fromEmail = this.configService.get<string>('emailFrom') || 'onboarding@resend.dev';
+      
+      const subject = isNewUser 
+        ? 'Welcome to AI Rate Limiting' 
+        : 'Sign in to AI Rate Limiting';
+      
+      const heading = isNewUser 
+        ? 'Welcome! Complete your signup' 
+        : 'Sign in to your account';
+      
+      const description = isNewUser
+        ? 'Click the link below to complete your account setup. This link will expire in 15 minutes.'
+        : 'Click the link below to sign in to your account. This link will expire in 15 minutes.';
+      
+      const buttonText = isNewUser ? 'Complete Signup' : 'Sign In';
       
       await this.resend.emails.send({
         from: fromEmail,
         to: email,
-        subject: 'Sign in to AI Rate Limiting',
+        subject,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2>Sign in to your account</h2>
-            <p>Click the link below to sign in to your account. This link will expire in 15 minutes.</p>
+            <h2>${heading}</h2>
+            <p>${description}</p>
             <p style="margin: 30px 0;">
               <a href="${magicLink}" 
                  style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
-                Sign In
+                ${buttonText}
               </a>
             </p>
             <p style="color: #666; font-size: 14px;">
@@ -58,23 +72,25 @@ export class EmailService {
         `,
       });
 
-      this.logger.log(`Magic link email sent to ${email} via Resend`);
+      this.logger.log(`Magic link email sent to ${email} via Resend (${isNewUser ? 'new user' : 'existing user'})`);
     } catch (error) {
       this.logger.error(`Failed to send email via Resend: ${error.message}`);
       throw new Error('Failed to send magic link email');
     }
   }
 
-  private logMagicLinkToConsole(email: string, magicLink: string): void {
+  private logMagicLinkToConsole(email: string, magicLink: string, isNewUser: boolean): void {
+    const type = isNewUser ? 'SIGNUP' : 'LOGIN';
+    
     this.logger.log('\n' + '='.repeat(80));
-    this.logger.log('🔐 MAGIC LINK AUTHENTICATION');
+    this.logger.log(`🔐 MAGIC LINK ${type}`);
     this.logger.log('='.repeat(80));
     this.logger.log(`📧 Email: ${email}`);
     this.logger.log(`🔗 Magic Link: ${magicLink}`);
     this.logger.log('='.repeat(80) + '\n');
     
     console.log('\n' + '='.repeat(80));
-    console.log('🔐 MAGIC LINK AUTHENTICATION');
+    console.log(`🔐 MAGIC LINK ${type}`);
     console.log('='.repeat(80));
     console.log(`📧 Email: ${email}`);
     console.log(`🔗 Magic Link: ${magicLink}`);

@@ -51,7 +51,7 @@ export class AuthService {
     );
 
     // Automatically send magic link for first login
-    await this.requestMagicLink({ email: user.email });
+    await this.requestMagicLink({ email: user.email }, true);
 
     return {
       message: 'Account created! Check your email for a magic link to sign in.',
@@ -86,7 +86,7 @@ export class AuthService {
     };
   }
 
-  async requestMagicLink(dto: RequestMagicLinkDto) {
+  async requestMagicLink(dto: RequestMagicLinkDto, isNewUser: boolean = false) {
     const user = await this.usersService.findByEmail(dto.email);
 
     // Don't auto-create users from login - they must sign up first
@@ -110,7 +110,7 @@ export class AuthService {
     const magicLink = `${frontendUrl}/auth/verify?token=${token}`;
 
     // Send email (or log to console in development)
-    await this.emailService.sendMagicLink(user.email, magicLink);
+    await this.emailService.sendMagicLink(user.email, magicLink, isNewUser);
 
     return {
       message: 'Magic link sent! Check your email (or console in development).',
