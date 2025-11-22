@@ -5,5 +5,5 @@ cmd = "npm install && npm install -g serve"
 cmd = "npm run generate"
 
 [start]
-cmd = "serve .output/public -l 8080"
+cmd = "serve .output/public -l 8080 --single"
 
