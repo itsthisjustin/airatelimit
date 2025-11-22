@@ -44,11 +44,11 @@ export class EmailService {
         'AI Ratelimit <noreply@airatelimit.com>';
 
       const subject = isNewUser
-        ? 'Welcome to AI Rate Limiting'
-        : 'Sign in to AI Rate Limiting';
+        ? 'Welcome to AI Ratelimit'
+        : 'Sign in to AI Ratelimit';
 
       const heading = isNewUser
-        ? 'Welcome! Complete your signup'
+        ? 'Welcome to AI Ratelimit! Complete your signup'
         : 'Sign in to your account';
 
       const description = isNewUser
@@ -73,7 +73,7 @@ export class EmailService {
             </p>
             <p style="color: #666; font-size: 14px;">
               Or copy and paste this link into your browser:<br>
-              <code style="background-color: #f3f4f6; padding: 8px; display: inline-block; margin-top: 8px;">${magicLink}</code>
+              <code style="background-color: #8ec5ff; font-weight: bold; padding: 8px; display: inline-block; margin-top: 8px;">${magicLink}</code>
             </p>
             <p style="color: #999; font-size: 12px; margin-top: 40px;">
               If you didn't request this email, you can safely ignore it.
