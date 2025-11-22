@@ -52,7 +52,11 @@ export class ProviderRouterService {
           payload,
         );
       default:
-        throw new Error(`Unsupported provider: ${project.provider}`);
+        throw new Error(
+          project.provider 
+            ? `Unsupported provider: ${project.provider}` 
+            : 'Project is not configured. Please set up your AI provider and API key in the dashboard.'
+        );
     }
   }
 
@@ -101,7 +105,11 @@ export class ProviderRouterService {
         );
         return;
       default:
-        throw new Error(`Unsupported provider: ${project.provider}`);
+        throw new Error(
+          project.provider 
+            ? `Unsupported provider: ${project.provider}` 
+            : 'Project is not configured. Please set up your AI provider and API key in the dashboard.'
+        );
     }
   }
 

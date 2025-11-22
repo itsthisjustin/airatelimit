@@ -82,8 +82,12 @@ export class ProjectsService {
 
     const updateData: any = { ...dto };
     
-    // Generate project key when API key is first set
+    // Generate project key when both provider and API key are set for the first time
     if (dto.openaiApiKey && !project.projectKey) {
+      const finalProvider = dto.provider || project.provider;
+      if (!finalProvider) {
+        throw new Error('Provider must be configured before setting API key');
+      }
       updateData.projectKey = this.generateProjectKey();
     }
     
