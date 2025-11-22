@@ -38,14 +38,116 @@
         </div>
       </div>
 
-      <!-- Empty State -->
-      <EmptyState
-        v-else-if="projects.length === 0"
-        title="No projects yet"
-        description="Create your first project to start managing your AI API rate limits and usage tracking."
-        button-text="Create Your First Project"
-        @action="showModal = true"
-      />
+      <!-- Empty State with Getting Started Guide -->
+      <div v-else-if="projects.length === 0" class="max-w-4xl mx-auto">
+        <div class="bg-gray-500/10 border border-gray-500/15 rounded-lg p-8">
+          <div class="flex items-center justify-between mb-8">
+            <h2 class="text-2xl font-bold text-white">Getting Started</h2>
+            <a 
+              href="https://github.com/treadiehq/airatelimit#readme" 
+              target="_blank"
+              class="text-sm text-gray-400 hover:text-white inline-flex items-center gap-2"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Docs
+            </a>
+          </div>
+
+          <!-- Step 1: Create Project -->
+          <div class="mb-8">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-8 h-8 rounded-full bg-blue-300/20 flex items-center justify-center text-blue-300 font-bold">
+                1
+              </div>
+              <h3 class="text-lg font-medium text-white">Create a project and get your API key</h3>
+            </div>
+            <button
+              @click="showModal = true"
+              class="ml-11 px-4 py-2 bg-blue-300 text-black text-sm font-medium rounded-lg hover:bg-blue-400 inline-flex items-center gap-2"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Create Project
+            </button>
+          </div>
+
+          <!-- Step 2: Install SDK -->
+          <div class="mb-8">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-8 h-8 rounded-full bg-blue-300/20 flex items-center justify-center text-blue-300 font-bold">
+                2
+              </div>
+              <h3 class="text-lg font-medium text-white">Install the SDK in your application</h3>
+            </div>
+            <div class="ml-11 bg-black border border-gray-500/20 rounded-lg p-4 font-mono text-sm">
+              <div class="text-gray-500 mb-2">// Install via npm</div>
+              <div class="text-green-300">npm install @ai-ratelimit/sdk</div>
+            </div>
+          </div>
+
+          <!-- Step 3: Use in Code -->
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-8 h-8 rounded-full bg-blue-300/20 flex items-center justify-center text-blue-300 font-bold">
+                3
+              </div>
+              <h3 class="text-lg font-medium text-white">Use in your code</h3>
+            </div>
+            <div class="ml-11 bg-black border border-gray-500/20 rounded-lg p-4 font-mono text-sm overflow-x-auto">
+              <div class="text-gray-500 mb-3">// In your application:</div>
+              <div class="mb-3">
+                <span class="text-purple-300">import</span>
+                <span class="text-white"> { </span>
+                <span class="text-blue-300">RateLimitClient</span>
+                <span class="text-white"> } </span>
+                <span class="text-purple-300">from</span>
+                <span class="text-yellow-300"> '@ai-ratelimit/sdk'</span>
+              </div>
+              
+              <div class="mb-3">
+                <span class="text-purple-300">const</span>
+                <span class="text-white"> client = </span>
+                <span class="text-purple-300">new</span>
+                <span class="text-blue-300"> RateLimitClient</span>
+                <span class="text-white">(</span>
+                <span class="text-yellow-300">'your-project-api-key'</span>
+                <span class="text-white">)</span>
+              </div>
+
+              <div class="text-gray-500 mb-3">// Make AI requests with automatic rate limiting:</div>
+              <div class="mb-1">
+                <span class="text-purple-300">const</span>
+                <span class="text-white"> response = </span>
+                <span class="text-purple-300">await</span>
+                <span class="text-white"> client.</span>
+                <span class="text-blue-300">chat</span>
+                <span class="text-white">({</span>
+              </div>
+              <div class="ml-4 mb-1">
+                <span class="text-white">model: </span>
+                <span class="text-yellow-300">'gpt-4'</span>
+                <span class="text-white">,</span>
+              </div>
+              <div class="ml-4 mb-1">
+                <span class="text-white">messages: [{ role: </span>
+                <span class="text-yellow-300">'user'</span>
+                <span class="text-white">, content: </span>
+                <span class="text-yellow-300">'Hello!'</span>
+                <span class="text-white"> }],</span>
+              </div>
+              <div class="ml-4 mb-1">
+                <span class="text-white">identity: </span>
+                <span class="text-yellow-300">'user-123'</span>
+                <span class="text-gray-500"> // Track per-user limits</span>
+              </div>
+              <div class="text-white">})</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Projects Grid -->
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -86,7 +188,7 @@ definePageMeta({
 })
 
 useHead({
-  title: 'Projects - AI Rate Limiting'
+  title: 'Projects - AI Ratelimit'
 })
 
 const api = useApi()
