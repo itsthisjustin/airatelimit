@@ -244,6 +244,129 @@ client.chat({
 })
 ```
 
+## Tier-Based Limits & Custom Messages
+
+Configure different limits and messages for each tier (free, pro, enterprise, etc.).
+
+### Basic Tier Setup
+
+Configure in your project settings:
+
+```json
+{
+  "tiers": {
+    "free": {
+      "requestLimit": 50,
+      "tokenLimit": 10000,
+      "customResponse": {
+        "error": "limit_exceeded",
+        "message": "You've used all {{usage}} of your {{limit}} free {{limitType}} this {{period}}. Upgrade to Pro for 500 {{limitType}}!",
+        "deepLink": "myapp://upgrade?from=free&to=pro"
+      }
+    },
+    "pro": {
+      "requestLimit": 500,
+      "tokenLimit": 100000,
+      "customResponse": {
+        "error": "limit_exceeded",
+        "message": "You've reached your Pro limit of {{limit}} {{limitType}}. Contact us for Enterprise.",
+        "deepLink": "myapp://contact-sales"
+      }
+    }
+  }
+}
+```
+
+### Template Variables
+
+Use these variables in your messages - they'll be replaced automatically:
+
+- `{{tier}}` - User's tier (free, pro, etc.)
+- `{{limit}}` - The limit that was exceeded
+- `{{usage}}` - Current usage count
+- `{{limitType}}` - "requests" or "tokens"
+- `{{period}}` - "daily", "weekly", or "monthly"
+
+### Markdown & Deep Links
+
+Messages support **markdown** and **deep links** for native apps:
+
+```json
+{
+  "customResponse": {
+    "error": "limit_exceeded",
+    "message": "Free tier limit reached ({{usage}}/{{limit}} {{limitType}}).\n\n[Upgrade to Pro](myapp://upgrade) for unlimited access!",
+    "deepLink": "myapp://upgrade",
+    "cta": {
+      "text": "Upgrade Now",
+      "url": "myapp://upgrade"
+    }
+  }
+}
+```
+
+Your app can render the markdown and handle deep links:
+
+```typescript
+try {
+  const result = await client.chat({ tier: 'free', ... });
+} catch (err) {
+  if (err instanceof LimitExceededError) {
+    // Display markdown message
+    showMarkdown(err.response.message);
+    
+    // Handle deep link click
+    if (err.response.deepLink) {
+      navigateTo(err.response.deepLink);
+    }
+    
+    // Or use the CTA button
+    if (err.response.cta) {
+      showButton(err.response.cta.text, err.response.cta.url);
+    }
+  }
+}
+```
+
+### Different Messages Per Tier
+
+**Example:** Different experiences for free vs paid users
+
+```json
+{
+  "tiers": {
+    "free": {
+      "requestLimit": 50,
+      "customResponse": {
+        "message": "You've used all {{usage}} free requests today. [Upgrade to Pro](app://upgrade) for 10x more!",
+        "upgrade": true,
+        "tier": "free"
+      }
+    },
+    "pro": {
+      "requestLimit": 500,
+      "customResponse": {
+        "message": "You've hit your Pro limit of {{limit}} requests. [Contact Sales](app://sales) for Enterprise unlimited.",
+        "upgrade": false,
+        "tier": "pro"
+      }
+    }
+  }
+}
+```
+
+Then in your API calls:
+
+```typescript
+// Free user
+await client.chat({ tier: 'free', identity: 'user-123', ... });
+// → Gets free limits + free tier message
+
+// Pro user  
+await client.chat({ tier: 'pro', identity: 'user-456', ... });
+// → Gets pro limits + pro tier message
+```
+
 ## Rule Engine
 
 Create smart limits in the dashboard:

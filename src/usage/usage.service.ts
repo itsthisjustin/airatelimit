@@ -74,21 +74,35 @@ export class UsageService {
     const shouldCheckRequests = project.limitType === 'requests' || project.limitType === 'both';
     const shouldCheckTokens = project.limitType === 'tokens' || project.limitType === 'both';
 
-    // Check request limit
-    if (shouldCheckRequests && limits.requestLimit && nextRequests > limits.requestLimit) {
-      return {
-        allowed: false,
-        limitResponse: limits.customResponse || this.getLimitResponse(project),
-      };
-    }
+  // Check request limit
+  if (shouldCheckRequests && limits.requestLimit && nextRequests > limits.requestLimit) {
+    const response = limits.customResponse || this.getLimitResponse(project);
+    return {
+      allowed: false,
+      limitResponse: this.interpolateVariables(response, {
+        tier,
+        limit: limits.requestLimit,
+        usage: nextRequests,
+        limitType: 'requests',
+        period: project.limitPeriod || 'daily',
+      }),
+    };
+  }
 
-    // Check token limit
-    if (shouldCheckTokens && limits.tokenLimit && nextTokens > limits.tokenLimit) {
-      return {
-        allowed: false,
-        limitResponse: limits.customResponse || this.getLimitResponse(project),
-      };
-    }
+  // Check token limit
+  if (shouldCheckTokens && limits.tokenLimit && nextTokens > limits.tokenLimit) {
+    const response = limits.customResponse || this.getLimitResponse(project);
+    return {
+      allowed: false,
+      limitResponse: this.interpolateVariables(response, {
+        tier,
+        limit: limits.tokenLimit,
+        usage: nextTokens,
+        limitType: 'tokens',
+        period: project.limitPeriod || 'daily',
+      }),
+    };
+  }
 
     // Calculate usage percentages for rule engine
     const usagePercent = {
@@ -209,6 +223,57 @@ export class UsageService {
       }
     }
     return DEFAULT_LIMIT_RESPONSE;
+  }
+
+  /**
+   * Interpolate template variables in response messages
+   * Supports: {{tier}}, {{limit}}, {{usage}}, {{limitType}}, {{period}}
+   */
+  private interpolateVariables(
+    response: any,
+    variables: {
+      tier?: string;
+      limit?: number;
+      usage?: number;
+      limitType?: string;
+      period?: string;
+    },
+  ): any {
+    if (!response) return response;
+
+    // If response is a string, interpolate directly
+    if (typeof response === 'string') {
+      return this.replaceTemplateVars(response, variables);
+    }
+
+    // If response is an object, recursively interpolate all string fields
+    if (typeof response === 'object') {
+      const interpolated = { ...response };
+      for (const key in interpolated) {
+        if (typeof interpolated[key] === 'string') {
+          interpolated[key] = this.replaceTemplateVars(interpolated[key], variables);
+        } else if (typeof interpolated[key] === 'object') {
+          interpolated[key] = this.interpolateVariables(interpolated[key], variables);
+        }
+      }
+      return interpolated;
+    }
+
+    return response;
+  }
+
+  private replaceTemplateVars(
+    text: string,
+    variables: Record<string, any>,
+  ): string {
+    let result = text;
+    for (const [key, value] of Object.entries(variables)) {
+      if (value !== undefined && value !== null) {
+        const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
+        result = result.replace(regex, String(value));
+      }
+    }
+    return result;
   }
 }
 
