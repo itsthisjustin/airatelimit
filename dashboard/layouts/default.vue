@@ -5,7 +5,7 @@
         <div class="flex justify-between h-12 items-center">
           <div class="flex items-center space-x-4">
             <NuxtLink to="/projects" class="text-base font-medium text-white">
-              <img src="~/assets/img/logo.png" alt="AI Rate Limiting" class="w-6 h-6">
+              <img src="/logo.png" alt="AI Rate Limiting" class="w-6 h-6">
             </NuxtLink>
             <span class="text-sm text-gray-500/50">|</span>
             <div class="text-sm text-white font-medium">{{ organization?.name || 'Loading...' }}</div>
