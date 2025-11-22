@@ -97,12 +97,12 @@
                 >
                   <div
                     v-if="showSettingsDropdown"
-                    class="absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-gray-800 border border-gray-500/20 ring-1 ring-black ring-opacity-5 z-50"
+                    class="absolute right-0 mt-2 w-40 rounded-lg shadow-lg bg-black border border-gray-500/20 ring-1 ring-black ring-opacity-5 z-50"
                   >
                     <div class="py-1">
                       <button
                         @click="openConfigurations"
-                        class="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-500/10 hover:text-white transition-colors flex items-center space-x-2"
+                        class="w-full text-left px-3 py-2 text-xs text-gray-300 hover:bg-gray-500/10 hover:text-white transition-colors flex items-center space-x-2"
                       >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
@@ -111,7 +111,7 @@
                       </button>
                       <button
                         @click="openDelete"
-                        class="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-400/10 hover:text-red-300 transition-colors flex items-center space-x-2"
+                        class="w-full text-left px-3 py-2 text-xs text-red-400 hover:bg-red-400/10 hover:text-red-300 transition-colors flex items-center space-x-2"
                       >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -228,7 +228,6 @@
       :update-success="updateSuccess"
       @close="showSettingsModal = false"
       @update="handleUpdate"
-      @delete="handleDeleteRequest"
     />
 
     <!-- Delete Confirmation Dialog -->

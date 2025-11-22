@@ -29,28 +29,8 @@
 
           <!-- Content -->
           <div class="p-0 px-6 max-h-[70vh] overflow-y-auto">
-            <!-- Tabs -->
-            <div class="mb-6 border-b border-gray-500/10">
-              <nav class="-mb-px flex space-x-8">
-                <button
-                  @click="activeSection = 'configuration'"
-                  :class="activeSection === 'configuration' ? 'border-blue-300 text-blue-300' : 'border-transparent text-gray-400 hover:text-gray-400 hover:border-gray-300'"
-                  class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
-                >
-                  Configuration
-                </button>
-                <button
-                  @click="activeSection = 'danger'"
-                  :class="activeSection === 'danger' ? 'border-red-400 text-red-400' : 'border-transparent text-gray-400 hover:text-gray-400 hover:border-gray-300'"
-                  class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
-                >
-                  Danger Zone
-                </button>
-              </nav>
-            </div>
-
             <!-- Configuration Section -->
-            <div v-show="activeSection === 'configuration'" class="space-y-6">
+            <div class="space-y-6 pt-6">
               <!-- Config Tabs -->
               <div class="border-b border-gray-500/10">
                 <nav class="-mb-px flex space-x-8">
@@ -179,7 +159,7 @@
                   <div class="flex justify-between items-center mb-3">
                     <h4 class="font-semibold text-white capitalize">{{ tierName }} Tier</h4>
                     <button
-                      @click="deleteTier(tierName)"
+                      @click="deleteTier(String(tierName))"
                       class="text-red-400 hover:text-red-400/80 text-sm"
                     >
                       Remove
@@ -243,25 +223,6 @@
                 </button>
               </div>
             </div>
-
-            <!-- Danger Zone Section -->
-            <div v-show="activeSection === 'danger'" class="space-y-4">
-              <div class="bg-red-400/10 border border-red-400/20 rounded-lg p-6">
-                <h3 class="text-lg font-semibold text-red-400 mb-2">Delete Project</h3>
-                <p class="text-sm text-gray-400 mb-4">
-                  Once you delete a project, there is no going back. All data, usage history, and configurations will be permanently removed.
-                </p>
-                <button
-                  @click="handleDeleteRequest"
-                  class="px-4 py-2 bg-red-400/20 text-red-400 border border-red-400/30 rounded-lg hover:bg-red-400/30 text-sm font-medium transition-colors inline-flex items-center space-x-2"
-                >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                  <span>Delete This Project</span>
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -282,10 +243,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'close'): void
   (e: 'update'): void
-  (e: 'delete'): void
 }>()
 
-const activeSection = ref('configuration')
 const configTab = ref('basic')
 const newTierName = ref('')
 
@@ -307,11 +266,6 @@ const deleteTier = (tierName: string) => {
 
 const handleUpdate = () => {
   emit('update')
-}
-
-const handleDeleteRequest = () => {
-  emit('delete')
-  emit('close')
 }
 </script>
 
