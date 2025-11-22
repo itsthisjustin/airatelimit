@@ -193,7 +193,7 @@
                     Define different limits for <strong>free</strong>, <strong>pro</strong>, <strong>enterprise</strong>, etc.
                     Your app passes a <code class="bg-gray-500/10 text-white px-1 rounded">tier</code> parameter in API calls.
                   </p>
-                  <div class="mt-3 p-3 bg-gray-500/5 rounded border-l-2 border-blue-300">
+                  <div class="mt-3 p-3 bg-gray-500/5 border border-gray-500/10 rounded-lg">
                     <p class="text-xs text-gray-300 font-semibold mb-1">Template Variables</p>
                     <p class="text-xs text-gray-400">
                       Use in custom messages: <code class="bg-gray-500/10 text-white px-1 rounded text-xs">{{"{{"}}tier}}</code>, 
