@@ -12,8 +12,9 @@ export class CreateUserProjectDto {
   @IsString()
   baseUrl?: string;
 
+  @IsOptional()
   @IsString()
-  openaiApiKey: string;
+  openaiApiKey?: string;
 
   @IsOptional()
   @IsInt()

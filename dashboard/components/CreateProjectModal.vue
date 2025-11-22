@@ -12,7 +12,7 @@
         <!-- Modal -->
         <div class="flex min-h-full items-center justify-center p-4">
           <div
-            class="relative bg-black border border-gray-500/20 rounded-lg shadow-xl w-full max-w-2xl"
+            class="relative bg-black border border-gray-500/20 rounded-lg shadow-xl w-full max-w-md"
             @click.stop
           >
             <!-- Header -->
@@ -42,167 +42,49 @@
                       v-model="form.name"
                       type="text"
                       required
-                      class="w-full px-4 py-2 text-white bg-gray-500/10 border border-gray-500/10 rounded-lg focus:ring-2 focus:ring-blue-300/50 focus:border-transparent transition-all"
-                      placeholder="My App"
+                      class="w-full px-4 py-3 text-white bg-gray-500/10 border border-gray-500/10 rounded-lg focus:ring-2 focus:ring-blue-300/50 focus:border-transparent transition-all"
+                      placeholder="My AI App"
+                      autofocus
                     />
-                  </div>
-
-                  <!-- Provider Selection -->
-                  <div>
-                    <label class="block text-sm font-medium text-white mb-2">
-                      AI Provider
-                    </label>
-                    <div class="relative">
-                      <select
-                        v-model="form.provider"
-                        class="w-full px-4 py-2.5 text-white bg-gray-500/10 border border-gray-500/20 rounded-lg focus:ring-2 focus:ring-blue-300/50 focus:border-transparent appearance-none cursor-pointer pr-10 transition-all hover:bg-gray-500/20"
-                      >
-                        <option value="openai">OpenAI</option>
-                        <option value="anthropic">Anthropic</option>
-                        <option value="google">Google</option>
-                        <option value="xai">xAI</option>
-                        <option value="other">Other (OpenAI-compatible)</option>
-                      </select>
-                      <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Base URL (only for Other provider) -->
-                  <div v-if="form.provider === 'other'">
-                    <label class="block text-sm font-medium text-white mb-2">
-                      API Base URL
-                    </label>
-                    <input
-                      v-model="form.baseUrl"
-                      type="text"
-                      required
-                      class="w-full px-4 py-2 text-white bg-gray-500/10 border border-gray-500/10 rounded-lg focus:ring-2 focus:ring-amber-300/50 focus:border-transparent font-mono text-sm"
-                      placeholder="https://api.your-provider.com/v1/chat/completions"
-                    />
-                    <p class="mt-1 text-xs text-gray-400">Full API endpoint URL for your provider</p>
-                  </div>
-
-                  <!-- API Key -->
-                  <div>
-                    <label class="block text-sm font-medium text-white mb-2">
-                      {{ providerLabels[form.provider] }} API Key
-                    </label>
-                    <input
-                      v-model="form.openaiApiKey"
-                      type="text"
-                      required
-                      class="w-full px-4 py-2 text-white bg-gray-500/10 border border-gray-500/10 rounded-lg focus:ring-2 focus:ring-amber-300/50 focus:border-transparent font-mono text-sm"
-                      :placeholder="providerPlaceholders[form.provider]"
-                    />
-                    <p class="mt-1 text-xs text-gray-400">{{ providerHints[form.provider] }}</p>
-                  </div>
-
-                  <!-- Limit Period -->
-                  <div>
-                    <label class="block text-sm font-medium text-white mb-2">
-                      Limit Period
-                    </label>
-                    <div class="relative">
-                      <select
-                        v-model="form.limitPeriod"
-                        class="w-full px-4 py-2.5 text-white bg-gray-500/10 border border-gray-500/20 rounded-lg focus:ring-2 focus:ring-blue-300/50 focus:border-transparent appearance-none cursor-pointer pr-10 transition-all hover:bg-gray-500/20"
-                      >
-                        <option value="daily">Daily</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
-                      </select>
-                      <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </div>
-                    </div>
-                    <p class="mt-1 text-xs text-gray-400">
-                      Reset limits daily, weekly, or monthly
+                    <p class="mt-2 text-xs text-gray-400">
+                      You'll configure limits, tiers, and model settings after creation
                     </p>
                   </div>
 
-                  <!-- Limit Type -->
-                  <div>
-                    <label class="block text-sm font-medium text-white mb-2">
-                      Limit Type
-                    </label>
-                    <div class="relative">
-                      <select
-                        v-model="form.limitType"
-                        class="w-full px-4 py-2.5 text-white bg-gray-500/10 border border-gray-500/20 rounded-lg focus:ring-2 focus:ring-blue-300/50 focus:border-transparent appearance-none cursor-pointer pr-10 transition-all hover:bg-gray-500/20"
-                      >
-                        <option value="both">Both Requests & Tokens</option>
-                        <option value="requests">Requests Only (Image Gen)</option>
-                        <option value="tokens">Tokens Only (Chat)</option>
-                      </select>
-                      <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
+                  <!-- Info Box -->
+                  <div class="bg-blue-300/10 border border-blue-300/20 rounded-lg p-4">
+                    <div class="flex">
+                      <svg class="w-5 h-5 text-blue-300 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <div class="text-sm text-blue-200">
+                        <p class="font-medium mb-1">Quick Setup</p>
+                        <p class="text-blue-300/80">
+                          After creating your project, you'll set up:
+                        </p>
+                        <ul class="mt-2 space-y-1 text-blue-300/80">
+                          <li>• AI provider & API key</li>
+                          <li>• Usage limits (per-model if needed)</li>
+                          <li>• Plan tiers (free, pro, etc.)</li>
+                          <li>• Custom limit messages</li>
+                        </ul>
                       </div>
                     </div>
-                    <p class="mt-1 text-xs text-gray-400">
-                      Choose how to track usage: requests for image generation, tokens for chat, or both
-                    </p>
-                  </div>
-
-                  <!-- Request Limit -->
-                  <div v-if="form.limitType !== 'tokens'">
-                    <label class="block text-sm font-medium text-white mb-2">
-                      Request Limit
-                    </label>
-                    <input
-                      v-model.number="form.dailyRequestLimit"
-                      type="number"
-                      min="0"
-                      class="w-full px-4 py-2 text-white bg-gray-500/10 border border-gray-500/10 rounded-lg focus:ring-2 focus:ring-amber-300/50 focus:border-transparent"
-                      placeholder="100"
-                    />
-                    <p class="mt-1 text-xs text-gray-400">Leave empty for unlimited</p>
-                  </div>
-
-                  <!-- Token Limit -->
-                  <div v-if="form.limitType !== 'requests'">
-                    <label class="block text-sm font-medium text-white mb-2">
-                      Token Limit
-                    </label>
-                    <input
-                      v-model.number="form.dailyTokenLimit"
-                      type="number"
-                      min="0"
-                      class="w-full px-4 py-2 text-white bg-gray-500/10 border border-gray-500/10 rounded-lg focus:ring-2 focus:ring-amber-300/50 focus:border-transparent"
-                      placeholder="50000"
-                    />
-                    <p class="mt-1 text-xs text-gray-400">Leave empty for unlimited</p>
-                  </div>
-
-                  <!-- Limit Exceeded Message -->
-                  <div>
-                    <label class="block text-sm font-medium text-white mb-2">
-                      Limit Exceeded Message (Optional)
-                    </label>
-                    <textarea
-                      v-model="form.limitMessage"
-                      rows="3"
-                      class="w-full px-4 py-2 text-white bg-gray-500/10 border border-gray-500/10 rounded-lg focus:ring-2 focus:ring-amber-300/50 focus:border-transparent"
-                      placeholder="Daily limit reached. Please upgrade to continue."
-                    />
-                    <p class="mt-1 text-xs text-gray-400">Custom message shown when limits are exceeded</p>
                   </div>
 
                   <!-- Error Message -->
-                  <div v-if="error" class="bg-red-400/10 text-red-400 p-4 rounded-lg">
+                  <div v-if="error" class="bg-red-400/10 text-red-400 p-4 rounded-lg text-sm">
                     {{ error }}
                   </div>
 
                   <!-- Success Message -->
-                  <div v-if="success" class="bg-green-300/10 text-green-300 p-4 rounded-lg">
-                    Project created successfully!
+                  <div v-if="success" class="bg-green-300/10 text-green-300 p-4 rounded-lg text-sm">
+                    <div class="flex items-center">
+                      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      Project created! Redirecting...
+                    </div>
                   </div>
                 </div>
 
@@ -218,7 +100,7 @@
                   <button
                     type="submit"
                     :disabled="loading"
-                    class="px-4 py-2 bg-blue-300 text-sm font-medium text-black rounded-lg hover:bg-blue-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center space-x-2"
+                    class="px-6 py-2 bg-blue-300 text-sm font-medium text-black rounded-lg hover:bg-blue-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center space-x-2"
                   >
                     <svg
                       v-if="loading"
@@ -247,8 +129,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  close: []
-  created: []
+  (e: 'close'): void
+  (e: 'created', projectId: string): void
 }>()
 
 const api = useApi()
@@ -256,100 +138,45 @@ const nameInput = ref<HTMLInputElement | null>(null)
 
 const form = ref({
   name: '',
-  provider: 'openai' as 'openai' | 'anthropic' | 'google' | 'xai' | 'other',
-  openaiApiKey: '',
-  baseUrl: '',
-  limitPeriod: 'daily' as 'daily' | 'weekly' | 'monthly',
-  limitType: 'both' as 'requests' | 'tokens' | 'both',
-  dailyRequestLimit: null as number | null,
-  dailyTokenLimit: null as number | null,
-  limitMessage: '',
 })
-
-const providerLabels = {
-  openai: 'OpenAI',
-  anthropic: 'Anthropic',
-  google: 'Google',
-  xai: 'xAI',
-  other: 'Provider',
-}
-
-const providerPlaceholders = {
-  openai: 'sk-...',
-  anthropic: 'sk-ant-...',
-  google: 'AIza...',
-  xai: 'xai-...',
-  other: 'your-api-key-...',
-}
-
-const providerHints = {
-  openai: 'Your OpenAI API key will be encrypted',
-  anthropic: 'Your Anthropic API key will be encrypted',
-  google: 'Your Google API key will be encrypted',
-  xai: 'Your xAI API key will be encrypted',
-  other: 'Your API key will be encrypted',
-}
 
 const loading = ref(false)
 const error = ref('')
 const success = ref(false)
 
+watch(() => props.isOpen, (isOpen) => {
+  if (isOpen) {
+    nextTick(() => {
+      nameInput.value?.focus()
+    })
+    // Reset form
+    form.value = {
+      name: '',
+    }
+    error.value = ''
+    success.value = false
+  }
+})
+
 const handleSubmit = async () => {
   loading.value = true
   error.value = ''
-  success.value = false
 
   try {
-    const payload: any = {
-      name: form.value.name,
-      provider: form.value.provider,
-      openaiApiKey: form.value.openaiApiKey,
-      limitPeriod: form.value.limitPeriod,
-      limitType: form.value.limitType,
-    }
-
-    if (form.value.provider === 'other' && form.value.baseUrl) {
-      payload.baseUrl = form.value.baseUrl
-    }
-    if (form.value.dailyRequestLimit) {
-      payload.dailyRequestLimit = form.value.dailyRequestLimit
-    }
-    if (form.value.dailyTokenLimit) {
-      payload.dailyTokenLimit = form.value.dailyTokenLimit
-    }
-    if (form.value.limitMessage) {
-      payload.limitExceededResponse = {
-        error: 'limit_exceeded',
-        message: form.value.limitMessage,
-      }
-    }
-
-    await api('/projects', {
+    const project = await api('/projects', {
       method: 'POST',
-      body: payload,
+      body: {
+        name: form.value.name,
+      },
     })
 
     success.value = true
     
-    // Reset form
-    form.value = {
-      name: '',
-      provider: 'openai',
-      openaiApiKey: '',
-      baseUrl: '',
-      limitPeriod: 'daily',
-      limitType: 'both',
-      dailyRequestLimit: null,
-      dailyTokenLimit: null,
-      limitMessage: '',
-    }
-
-    // Close modal after a brief delay to show success message
+    // Redirect to project settings page after a short delay
     setTimeout(() => {
-      emit('created')
-      emit('close')
-      success.value = false
-    }, 500)
+      emit('created', project.id)
+      close()
+    }, 1000)
   } catch (err: any) {
     error.value = err.message || 'Failed to create project'
   } finally {
@@ -358,54 +185,8 @@ const handleSubmit = async () => {
 }
 
 const close = () => {
-  if (!loading.value) {
-    emit('close')
-    // Reset form and messages
-    setTimeout(() => {
-      form.value = {
-        name: '',
-        provider: 'openai',
-        openaiApiKey: '',
-        baseUrl: '',
-        limitPeriod: 'daily',
-        limitType: 'both',
-        dailyRequestLimit: null,
-        dailyTokenLimit: null,
-        limitMessage: '',
-      }
-      error.value = ''
-      success.value = false
-    }, 300)
-  }
+  emit('close')
 }
-
-// Close modal on Escape key
-const handleKeydown = (e: KeyboardEvent) => {
-  if (e.key === 'Escape' && props.isOpen) {
-    close()
-  }
-}
-
-onMounted(() => {
-  if (process.client) {
-    document.addEventListener('keydown', handleKeydown)
-  }
-})
-
-onUnmounted(() => {
-  if (process.client) {
-    document.removeEventListener('keydown', handleKeydown)
-  }
-})
-
-// Auto-focus first input when modal opens
-watch(() => props.isOpen, (isOpen) => {
-  if (isOpen) {
-    nextTick(() => {
-      nameInput.value?.focus()
-    })
-  }
-})
 </script>
 
 <style scoped>
@@ -418,15 +199,4 @@ watch(() => props.isOpen, (isOpen) => {
 .modal-leave-to {
   opacity: 0;
 }
-
-.modal-enter-active .relative,
-.modal-leave-active .relative {
-  transition: transform 0.2s ease;
-}
-
-.modal-enter-from .relative,
-.modal-leave-to .relative {
-  transform: scale(0.95);
-}
 </style>
-

@@ -70,14 +70,18 @@ Dashboard: `http://localhost:3001`
 
 ### 1. Create a Project (via Dashboard)
 
+**Simple 2-Step Process:**
+
 1. Visit `http://localhost:3001/signup`
 2. Enter your email (magic link sent to console in dev)
-3. Create a project:
+3. **Create project with just a name** - that's it!
+4. Configure everything in project settings:
    - Choose your AI provider (OpenAI, Anthropic, Google, xAI, or Other)
    - Enter your API key for that provider
    - For "Other" providers: specify the API endpoint URL
-   - Set limits (e.g., 5 requests/day for free tier)
-4. Copy your project key
+   - Set general limits or model-specific limits
+   - Configure tiers (free, pro, etc.) if needed
+5. Copy your project key and start using it
 
 ### 2. Use the SDK
 

@@ -303,7 +303,9 @@ const toggleProjectKeyVisibility = () => {
 
 const editForm = ref({
   name: '',
-  provider: 'openai' as 'openai' | 'anthropic' | 'google' | 'xai',
+  provider: 'openai' as 'openai' | 'anthropic' | 'google' | 'xai' | 'other',
+  baseUrl: '',
+  openaiApiKey: '',
   limitPeriod: 'daily' as 'daily' | 'weekly' | 'monthly',
   limitType: 'both' as 'requests' | 'tokens' | 'both',
   dailyRequestLimit: null as number | null,
@@ -339,6 +341,8 @@ const loadProject = async () => {
     // Populate edit form
     editForm.value.name = project.value.name
     editForm.value.provider = project.value.provider || 'openai'
+    editForm.value.baseUrl = project.value.baseUrl || ''
+    editForm.value.openaiApiKey = '' // Don't load existing key for security
     editForm.value.limitPeriod = project.value.limitPeriod || 'daily'
     editForm.value.limitType = project.value.limitType || 'both'
     editForm.value.dailyRequestLimit = project.value.dailyRequestLimit
@@ -413,6 +417,19 @@ const handleUpdate = async () => {
       name: editForm.value.name,
       limitPeriod: editForm.value.limitPeriod,
       limitType: editForm.value.limitType,
+    }
+
+    // Provider settings (only if API key not already set)
+    if (!project.value.openaiApiKey) {
+      payload.provider = editForm.value.provider
+      if (editForm.value.baseUrl) {
+        payload.baseUrl = editForm.value.baseUrl
+      }
+    }
+
+    // API key (only if changed)
+    if (editForm.value.openaiApiKey) {
+      payload.openaiApiKey = editForm.value.openaiApiKey
     }
 
     // Basic limits

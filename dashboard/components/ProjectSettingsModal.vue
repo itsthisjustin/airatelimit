@@ -72,6 +72,21 @@
                 </nav>
               </div>
 
+              <!-- Setup Required Banner -->
+              <div v-if="!project.openaiApiKey && configTab === 'basic'" class="mx-6 mt-4 bg-amber-300/10 border border-amber-300/20 rounded-lg p-4">
+                <div class="flex">
+                  <svg class="w-5 h-5 text-amber-300 mt-0.5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <div>
+                    <p class="font-medium text-amber-200 mb-1">Configuration Required</p>
+                    <p class="text-sm text-amber-300/80">
+                      Add your AI provider's API key below to start using this project. You can configure limits and tiers afterward.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <!-- Basic Limits Tab -->
               <form v-show="configTab === 'basic'" @submit.prevent="handleUpdate" class="space-y-4 px-6">
                 <div>
@@ -83,13 +98,60 @@
                   />
                 </div>
 
-                <!-- Provider Display (Read-only) -->
+                <!-- Provider Selection (or Display if already set) -->
                 <div>
                   <label class="block text-sm font-medium text-white mb-2">AI Provider</label>
-                  <div class="w-full px-4 py-2 text-gray-400 bg-gray-500/5 border border-gray-500/10 rounded-lg">
+                  <div v-if="!project.openaiApiKey" class="relative">
+                    <select
+                      v-model="editForm.provider"
+                      class="w-full px-4 py-2.5 text-white bg-gray-500/10 border border-gray-500/20 rounded-lg focus:ring-2 focus:ring-blue-300/50 focus:border-transparent appearance-none cursor-pointer pr-10 transition-all hover:bg-gray-500/20"
+                    >
+                      <option value="openai">OpenAI</option>
+                      <option value="anthropic">Anthropic</option>
+                      <option value="google">Google</option>
+                      <option value="xai">xAI</option>
+                      <option value="other">Other (OpenAI-compatible)</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div v-else class="w-full px-4 py-2 text-gray-400 bg-gray-500/5 border border-gray-500/10 rounded-lg">
                     {{ providerLabels[project.provider] || 'OpenAI' }}
                   </div>
-                  <p class="text-xs text-gray-500 mt-1">Provider cannot be changed after project creation</p>
+                  <p class="text-xs text-gray-500 mt-1">
+                    {{ project.openaiApiKey ? 'Provider cannot be changed after API key is set' : 'Choose your AI provider' }}
+                  </p>
+                </div>
+
+                <!-- Base URL (only for Other provider) -->
+                <div v-if="editForm.provider === 'other'">
+                  <label class="block text-sm font-medium text-white mb-2">API Base URL</label>
+                  <input
+                    v-model="editForm.baseUrl"
+                    type="text"
+                    class="w-full px-4 py-2 text-white bg-gray-500/10 border border-gray-500/10 rounded-lg focus:ring-2 focus:ring-blue-300/50 focus:border-transparent font-mono text-sm"
+                    placeholder="https://api.your-provider.com/v1/chat/completions"
+                  />
+                  <p class="text-xs text-gray-400 mt-1">Full API endpoint URL for your provider</p>
+                </div>
+
+                <!-- API Key -->
+                <div>
+                  <label class="block text-sm font-medium text-white mb-2">
+                    {{ providerLabels[editForm.provider] || 'OpenAI' }} API Key
+                  </label>
+                  <input
+                    v-model="editForm.openaiApiKey"
+                    type="password"
+                    class="w-full px-4 py-2 text-white bg-gray-500/10 border border-gray-500/10 rounded-lg focus:ring-2 focus:ring-amber-300/50 focus:border-transparent font-mono text-sm"
+                    :placeholder="project.openaiApiKey ? '••••••••••••••••' : 'sk-...'"
+                  />
+                  <p class="text-xs text-gray-400 mt-1">
+                    {{ project.openaiApiKey ? 'Leave empty to keep existing key' : 'Required to use this project' }}
+                  </p>
                 </div>
 
                 <!-- Limit Period -->

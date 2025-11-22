@@ -296,13 +296,13 @@ const loadProjects = async () => {
   }
 }
 
-// Optimistic UI: Add project immediately, then update from server
-const handleProjectCreated = async () => {
+// Redirect to project settings after creation
+const handleProjectCreated = async (projectId: string) => {
   showModal.value = false
-  success('Project created successfully!')
+  success('Project created! Configure it now.')
   
-  // Reload projects to get the new one
-  await loadProjects()
+  // Redirect to project settings page
+  navigateTo(`/projects/${projectId}`)
 }
 
 const handleDeleteRequest = (projectId: string) => {

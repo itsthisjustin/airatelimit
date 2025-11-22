@@ -52,7 +52,7 @@ export class Project {
 
   // TODO: Encrypt at rest in production
   // Stores API key for selected provider (OpenAI, Anthropic, Google, or xAI)
-  @Column()
+  @Column({ nullable: true })
   openaiApiKey: string;
 
   @Column({ nullable: true })
