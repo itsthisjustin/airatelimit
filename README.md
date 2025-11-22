@@ -29,7 +29,22 @@ That's what this does.
 - Custom upgrade messages with deep links
 - Analytics to see what's working
 
-## Quick Start
+## Deploy to Production
+
+**Recommended Stack:**
+- **Hosting:** [Railway](https://railway.app) (Backend + Dashboard + PostgreSQL)
+- **Email:** [Resend](https://resend.com) (Magic link authentication)
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete deployment guide.
+
+**Quick Deploy:**
+1. Push to GitHub
+2. Connect to Railway
+3. Add PostgreSQL
+4. Set environment variables (see `env.example`)
+5. Deploy!
+
+## Local Development
 
 ```bash
 # 1. Install
@@ -43,8 +58,8 @@ docker run --name ai-proxy-db \
   -p 5433:5432 -d postgres:15
 
 # 3. Setup environment
-cp .env.example .env
-# Edit .env with your OpenAI key and settings
+cp env.example .env
+# Edit .env with your database and settings
 
 # 4. Start everything
 npm run start
@@ -320,10 +335,35 @@ GET    /api/projects/:id/analytics/rule-triggers
 GET    /api/projects/:id/analytics/recent-triggers
 ```
 
+## Production Deployment
+
+### Railway + Resend (Recommended)
+
+**Cost:** ~$5-10/month for small projects
+
+1. **Backend Service**
+   - Auto-deploy from GitHub
+   - Add PostgreSQL database
+   - Set environment variables from `env.example`
+   - Deploy
+
+2. **Dashboard Service**
+   - Same repo, root directory: `/dashboard`
+   - Set `NUXT_PUBLIC_API_BASE_URL`
+   - Deploy
+
+3. **Email (Resend)**
+   - Sign up at [resend.com](https://resend.com)
+   - Verify your domain
+   - Get API key
+   - Add to backend env vars
+
+**Full guide:** [DEPLOYMENT.md](./DEPLOYMENT.md)
+
 ## Architecture
 
 ```
-Your App → AI Ratelimit Proxy → OpenAI
+Your App → AI Ratelimit Proxy → OpenAI/Anthropic/Google/xAI
               ↓
           PostgreSQL
           (usage tracking)
