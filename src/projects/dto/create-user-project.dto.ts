@@ -4,6 +4,10 @@ export class CreateUserProjectDto {
   @IsString()
   name: string;
 
+  @IsOptional()
+  @IsIn(['openai', 'anthropic', 'google', 'xai'])
+  provider?: 'openai' | 'anthropic' | 'google' | 'xai';
+
   @IsString()
   openaiApiKey: string;
 

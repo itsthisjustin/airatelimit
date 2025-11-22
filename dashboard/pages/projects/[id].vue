@@ -303,6 +303,7 @@ const toggleProjectKeyVisibility = () => {
 
 const editForm = ref({
   name: '',
+  provider: 'openai' as 'openai' | 'anthropic' | 'google' | 'xai',
   limitType: 'both' as 'requests' | 'tokens' | 'both',
   dailyRequestLimit: null as number | null,
   dailyTokenLimit: null as number | null,
@@ -330,6 +331,7 @@ const loadProject = async () => {
 
     // Populate edit form
     editForm.value.name = project.value.name
+    editForm.value.provider = project.value.provider || 'openai'
     editForm.value.limitType = project.value.limitType || 'both'
     editForm.value.dailyRequestLimit = project.value.dailyRequestLimit
     editForm.value.dailyTokenLimit = project.value.dailyTokenLimit
@@ -383,6 +385,7 @@ const handleUpdate = async () => {
   try {
     const payload: any = {
       name: editForm.value.name,
+      provider: editForm.value.provider,
       limitType: editForm.value.limitType,
     }
 

@@ -40,13 +40,18 @@ export class Project {
   organizationId: string;
 
   // Provider configuration
-  @Column({ default: 'openai' })
-  provider: string;
+  @Column({
+    type: 'enum',
+    enum: ['openai', 'anthropic', 'google', 'xai'],
+    default: 'openai',
+  })
+  provider: 'openai' | 'anthropic' | 'google' | 'xai';
 
   @Column({ default: 'https://api.openai.com/v1/chat/completions' })
   baseUrl: string;
 
   // TODO: Encrypt at rest in production
+  // Stores API key for selected provider (OpenAI, Anthropic, Google, or xAI)
   @Column()
   openaiApiKey: string;
 

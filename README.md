@@ -18,7 +18,8 @@ That's what this does.
 - Per-user/session/device usage tracking
 - Privacy-first (never stores prompts or AI responses)
 - Works with anonymous users (no auth required)
-- OpenAI proxy with streaming support
+- Multi-provider support (OpenAI, Anthropic Claude, Google Gemini, xAI Grok)
+- Streaming support for all providers
 - JavaScript SDK
 
 **Limiting:**
@@ -58,9 +59,11 @@ Dashboard: `http://localhost:3001`
 
 1. Visit `http://localhost:3001/signup`
 2. Enter your email (magic link sent to console in dev)
-3. Create a project with your OpenAI API key
-4. Set limits (e.g., 5 requests/day for free tier)
-5. Copy your project key
+3. Create a project:
+   - Choose your AI provider (OpenAI, Anthropic, Google, or xAI)
+   - Enter your API key for that provider
+   - Set limits (e.g., 5 requests/day for free tier)
+4. Copy your project key
 
 ### 2. Use the SDK
 
@@ -148,7 +151,20 @@ else:
     print(result)
 ```
 
-### 4. Handle Limit Exceeded
+### 4. Supported Providers
+
+When creating a project, you can choose from:
+
+| Provider | Models | Base URL |
+|----------|--------|----------|
+| **OpenAI** | GPT-4, GPT-3.5 | `https://api.openai.com/v1/chat/completions` |
+| **Anthropic** | Claude 3 (Opus, Sonnet, Haiku) | `https://api.anthropic.com/v1/messages` |
+| **Google** | Gemini Pro, Gemini Ultra | `https://generativelanguage.googleapis.com/v1/models/{model}:generateContent` |
+| **xAI** | Grok | `https://api.x.ai/v1/chat/completions` |
+
+The proxy automatically handles API format differences - you always use OpenAI-compatible format in your requests.
+
+### 5. Handle Limit Exceeded
 
 ```typescript
 try {

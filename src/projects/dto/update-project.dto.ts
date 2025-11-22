@@ -6,6 +6,10 @@ export class UpdateProjectDto {
   name?: string;
 
   @IsOptional()
+  @IsIn(['openai', 'anthropic', 'google', 'xai'])
+  provider?: 'openai' | 'anthropic' | 'google' | 'xai';
+
+  @IsOptional()
   @IsString()
   openaiApiKey?: string;
 

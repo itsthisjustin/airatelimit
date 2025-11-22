@@ -43,13 +43,16 @@ export class ProjectsService {
     dto: CreateUserProjectDto,
   ): Promise<Project> {
     const projectKey = this.generateProjectKey();
+    const provider = dto.provider || 'openai';
+    const baseUrl = this.getDefaultBaseUrl(provider);
+    
     const project = this.projectsRepository.create({
       ...dto,
       projectKey,
       ownerId: userId,
       organizationId,
-      provider: 'openai',
-      baseUrl: 'https://api.openai.com/v1/chat/completions',
+      provider,
+      baseUrl,
       limitExceededResponse: dto.limitExceededResponse
         ? JSON.stringify(dto.limitExceededResponse)
         : null,
@@ -75,6 +78,12 @@ export class ProjectsService {
     }
 
     const updateData: any = { ...dto };
+    
+    // Update baseUrl if provider changed
+    if (dto.provider && dto.provider !== project.provider) {
+      updateData.baseUrl = this.getDefaultBaseUrl(dto.provider);
+    }
+    
     if (dto.limitExceededResponse) {
       updateData.limitExceededResponse = JSON.stringify(
         dto.limitExceededResponse,
@@ -92,6 +101,16 @@ export class ProjectsService {
   private generateProjectKey(): string {
     const random = randomBytes(16).toString('hex');
     return `pk_${random}`;
+  }
+
+  private getDefaultBaseUrl(provider: string): string {
+    const baseUrls: Record<string, string> = {
+      openai: 'https://api.openai.com/v1/chat/completions',
+      anthropic: 'https://api.anthropic.com/v1/messages',
+      google: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
+      xai: 'https://api.x.ai/v1/chat/completions',
+    };
+    return baseUrls[provider] || baseUrls.openai;
   }
 }
 

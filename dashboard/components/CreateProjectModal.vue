@@ -47,19 +47,42 @@
                     />
                   </div>
 
-                  <!-- OpenAI API Key -->
+                  <!-- Provider Selection -->
                   <div>
                     <label class="block text-sm font-medium text-white mb-2">
-                      OpenAI API Key
+                      AI Provider
+                    </label>
+                    <div class="relative">
+                      <select
+                        v-model="form.provider"
+                        class="w-full px-4 py-2.5 text-white bg-gray-500/10 border border-gray-500/20 rounded-lg focus:ring-2 focus:ring-blue-300/50 focus:border-transparent appearance-none cursor-pointer pr-10 transition-all hover:bg-gray-500/20"
+                      >
+                        <option value="openai">OpenAI (GPT-4, GPT-3.5)</option>
+                        <option value="anthropic">Anthropic (Claude)</option>
+                        <option value="google">Google (Gemini)</option>
+                        <option value="xai">xAI (Grok)</option>
+                      </select>
+                      <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- API Key -->
+                  <div>
+                    <label class="block text-sm font-medium text-white mb-2">
+                      {{ providerLabels[form.provider] }} API Key
                     </label>
                     <input
                       v-model="form.openaiApiKey"
                       type="text"
                       required
                       class="w-full px-4 py-2 text-white bg-gray-500/10 border border-gray-500/10 rounded-lg focus:ring-2 focus:ring-amber-300/50 focus:border-transparent font-mono text-sm"
-                      placeholder="sk-..."
+                      :placeholder="providerPlaceholders[form.provider]"
                     />
-                    <p class="mt-1 text-xs text-gray-400">Your OpenAI API key will be encrypted</p>
+                    <p class="mt-1 text-xs text-gray-400">{{ providerHints[form.provider] }}</p>
                   </div>
 
                   <!-- Limit Type -->
@@ -192,12 +215,34 @@ const nameInput = ref<HTMLInputElement | null>(null)
 
 const form = ref({
   name: '',
+  provider: 'openai' as 'openai' | 'anthropic' | 'google' | 'xai',
   openaiApiKey: '',
   limitType: 'both' as 'requests' | 'tokens' | 'both',
   dailyRequestLimit: null as number | null,
   dailyTokenLimit: null as number | null,
   limitMessage: '',
 })
+
+const providerLabels = {
+  openai: 'OpenAI',
+  anthropic: 'Anthropic',
+  google: 'Google',
+  xai: 'xAI',
+}
+
+const providerPlaceholders = {
+  openai: 'sk-...',
+  anthropic: 'sk-ant-...',
+  google: 'AIza...',
+  xai: 'xai-...',
+}
+
+const providerHints = {
+  openai: 'Your OpenAI API key will be encrypted',
+  anthropic: 'Your Anthropic API key will be encrypted',
+  google: 'Your Google API key will be encrypted',
+  xai: 'Your xAI API key will be encrypted',
+}
 
 const loading = ref(false)
 const error = ref('')
@@ -211,6 +256,7 @@ const handleSubmit = async () => {
   try {
     const payload: any = {
       name: form.value.name,
+      provider: form.value.provider,
       openaiApiKey: form.value.openaiApiKey,
       limitType: form.value.limitType,
     }
@@ -238,6 +284,7 @@ const handleSubmit = async () => {
     // Reset form
     form.value = {
       name: '',
+      provider: 'openai',
       openaiApiKey: '',
       limitType: 'both',
       dailyRequestLimit: null,
@@ -265,6 +312,7 @@ const close = () => {
     setTimeout(() => {
       form.value = {
         name: '',
+        provider: 'openai',
         openaiApiKey: '',
         limitType: 'both',
         dailyRequestLimit: null,
