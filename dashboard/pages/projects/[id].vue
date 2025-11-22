@@ -326,7 +326,7 @@ const toggleProjectKeyVisibility = () => {
 
 const editForm = ref({
   name: '',
-  provider: 'openai' as 'openai' | 'anthropic' | 'google' | 'xai' | 'other',
+  provider: null as 'openai' | 'anthropic' | 'google' | 'xai' | 'other' | null,
   baseUrl: '',
   openaiApiKey: '',
   limitPeriod: 'daily' as 'daily' | 'weekly' | 'monthly',
@@ -363,7 +363,7 @@ const loadProject = async () => {
 
     // Populate edit form
     editForm.value.name = project.value.name
-    editForm.value.provider = project.value.provider || 'openai'
+    editForm.value.provider = project.value.provider || null
     editForm.value.baseUrl = project.value.baseUrl || ''
     editForm.value.openaiApiKey = '' // Don't load existing key for security
     editForm.value.limitPeriod = project.value.limitPeriod || 'daily'

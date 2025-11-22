@@ -52,23 +52,23 @@
                   </div>
 
                   <!-- Info Box -->
-                  <div class="bg-blue-300/10 border border-blue-300/20 rounded-lg p-4">
+                  <div class="bg-gray-500/10 border border-gray-500/20 rounded-lg p-4">
                     <div class="flex">
-                      <svg class="w-5 h-5 text-blue-300 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg class="w-5 h-5 text-gray-400 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      <div class="text-sm text-blue-200">
+                      <div class="text-sm text-white">
                         <p class="font-medium mb-1">Quick Setup</p>
-                        <p class="text-blue-300/80">
-                          After creating your project, you'll configure:
+                        <p class="text-gray-400">
+                          After creating your project, go to settings to configure:
                         </p>
-                        <ul class="mt-2 space-y-1 text-blue-300/80">
+                        <ul class="mt-2 space-y-1 text-gray-400">
                           <li>• AI provider & API key (required)</li>
                           <li>• Usage limits (optional, per-model if needed)</li>
                           <li>• Plan tiers (optional, free/pro/etc.)</li>
                           <li>• Custom limit messages (optional)</li>
                         </ul>
-                        <p class="mt-3 text-xs text-blue-300/60">
+                        <p class="mt-3 text-xs text-gray-500">
                           Your project API key will be generated once you save your API key.
                         </p>
                       </div>

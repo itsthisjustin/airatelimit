@@ -106,6 +106,7 @@
                       v-model="editForm.provider"
                       class="w-full px-4 py-2.5 text-white bg-gray-500/10 border border-gray-500/20 rounded-lg focus:ring-2 focus:ring-blue-300/50 focus:border-transparent appearance-none cursor-pointer pr-10 transition-all hover:bg-gray-500/20"
                     >
+                      <option :value="null" disabled>Select a provider...</option>
                       <option value="openai">OpenAI</option>
                       <option value="anthropic">Anthropic</option>
                       <option value="google">Google</option>
@@ -119,7 +120,7 @@
                     </div>
                   </div>
                   <div v-else class="w-full px-4 py-2 text-gray-400 bg-gray-500/5 border border-gray-500/10 rounded-lg">
-                    {{ providerLabels[project.provider] || 'OpenAI' }}
+                    {{ project.provider ? providerLabels[project.provider] : 'Not configured' }}
                   </div>
                   <p class="text-xs text-gray-500 mt-1">
                     {{ project.openaiApiKey ? 'Provider cannot be changed after API key is set' : 'Choose your AI provider' }}
@@ -141,13 +142,14 @@
                 <!-- API Key -->
                 <div>
                   <label class="block text-sm font-medium text-white mb-2">
-                    {{ providerLabels[editForm.provider] || 'OpenAI' }} API Key
+                    {{ editForm.provider ? providerLabels[editForm.provider] : 'Provider' }} API Key
                   </label>
                   <input
                     v-model="editForm.openaiApiKey"
                     type="password"
                     class="w-full px-4 py-2 text-white bg-gray-500/10 border border-gray-500/10 rounded-lg focus:ring-2 focus:ring-amber-300/50 focus:border-transparent font-mono text-sm"
                     :placeholder="project.openaiApiKey ? '••••••••••••••••' : 'sk-...'"
+                    :disabled="!editForm.provider"
                   />
                   <p class="text-xs text-gray-400 mt-1">
                     {{ project.openaiApiKey ? 'Leave empty to keep existing key' : 'Required to use this project' }}

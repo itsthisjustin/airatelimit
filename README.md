@@ -15,12 +15,12 @@ const result = await client.chat({
 
 ## Why?
 
-Building a freemium AI app? You need:
-- ✅ Limit free tier without building billing
-- ✅ Track anonymous users (no login required)
-- ✅ Different limits per model (gpt-4o: expensive, gemini: cheap)
-- ✅ Custom upgrade prompts when limits hit
-- ✅ Privacy-first (never store prompts or responses)
+Building an AI app? You need:
+- Limit free tier without building billing
+- Track anonymous users (no login required)
+- Different limits per model (gpt-4o: expensive, gemini: cheap)
+- Custom upgrade prompts when limits hit
+- Privacy-first (never store prompts or responses)
 
 This does all that.
 
@@ -174,13 +174,21 @@ Choose when limits reset:
 
 ## Supported Providers
 
-| Provider | Models | Streaming |
-|----------|--------|-----------|
-| OpenAI | gpt-4o, gpt-4o-mini, o1-preview, o1-mini, etc. | ✅ |
-| Anthropic | claude-3-5-sonnet, claude-3-opus, haiku | ✅ |
-| Google | gemini-2.5-flash, gemini-1.5-pro | ✅ |
-| xAI | grok-beta, grok-2 | ✅ |
-| Other | Any OpenAI-compatible API | ✅ |
+When creating a project, you can choose from:
+
+| Provider | Default Base URL | Notes |
+|----------|------------------|-------|
+| **OpenAI** | `https://api.openai.com/v1/chat/completions` | All GPT models (gpt-4o, o1, etc.) |
+| **Anthropic** | `https://api.anthropic.com/v1/messages` | All Claude models |
+| **Google** | `https://generativelanguage.googleapis.com/v1/models/{model}:generateContent` | All Gemini models |
+| **xAI** | `https://api.x.ai/v1/chat/completions` | All Grok models |
+| **Other** | *Custom URL required* | Any OpenAI-compatible API (Together.ai, Groq, Perplexity, etc.) |
+
+**Use Any Model:** The proxy doesn't restrict model names. Pass any model ID from your chosen provider - including future models. The proxy forwards your request directly to the provider's API.
+
+**Format Translation:** The proxy handles API format differences automatically. Always use OpenAI-compatible format in your requests, regardless of the provider.
+
+**Custom Providers:** When selecting "Other", you can use any provider that supports OpenAI's chat completions API format. Examples include Together.ai, Groq, Perplexity, Fireworks, or self-hosted LLMs with OpenAI-compatible servers.
 
 ## Dashboard Features
 
@@ -215,13 +223,6 @@ PORT=3000
 RESEND_API_KEY=re_...  # For magic link emails
 ```
 
-## Tech Stack
-
-- **Backend:** NestJS + TypeORM + PostgreSQL
-- **Dashboard:** Nuxt 3 + Vue 3 + TailwindCSS
-- **SDK:** TypeScript
-- **Deploy:** Railway, Render, or self-host
-
 ## Use Cases
 
 **Image Generation Apps:**
@@ -247,27 +248,15 @@ gpt-4o: 5 requests (free), 500 requests (pro)
 
 ## Privacy
 
-- ✅ Never logs prompts or responses
-- ✅ Only stores: identity, count, timestamp
-- ✅ No AI data leaves your provider
-- ✅ Open source—audit the code
+- Never logs prompts or responses
+- Only stores: identity, count, timestamp
+- No AI data leaves your provider
+- Open source—audit the code
 
 ## Links
 
-- [Deployment Guide](DEPLOYMENT.md) - Detailed deployment instructions
-- [Customer Demo](CUSTOMER_DEMO.md) - Interactive walkthrough
 - [SDK Docs](sdk/js/README.md) - JavaScript SDK reference
 
 ## License
 
-MIT
-
-## Support
-
-- 🐛 Issues: [GitHub Issues](https://github.com/treadiehq/airatelimit/issues)
-- 💬 Questions: Open a discussion
-- 📧 Email: support@treadie.com
-
----
-
-Built by [Treadie](https://treadie.com) • MIT Licensed • Open Source
+See [FSL-1.1-MIT](LICENSE) for full details.

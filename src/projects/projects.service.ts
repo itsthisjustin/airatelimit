@@ -44,10 +44,10 @@ export class ProjectsService {
   ): Promise<Project> {
     // Only generate project key if API key is provided (project is configured)
     const projectKey = dto.openaiApiKey ? this.generateProjectKey() : null;
-    const provider = dto.provider || 'openai';
     
-    // Use custom baseUrl if provided (for "other" provider), otherwise use default
-    const baseUrl = dto.baseUrl || this.getDefaultBaseUrl(provider);
+    // Only set provider and baseUrl if actually provided in DTO
+    const provider = dto.provider || null;
+    const baseUrl = dto.baseUrl || (provider ? this.getDefaultBaseUrl(provider) : null);
     
     const project = this.projectsRepository.create({
       ...dto,
@@ -85,6 +85,11 @@ export class ProjectsService {
     // Generate project key when API key is first set
     if (dto.openaiApiKey && !project.projectKey) {
       updateData.projectKey = this.generateProjectKey();
+    }
+    
+    // Set default baseUrl when provider is first configured (if baseUrl not explicitly provided)
+    if (dto.provider && !project.provider && !dto.baseUrl) {
+      updateData.baseUrl = this.getDefaultBaseUrl(dto.provider);
     }
     
     // Provider can only be changed if project key doesn't exist yet

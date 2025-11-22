@@ -43,11 +43,11 @@ export class Project {
   @Column({
     type: 'enum',
     enum: ['openai', 'anthropic', 'google', 'xai', 'other'],
-    default: 'openai',
+    nullable: true,
   })
   provider: 'openai' | 'anthropic' | 'google' | 'xai' | 'other';
 
-  @Column({ default: 'https://api.openai.com/v1/chat/completions' })
+  @Column({ nullable: true })
   baseUrl: string;
 
   // TODO: Encrypt at rest in production

@@ -5,10 +5,14 @@ export class UpdateProjectDto {
   @IsString()
   name?: string;
 
-  // Provider cannot be changed after creation
-  // @IsOptional()
-  // @IsIn(['openai', 'anthropic', 'google', 'xai'])
-  // provider?: 'openai' | 'anthropic' | 'google' | 'xai';
+  // Provider can be set during initial configuration (before project key is generated)
+  @IsOptional()
+  @IsIn(['openai', 'anthropic', 'google', 'xai', 'other'])
+  provider?: 'openai' | 'anthropic' | 'google' | 'xai' | 'other';
+
+  @IsOptional()
+  @IsString()
+  baseUrl?: string;
 
   @IsOptional()
   @IsString()
