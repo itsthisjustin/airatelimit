@@ -70,56 +70,80 @@ export class EmailService {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
           </head>
-          <body style="margin: 0; padding: 0; background-color: #f5f5f5;">
-            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f5f5f5;">
+          <body style="margin: 0; padding: 0; background-color: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #0a0a0a;">
               <tr>
-                <td align="center" style="padding: 40px 20px;">
-                  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
-                    <!-- Header -->
+                <td align="center" style="padding: 60px 20px;">
+                  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 560px;">
+                    
+                    <!-- Logo/Brand -->
                     <tr>
-                      <td style="padding: 40px 40px 30px; background: #8ec5ff;">
-                        <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-family: Arial, sans-serif; font-weight: 600;">
-                          AI Ratelimit
-                        </h1>
+                      <td align="center" style="padding-bottom: 40px;">
+                        <div style="display: inline-block; background: linear-gradient(135deg, #8ec5ff 0%, #6ba3e8 100%); padding: 12px 24px; border-radius: 8px;">
+                          <h1 style="margin: 0; color: #000000; font-size: 22px; font-weight: 700; letter-spacing: -0.5px;">
+                            AI Ratelimit
+                          </h1>
+                        </div>
                       </td>
                     </tr>
                     
-                    <!-- Content -->
+                    <!-- Main Card -->
                     <tr>
-                      <td style="padding: 40px;">
-                        <h2 style="margin: 0 0 16px; color: #1a1a1a; font-size: 20px; font-family: Arial, sans-serif; font-weight: 600;">
-                          ${heading}
-                        </h2>
-                        <p style="margin: 0 0 24px; color: #4a5568; font-size: 16px; line-height: 24px; font-family: Arial, sans-serif;">
-                          ${description}
-                        </p>
-                        
-                        <!-- Button -->
+                      <td style="background: linear-gradient(180deg, #1a1a1a 0%, #141414 100%); border: 1px solid #2a2a2a; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">
                         <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                          
+                          <!-- Content -->
                           <tr>
-                            <td align="center" style="padding: 20px 0;">
-                              <a href="${magicLink}" 
-                                 style="display: inline-block; background-color: #8ec5ff; color: #000000; font-size: 16px; font-weight: 600; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-family: Arial, sans-serif;">
-                                ${buttonText}
-                              </a>
+                            <td style="padding: 48px 40px;">
+                              <h2 style="margin: 0 0 12px; color: #ffffff; font-size: 24px; font-weight: 600; letter-spacing: -0.5px;">
+                                ${heading}
+                              </h2>
+                              <p style="margin: 0 0 32px; color: #a0a0a0; font-size: 15px; line-height: 24px;">
+                                ${description}
+                              </p>
+                              
+                              <!-- Button -->
+                              <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                  <td align="center" style="padding: 8px 0 32px;">
+                                    <a href="${magicLink}" 
+                                       style="display: inline-block; background: linear-gradient(135deg, #8ec5ff 0%, #6ba3e8 100%); color: #000000; font-size: 15px; font-weight: 600; text-decoration: none; padding: 16px 48px; border-radius: 8px; box-shadow: 0 2px 8px rgba(142, 197, 255, 0.3); transition: all 0.2s;">
+                                      ${buttonText}
+                                    </a>
+                                  </td>
+                                </tr>
+                              </table>
+                              
+                              <!-- Security Note -->
+                              <div style="background: rgba(142, 197, 255, 0.08); border-left: 3px solid #8ec5ff; padding: 16px 20px; border-radius: 6px;">
+                                <p style="margin: 0; color: #8ec5ff; font-size: 13px; line-height: 20px;">
+                                  <strong>🔒 Security:</strong> This link expires in 15 minutes
+                                </p>
+                              </div>
+                            </td>
+                          </tr>
+                          
+                          <!-- Footer -->
+                          <tr>
+                            <td style="padding: 24px 40px; background: rgba(0, 0, 0, 0.3); border-top: 1px solid #2a2a2a;">
+                              <p style="margin: 0; color: #666666; font-size: 12px; line-height: 18px; text-align: center;">
+                                If you didn't request this email, you can safely ignore it.
+                              </p>
                             </td>
                           </tr>
                         </table>
-                        
-                        <p style="margin: 24px 0 0; color: #718096; font-size: 14px; line-height: 20px; font-family: Arial, sans-serif;">
-                          This link will expire in <strong>15 minutes</strong> for security reasons.
+                      </td>
+                    </tr>
+                    
+                    <!-- Bottom Spacing -->
+                    <tr>
+                      <td style="padding-top: 32px; text-align: center;">
+                        <p style="margin: 0; color: #4a4a4a; font-size: 11px; line-height: 16px;">
+                          © ${new Date().getFullYear()} AI Ratelimit. Built for developers.
                         </p>
                       </td>
                     </tr>
                     
-                    <!-- Footer -->
-                    <tr>
-                      <td style="padding: 30px 40px; background-color: #f7fafc; border-top: 1px solid #e2e8f0;">
-                        <p style="margin: 0; color: #a0aec0; font-size: 12px; line-height: 18px; font-family: Arial, sans-serif;">
-                          If you didn't request this email, you can safely ignore it.
-                        </p>
-                      </td>
-                    </tr>
                   </table>
                 </td>
               </tr>
