@@ -91,67 +91,118 @@
                 <h3 class="text-white mb-3">Install SDK and use in your code:</h3>
               </div>
             </div>
-            <div class="bg-black border border-gray-500/10 rounded-lg p-5 font-mono text-[11px] leading-relaxed overflow-x-auto">
+            <div class="bg-black border border-gray-500/10 rounded-lg p-4 font-mono text-[11px] leading-relaxed overflow-x-auto">
               <div class="text-gray-500 mb-1">// Install SDK</div>
               <div class="mb-2">
                 <span class="text-white">npm install </span>
-                <span class="text-yellow-400">@ai-ratelimit/sdk</span>
+                <span class="text-yellow-300">@ai-ratelimit/sdk</span>
               </div>
               
               <div class="text-gray-500 mb-1">// In your application:</div>
               <div class="mb-1">
-                <span class="text-purple-400">import</span>
+                <span class="text-purple-300">import</span>
                 <span class="text-white"> { </span>
-                <span class="text-blue-400">createClient</span>
+                <span class="text-blue-300">createClient</span>
                 <span class="text-white"> } </span>
-                <span class="text-purple-400">from</span>
-                <span class="text-yellow-400"> '@ai-ratelimit/sdk'</span>
+                <span class="text-purple-300">from</span>
+                <span class="text-yellow-300"> '@ai-ratelimit/sdk'</span>
               </div>
               
               <div class="mb-1">
-                <span class="text-purple-400">const</span>
+                <span class="text-purple-300">const</span>
                 <span class="text-white"> client = </span>
-                <span class="text-blue-400">createClient</span>
+                <span class="text-blue-300">createClient</span>
                 <span class="text-white">({</span>
               </div>
               <div class="ml-4 mb-1">
                 <span class="text-white">baseUrl: </span>
-                <span class="text-yellow-400">'https://api.airatelimit.com/api'</span>
+                <span class="text-yellow-300">'https://api.airatelimit.com/api'</span>
                 <span class="text-white">,</span>
               </div>
               <div class="ml-4 mb-1">
                 <span class="text-white">projectKey: </span>
-                <span class="text-yellow-400">'pk_your_key_here'</span>
+                <span class="text-yellow-300">'pk_your_key_here'</span>
                 <span class="text-white">,</span>
               </div>
               <div class="text-white mb-1">})</div>
               
               <div class="mb-1">
-                <span class="text-purple-400">const</span>
+                <span class="text-purple-300">const</span>
                 <span class="text-white"> result = </span>
-                <span class="text-purple-400">await</span>
+                <span class="text-purple-300">await</span>
                 <span class="text-white"> client.</span>
-                <span class="text-blue-400">chat</span>
+                <span class="text-blue-300">chat</span>
                 <span class="text-white">({</span>
               </div>
               <div class="ml-4 mb-1">
                 <span class="text-white">identity: </span>
-                <span class="text-yellow-400">'user-123'</span>
+                <span class="text-yellow-300">'user-123'</span>
                 <span class="text-white">,</span>
               </div>
               <div class="ml-4 mb-1">
                 <span class="text-white">model: </span>
-                <span class="text-yellow-400">'gpt-4o'</span>
+                <span class="text-yellow-300">'gpt-4o'</span>
                 <span class="text-white">,</span>
               </div>
               <div class="ml-4 mb-1">
                 <span class="text-white">messages: [{ role: </span>
-                <span class="text-yellow-400">'user'</span>
+                <span class="text-yellow-300">'user'</span>
                 <span class="text-white">, content: </span>
-                <span class="text-yellow-400">'Hello!'</span>
+                <span class="text-yellow-300">'Hello!'</span>
                 <span class="text-white"> }],</span>
               </div>
               <div class="text-white">})</div>
+            </div>
+
+            <!-- Or REST API -->
+            <div class="mt-4">
+              <div class="text-gray-500 text-[11px] mb-2 text-center">— or use REST API directly —</div>
+              <div class="bg-black border border-gray-500/10 rounded-lg p-5 font-mono text-[11px] leading-relaxed overflow-x-auto">
+                <div class="text-gray-500 mb-1">// Direct REST API call</div>
+                <div class="mb-1">
+                  <span class="text-blue-300">POST</span>
+                  <span class="text-white"> https://api.airatelimit.com/api/v1/proxy/chat</span>
+                </div>
+                
+                <div class="text-gray-500 mb-1 mt-3">// Headers</div>
+                <div class="mb-1">
+                  <span class="text-white">Content-Type: </span>
+                  <span class="text-yellow-300">application/json</span>
+                </div>
+                <div class="mb-1">
+                  <span class="text-white">x-project-key: </span>
+                  <span class="text-yellow-300">pk_your_key_here</span>
+                </div>
+                
+                <div class="text-gray-500 mb-1 mt-3">// Body</div>
+                <div class="mb-1">
+                  <span class="text-white">{</span>
+                </div>
+                <div class="ml-4 mb-1">
+                  <span class="text-white">"identity": </span>
+                  <span class="text-yellow-300">"user-123"</span>
+                  <span class="text-white">,</span>
+                </div>
+                <div class="ml-4 mb-1">
+                  <span class="text-white">"model": </span>
+                  <span class="text-yellow-300">"gpt-4o"</span>
+                  <span class="text-white">,</span>
+                </div>
+                <div class="ml-4 mb-1">
+                  <span class="text-white">"messages": [</span>
+                </div>
+                <div class="ml-8 mb-1">
+                  <span class="text-white">{ "role": </span>
+                  <span class="text-yellow-300">"user"</span>
+                  <span class="text-white">, "content": </span>
+                  <span class="text-yellow-300">"Hello!"</span>
+                  <span class="text-white"> }</span>
+                </div>
+                <div class="ml-4 mb-1">
+                  <span class="text-white">]</span>
+                </div>
+                <div class="text-white">}</div>
+              </div>
             </div>
           </div>
         </div>
