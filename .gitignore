@@ -33,6 +33,7 @@ Thumbs.db
 # Temporary files
 *.tmp
 .cache/
+*.pid
 add-more-reserved-names.sql
 CUSTOMER_DEMO.md
 test.http
