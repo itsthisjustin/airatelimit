@@ -13,6 +13,8 @@ import { ConfigService } from '@nestjs/config';
         }
 
         const url = new URL(databaseUrl);
+        const nodeEnv = configService.get<string>('nodeEnv');
+        
         return {
           type: 'postgres',
           host: url.hostname,
@@ -21,9 +23,10 @@ import { ConfigService } from '@nestjs/config';
           password: url.password,
           database: url.pathname.slice(1),
           entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-          synchronize: configService.get<string>('nodeEnv') === 'development',
+          // Auto-create tables on startup (safe for new deployments)
+          synchronize: true,
           // Only log errors and schema changes, not every query
-          logging: configService.get<string>('nodeEnv') === 'development' ? ['error', 'warn', 'schema'] : false,
+          logging: nodeEnv === 'development' ? ['error', 'warn', 'schema'] : ['error'],
         };
       },
     }),

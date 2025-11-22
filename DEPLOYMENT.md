@@ -28,6 +28,7 @@ Deploy AI Ratelimit to Railway with Resend for email.
    - In your project, click "New"
    - Select "Database" → "PostgreSQL"
    - Railway auto-generates `DATABASE_URL` variable
+   - **That's it!** Database tables auto-create on first deployment
 
 3. **Configure Environment Variables**
    
@@ -78,24 +79,16 @@ Deploy AI Ratelimit to Railway with Resend for email.
    - Go back to backend service variables
    - Update `CORS_ORIGIN` to your dashboard URL
 
-## 3. Run Database Migrations
+## 3. Database Auto-Setup ✨
 
-After first deployment, run migrations:
+**No manual migrations needed!** 
 
-```bash
-# Connect to Railway PostgreSQL
-railway link
-railway run psql $DATABASE_URL
+When you add PostgreSQL to Railway and deploy, the app automatically:
+- ✅ Creates all database tables
+- ✅ Seeds reserved organization names
+- ✅ Sets up indexes and relationships
 
-# Then run migrations
-\i migrations/db-migration-organizations.sql
-\i migrations/db-migration-reserved-org-names.sql
-\i migrations/db-migration-magic-links.sql
-```
-
-Or use Railway's built-in database import:
-1. Go to PostgreSQL service → Data → Import
-2. Upload each `.sql` file from `/migrations` folder
+Just add the PostgreSQL service and deploy - everything happens automatically on first startup.
 
 ## 4. Verify Deployment
 
@@ -164,8 +157,9 @@ Both backend and dashboard will redeploy automatically.
 
 ### Database Connection Issues
 - Check `DATABASE_URL` is set correctly
-- Verify migrations have been run
+- Verify PostgreSQL service is running
 - Check Railway PostgreSQL logs
+- Tables are auto-created on first startup - check backend logs for "schema" messages
 
 ### CORS Errors
 - Ensure `CORS_ORIGIN` matches your dashboard URL exactly

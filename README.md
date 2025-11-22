@@ -40,9 +40,9 @@ See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete deployment guide.
 **Quick Deploy:**
 1. Push to GitHub
 2. Connect to Railway
-3. Add PostgreSQL
+3. Add PostgreSQL (tables auto-create!)
 4. Set environment variables (see `env.example`)
-5. Deploy!
+5. Deploy - done! ✨
 
 ## Local Development
 
