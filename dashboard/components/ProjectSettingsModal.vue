@@ -418,9 +418,9 @@ const analyticsError = ref('')
 const api = useApi()
 
 const providerLabels: Record<string, string> = {
-  openai: 'OpenAI (GPT-4, GPT-3.5)',
-  anthropic: 'Anthropic (Claude)',
-  google: 'Google (Gemini)',
+  openai: 'OpenAI (GPT-4o, GPT-4, o1)',
+  anthropic: 'Anthropic (Claude 3.5 Sonnet)',
+  google: 'Google (Gemini 1.5 Pro)',
   xai: 'xAI (Grok)',
 }
 

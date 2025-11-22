@@ -57,9 +57,9 @@
                         v-model="form.provider"
                         class="w-full px-4 py-2.5 text-white bg-gray-500/10 border border-gray-500/20 rounded-lg focus:ring-2 focus:ring-blue-300/50 focus:border-transparent appearance-none cursor-pointer pr-10 transition-all hover:bg-gray-500/20"
                       >
-                        <option value="openai">OpenAI (GPT-4, GPT-3.5)</option>
-                        <option value="anthropic">Anthropic (Claude)</option>
-                        <option value="google">Google (Gemini)</option>
+                        <option value="openai">OpenAI (GPT-4o, GPT-4, o1)</option>
+                        <option value="anthropic">Anthropic (Claude 3.5 Sonnet)</option>
+                        <option value="google">Google (Gemini 1.5 Pro)</option>
                         <option value="xai">xAI (Grok)</option>
                       </select>
                       <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">

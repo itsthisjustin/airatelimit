@@ -75,11 +75,11 @@ const client = createClient({
   projectKey: 'pk_your_key_here',
 });
 
-// Regular request
+// Regular request (works with any provider's models)
 const result = await client.chat({
   identity: 'user-123',        // User ID, session, or device ID
   tier: 'free',                 // Optional: free, pro, etc.
-  model: 'gpt-4-turbo-preview',
+  model: 'gpt-4o',              // Or claude-3-5-sonnet-20241022, gemini-1.5-pro, grok-beta
   messages: [{ role: 'user', content: 'Hello!' }],
 });
 
@@ -106,18 +106,18 @@ curl -X POST http://localhost:3000/api/v1/proxy/chat \
   -d '{
     "identity": "user-123",
     "tier": "free",
-    "model": "gpt-4-turbo-preview",
+    "model": "gpt-4o",
     "messages": [{"role": "user", "content": "Hello!"}]
   }'
 
-# Streaming request
+# Streaming request with Claude
 curl -X POST http://localhost:3000/api/v1/proxy/chat/stream \
   -H "x-project-key: pk_your_key_here" \
   -H "Content-Type: application/json" \
   -d '{
     "identity": "user-123",
     "tier": "free",
-    "model": "gpt-4-turbo-preview",
+    "model": "claude-3-5-sonnet-20241022",
     "messages": [{"role": "user", "content": "Tell me a story"}]
   }'
 ```
@@ -135,10 +135,10 @@ response = requests.post(
         'Content-Type': 'application/json'
     },
     json={
-        'identity': 'user-123',
-        'tier': 'free',
-        'model': 'gpt-4-turbo-preview',
-        'messages': [{'role': 'user', 'content': 'Hello!'}]
+    'identity': 'user-123',
+    'tier': 'free',
+    'model': 'gpt-4o',  # Or claude-3-5-sonnet-20241022, gemini-1.5-pro, grok-beta
+    'messages': [{'role': 'user', 'content': 'Hello!'}]
     }
 )
 
@@ -155,14 +155,16 @@ else:
 
 When creating a project, you can choose from:
 
-| Provider | Models | Base URL |
-|----------|--------|----------|
-| **OpenAI** | GPT-4, GPT-3.5 | `https://api.openai.com/v1/chat/completions` |
-| **Anthropic** | Claude 3 (Opus, Sonnet, Haiku) | `https://api.anthropic.com/v1/messages` |
-| **Google** | Gemini Pro, Gemini Ultra | `https://generativelanguage.googleapis.com/v1/models/{model}:generateContent` |
-| **xAI** | Grok | `https://api.x.ai/v1/chat/completions` |
+| Provider | Supported Models | Base URL |
+|----------|-----------------|----------|
+| **OpenAI** | GPT-4o, GPT-4o-mini, GPT-4 Turbo, GPT-4, GPT-3.5 Turbo, o1-preview, o1-mini | `https://api.openai.com/v1/chat/completions` |
+| **Anthropic** | Claude 3.5 Sonnet, Claude 3 Opus, Claude 3 Sonnet, Claude 3 Haiku | `https://api.anthropic.com/v1/messages` |
+| **Google** | Gemini 1.5 Pro, Gemini 1.5 Flash, Gemini Pro, Gemini Ultra | `https://generativelanguage.googleapis.com/v1/models/{model}:generateContent` |
+| **xAI** | Grok, Grok-1, Grok-beta | `https://api.x.ai/v1/chat/completions` |
 
-The proxy automatically handles API format differences - you always use OpenAI-compatible format in your requests.
+**Note:** The proxy accepts any model ID from these providers. As providers release new models, they'll work automatically without code changes.
+
+The proxy handles API format differences - you always use OpenAI-compatible format in your requests, regardless of the provider.
 
 ### 5. Handle Limit Exceeded
 
