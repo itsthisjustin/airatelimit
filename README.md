@@ -75,13 +75,16 @@ Dashboard: `http://localhost:3001`
 1. Visit `http://localhost:3001/signup`
 2. Enter your email (magic link sent to console in dev)
 3. **Create project with just a name** - that's it!
-4. Configure everything in project settings:
-   - Choose your AI provider (OpenAI, Anthropic, Google, xAI, or Other)
-   - Enter your API key for that provider
+4. Configure in project settings (auto-opens after creation):
+   - **Required:** Choose your AI provider (OpenAI, Anthropic, Google, xAI, or Other)
+   - **Required:** Enter your API key for that provider
    - For "Other" providers: specify the API endpoint URL
-   - Set general limits or model-specific limits
-   - Configure tiers (free, pro, etc.) if needed
-5. Copy your project key and start using it
+   - Optional: Set general limits or model-specific limits
+   - Optional: Configure tiers (free, pro, etc.)
+5. **Your project API key is auto-generated when you save your API key**
+6. Copy your project key and start using it
+
+**Important:** The project key (`pk_...`) is only generated after you configure your provider and API key. This ensures every project with a key is ready to use.
 
 ### 2. Use the SDK
 

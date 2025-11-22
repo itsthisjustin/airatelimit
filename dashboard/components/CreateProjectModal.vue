@@ -60,14 +60,17 @@
                       <div class="text-sm text-blue-200">
                         <p class="font-medium mb-1">Quick Setup</p>
                         <p class="text-blue-300/80">
-                          After creating your project, you'll set up:
+                          After creating your project, you'll configure:
                         </p>
                         <ul class="mt-2 space-y-1 text-blue-300/80">
-                          <li>• AI provider & API key</li>
-                          <li>• Usage limits (per-model if needed)</li>
-                          <li>• Plan tiers (free, pro, etc.)</li>
-                          <li>• Custom limit messages</li>
+                          <li>• AI provider & API key (required)</li>
+                          <li>• Usage limits (optional, per-model if needed)</li>
+                          <li>• Plan tiers (optional, free/pro/etc.)</li>
+                          <li>• Custom limit messages (optional)</li>
                         </ul>
+                        <p class="mt-3 text-xs text-blue-300/60">
+                          Your project API key will be generated once you save your API key.
+                        </p>
                       </div>
                     </div>
                   </div>

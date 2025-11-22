@@ -19,7 +19,7 @@ export class Project {
   @Column()
   name: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: true })
   projectKey: string;
 
   // Owner relationship

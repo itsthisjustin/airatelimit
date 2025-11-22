@@ -42,7 +42,8 @@ export class ProjectsService {
     organizationId: string,
     dto: CreateUserProjectDto,
   ): Promise<Project> {
-    const projectKey = this.generateProjectKey();
+    // Only generate project key if API key is provided (project is configured)
+    const projectKey = dto.openaiApiKey ? this.generateProjectKey() : null;
     const provider = dto.provider || 'openai';
     
     // Use custom baseUrl if provided (for "other" provider), otherwise use default
@@ -81,8 +82,15 @@ export class ProjectsService {
 
     const updateData: any = { ...dto };
     
-    // Provider cannot be changed after creation
-    delete updateData.provider;
+    // Generate project key when API key is first set
+    if (dto.openaiApiKey && !project.projectKey) {
+      updateData.projectKey = this.generateProjectKey();
+    }
+    
+    // Provider can only be changed if project key doesn't exist yet
+    if (project.projectKey) {
+      delete updateData.provider;
+    }
     
     if (dto.limitExceededResponse) {
       updateData.limitExceededResponse = JSON.stringify(
