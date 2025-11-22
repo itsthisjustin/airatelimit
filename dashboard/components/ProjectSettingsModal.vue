@@ -11,7 +11,7 @@
       <!-- Modal -->
       <div class="flex min-h-full items-center justify-center p-4">
         <div
-          class="relative w-full max-w-4xl bg-gray-800 border border-gray-500/20 rounded-lg shadow-xl"
+          class="relative w-full max-w-4xl bg-black border border-gray-500/20 rounded-lg shadow-xl"
           @click.stop
         >
           <!-- Header -->
@@ -21,14 +21,14 @@
               @click="$emit('close')"
               class="text-gray-400 hover:text-white transition-colors"
             >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
 
           <!-- Content -->
-          <div class="p-6 max-h-[70vh] overflow-y-auto">
+          <div class="p-0 px-6 max-h-[70vh] overflow-y-auto">
             <!-- Tabs -->
             <div class="mb-6 border-b border-gray-500/10">
               <nav class="-mb-px flex space-x-8">

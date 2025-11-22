@@ -73,16 +73,55 @@
                   </button>
                 </div>
               </div>
-              <button
-                @click="showSettingsModal = true"
-                class="px-3 py-2 bg-gray-500/10 text-gray-400 border border-gray-500/10 rounded-lg hover:bg-gray-500/15 hover:text-white text-sm transition-colors inline-flex items-center space-x-2"
-                title="Project Settings"
-              >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </button>
+              <!-- Settings Dropdown -->
+              <div class="relative" ref="settingsDropdownRef">
+                <button
+                  @click="toggleSettingsDropdown"
+                  class="px-3 py-2 bg-gray-500/10 text-gray-400 border border-gray-500/10 rounded-lg hover:bg-gray-500/15 hover:text-white text-sm transition-colors inline-flex items-center space-x-2"
+                  title="Project Settings"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </button>
+                
+                <!-- Dropdown Menu -->
+                <Transition
+                  enter-active-class="transition ease-out duration-100"
+                  enter-from-class="transform opacity-0 scale-95"
+                  enter-to-class="transform opacity-100 scale-100"
+                  leave-active-class="transition ease-in duration-75"
+                  leave-from-class="transform opacity-100 scale-100"
+                  leave-to-class="transform opacity-0 scale-95"
+                >
+                  <div
+                    v-if="showSettingsDropdown"
+                    class="absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-gray-800 border border-gray-500/20 ring-1 ring-black ring-opacity-5 z-50"
+                  >
+                    <div class="py-1">
+                      <button
+                        @click="openConfigurations"
+                        class="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-500/10 hover:text-white transition-colors flex items-center space-x-2"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                        </svg>
+                        <span>Configurations</span>
+                      </button>
+                      <button
+                        @click="openDelete"
+                        class="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-400/10 hover:text-red-300 transition-colors flex items-center space-x-2"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        <span>Delete</span>
+                      </button>
+                    </div>
+                  </div>
+                </Transition>
+              </div>
             </div>
           </div>
 
@@ -224,6 +263,8 @@ const loading = ref(true)
 const error = ref('')
 const showDeleteConfirm = ref(false)
 const showSettingsModal = ref(false)
+const showSettingsDropdown = ref(false)
+const settingsDropdownRef = ref(null)
 
 // Dynamic page title based on project name
 const pageTitle = computed(() => {
@@ -238,6 +279,13 @@ useHead({
 })
 
 const showProjectKey = ref(false)
+
+// Close dropdown when clicking outside
+const handleClickOutside = (event: MouseEvent) => {
+  if (settingsDropdownRef.value && !(settingsDropdownRef.value as HTMLElement).contains(event.target as Node)) {
+    showSettingsDropdown.value = false
+  }
+}
 
 const maskedProjectKey = computed(() => {
   if (!project.value?.projectKey) return 'pk_xxxxxxxxxxxxxxx'
@@ -307,6 +355,20 @@ const { success: showSuccess } = useToast()
 
 const copyProjectKey = () => {
   copy(project.value.projectKey, 'Project key copied!')
+}
+
+const toggleSettingsDropdown = () => {
+  showSettingsDropdown.value = !showSettingsDropdown.value
+}
+
+const openConfigurations = () => {
+  showSettingsDropdown.value = false
+  showSettingsModal.value = true
+}
+
+const openDelete = () => {
+  showSettingsDropdown.value = false
+  handleDeleteRequest()
 }
 
 const handleUpdate = async () => {
@@ -391,6 +453,11 @@ const confirmDelete = async () => {
 
 onMounted(() => {
   loadProject()
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
 })
 
 // Reload project when route changes (including when navigating to this page)
