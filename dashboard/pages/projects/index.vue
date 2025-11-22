@@ -39,14 +39,32 @@
       </div>
 
       <!-- Empty State with Getting Started Guide -->
-      <div v-else-if="projects.length === 0" class="max-w-3xl mx-auto">
-        <div class="bg-gray-500/5 border border-gray-500/10 rounded-xl p-10">
-          <div class="flex items-center justify-between mb-10">
-            <h2 class="text-2xl font-semibold text-white">Getting Started</h2>
+      <div v-else-if="projects.length === 0" class="max-w-md mx-auto">
+        <div class="text-center py-12 px-4">
+          <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-500/10 mb-4">
+            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-medium text-white mb-2">No projects yet</h3>
+          <p class="text-gray-400 text-sm mb-6 max-w-sm mx-auto">Create your first project to start managing your AI API rate limits and usage tracking.</p>
+          <button
+            @click="showModal = true"
+            class="px-4 py-2 bg-blue-300 text-black text-sm font-medium rounded-lg hover:bg-blue-400 inline-flex items-center space-x-2 transition-colors"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            <span>Create Your First Project</span>
+          </button>
+        </div>
+        <div class="bg-gray-500/5 border border-gray-500/10 rounded-xl p-4">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-sm font-semibold text-white">Getting Started</h2>
             <a 
               href="https://github.com/treadiehq/airatelimit#readme" 
               target="_blank"
-              class="text-sm text-gray-500 hover:text-gray-300 inline-flex items-center gap-1.5 transition-colors"
+              class="text-xs text-gray-500 hover:text-gray-300 inline-flex items-center gap-1.5 transition-colors"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -56,85 +74,84 @@
           </div>
 
           <!-- Step 1: Create Project -->
-          <div class="mb-8">
-            <div class="flex items-start gap-4 mb-3">
-              <div class="text-gray-600 font-medium text-lg pt-0.5">1</div>
-              <div class="flex-1">
-                <h3 class="text-base text-white mb-3">
-                  Create an API key in 
-                  <button @click="showModal = true" class="text-blue-400 hover:text-blue-300 underline underline-offset-2">
-                    Settings
-                  </button>
-                </h3>
-              </div>
+          <div class="flex items-start gap-4 mb-3 text-xs">
+            <div class="shrink-0 w-5 h-5 rounded-full bg-gray-500/10 text-gray-400 flex items-center justify-center text-[11px] font-medium">1</div>
+            <div class="flex-1">
+              <h3 class="text-white mb-1">
+                Create a project and get the Project API key
+              </h3>
             </div>
           </div>
 
           <!-- Step 2: Install and Use -->
-          <div>
-            <div class="flex items-start gap-4 mb-3">
-              <div class="text-gray-600 font-medium text-lg pt-0.5">2</div>
+           <div>
+            <div class="flex items-start gap-4 mb-1 text-xs">
+              <div class="shrink-0 w-5 h-5 rounded-full bg-gray-500/10 text-gray-400 flex items-center justify-center text-[11px] font-medium">2</div>
               <div class="flex-1">
-                <h3 class="text-base text-white mb-4">Install SDK and use in your code:</h3>
-                <div class="bg-[#0a0a0a] border border-gray-800 rounded-lg p-5 font-mono text-[13px] leading-relaxed overflow-x-auto">
-                  <div class="text-gray-600 mb-3">// Install SDK</div>
-                  <div class="mb-4">
-                    <span class="text-white">npm install </span>
-                    <span class="text-yellow-400">@ai-ratelimit/sdk</span>
-                  </div>
-                  
-                  <div class="text-gray-600 mb-3">// In your application:</div>
-                  <div class="mb-4">
-                    <span class="text-purple-400">import</span>
-                    <span class="text-white"> { </span>
-                    <span class="text-blue-400">RateLimitClient</span>
-                    <span class="text-white"> } </span>
-                    <span class="text-purple-400">from</span>
-                    <span class="text-yellow-400"> '@ai-ratelimit/sdk'</span>
-                  </div>
-                  
-                  <div class="mb-1">
-                    <span class="text-purple-400">const</span>
-                    <span class="text-white"> client = </span>
-                    <span class="text-purple-400">new</span>
-                    <span class="text-blue-400"> RateLimitClient</span>
-                    <span class="text-white">(</span>
-                  </div>
-                  <div class="ml-4 mb-1">
-                    <span class="text-white">apiKey: process.env.</span>
-                    <span class="text-yellow-400">AI_RATELIMIT_KEY</span>
-                    <span class="text-white">,</span>
-                  </div>
-                  <div class="text-white mb-4">)</div>
-                  
-                  <div class="mb-1">
-                    <span class="text-purple-400">const</span>
-                    <span class="text-white"> result = </span>
-                    <span class="text-purple-400">await</span>
-                    <span class="text-white"> client.</span>
-                    <span class="text-blue-400">chat</span>
-                    <span class="text-white">({</span>
-                  </div>
-                  <div class="ml-4 mb-1">
-                    <span class="text-white">model: </span>
-                    <span class="text-yellow-400">'gpt-4'</span>
-                    <span class="text-white">,</span>
-                  </div>
-                  <div class="ml-4 mb-1">
-                    <span class="text-white">messages: [{ role: </span>
-                    <span class="text-yellow-400">'user'</span>
-                    <span class="text-white">, content: </span>
-                    <span class="text-yellow-400">'Hello!'</span>
-                    <span class="text-white"> }],</span>
-                  </div>
-                  <div class="ml-4 mb-1">
-                    <span class="text-white">identity: </span>
-                    <span class="text-yellow-400">'user-123'</span>
-                    <span class="text-gray-600"> // Track per-user limits</span>
-                  </div>
-                  <div class="text-white">})</div>
-                </div>
+                <h3 class="text-white mb-3">Install SDK and use in your code:</h3>
               </div>
+            </div>
+            <div class="bg-black border border-gray-500/10 rounded-lg p-5 font-mono text-[11px] leading-relaxed overflow-x-auto">
+              <div class="text-gray-500 mb-1">// Install SDK</div>
+              <div class="mb-2">
+                <span class="text-white">npm install </span>
+                <span class="text-yellow-400">@ai-ratelimit/sdk</span>
+              </div>
+              
+              <div class="text-gray-500 mb-1">// In your application:</div>
+              <div class="mb-1">
+                <span class="text-purple-400">import</span>
+                <span class="text-white"> { </span>
+                <span class="text-blue-400">createClient</span>
+                <span class="text-white"> } </span>
+                <span class="text-purple-400">from</span>
+                <span class="text-yellow-400"> '@ai-ratelimit/sdk'</span>
+              </div>
+              
+              <div class="mb-1">
+                <span class="text-purple-400">const</span>
+                <span class="text-white"> client = </span>
+                <span class="text-blue-400">createClient</span>
+                <span class="text-white">({</span>
+              </div>
+              <div class="ml-4 mb-1">
+                <span class="text-white">baseUrl: </span>
+                <span class="text-yellow-400">'https://api.airatelimit.com/api'</span>
+                <span class="text-white">,</span>
+              </div>
+              <div class="ml-4 mb-1">
+                <span class="text-white">projectKey: </span>
+                <span class="text-yellow-400">'pk_your_key_here'</span>
+                <span class="text-white">,</span>
+              </div>
+              <div class="text-white mb-1">})</div>
+              
+              <div class="mb-1">
+                <span class="text-purple-400">const</span>
+                <span class="text-white"> result = </span>
+                <span class="text-purple-400">await</span>
+                <span class="text-white"> client.</span>
+                <span class="text-blue-400">chat</span>
+                <span class="text-white">({</span>
+              </div>
+              <div class="ml-4 mb-1">
+                <span class="text-white">identity: </span>
+                <span class="text-yellow-400">'user-123'</span>
+                <span class="text-white">,</span>
+              </div>
+              <div class="ml-4 mb-1">
+                <span class="text-white">model: </span>
+                <span class="text-yellow-400">'gpt-4o'</span>
+                <span class="text-white">,</span>
+              </div>
+              <div class="ml-4 mb-1">
+                <span class="text-white">messages: [{ role: </span>
+                <span class="text-yellow-400">'user'</span>
+                <span class="text-white">, content: </span>
+                <span class="text-yellow-400">'Hello!'</span>
+                <span class="text-white"> }],</span>
+              </div>
+              <div class="text-white">})</div>
             </div>
           </div>
         </div>
