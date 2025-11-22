@@ -79,17 +79,32 @@ export class EmailService {
                     <!-- Logo/Brand -->
                     <tr>
                       <td align="center" style="padding-bottom: 40px;">
-                        <div style="display: inline-block; background: linear-gradient(135deg, #8ec5ff 0%, #6ba3e8 100%); padding: 12px 24px; border-radius: 8px;">
-                          <h1 style="margin: 0; color: #000000; font-size: 22px; font-weight: 700; letter-spacing: -0.5px;">
-                            AI Ratelimit
-                          </h1>
-                        </div>
+                        <table border="0" cellpadding="0" cellspacing="0" style="display: inline-block;">
+                          <tr>
+                            <td style="background: #6ba3e8; padding: 12px 24px; border-radius: 8px;">
+                              <table border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                  <td style="padding-right: 12px; vertical-align: middle;">
+                                    <div style="width: 28px; height: 28px; background: #000000; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                      <div style="width: 16px; height: 16px; background: #6ba3e8; border-radius: 3px;"></div>
+                                    </div>
+                                  </td>
+                                  <td style="vertical-align: middle;">
+                                    <h1 style="margin: 0; color: #000000; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; white-space: nowrap;">
+                                      AI Ratelimit
+                                    </h1>
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
                       </td>
                     </tr>
                     
                     <!-- Main Card -->
                     <tr>
-                      <td style="background: linear-gradient(180deg, #1a1a1a 0%, #141414 100%); border: 1px solid #2a2a2a; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">
+                      <td style="background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">
                         <table border="0" cellpadding="0" cellspacing="0" width="100%">
                           
                           <!-- Content -->
@@ -107,7 +122,7 @@ export class EmailService {
                                 <tr>
                                   <td align="center" style="padding: 8px 0 32px;">
                                     <a href="${magicLink}" 
-                                       style="display: inline-block; background: linear-gradient(135deg, #8ec5ff 0%, #6ba3e8 100%); color: #000000; font-size: 15px; font-weight: 600; text-decoration: none; padding: 16px 48px; border-radius: 8px; box-shadow: 0 2px 8px rgba(142, 197, 255, 0.3); transition: all 0.2s;">
+                                       style="display: inline-block; background: #6ba3e8; color: #000000; font-size: 15px; font-weight: 600; text-decoration: none; padding: 16px 48px; border-radius: 8px; box-shadow: 0 2px 8px rgba(107, 163, 232, 0.3);">
                                       ${buttonText}
                                     </a>
                                   </td>
@@ -115,9 +130,9 @@ export class EmailService {
                               </table>
                               
                               <!-- Security Note -->
-                              <div style="background: rgba(142, 197, 255, 0.08); border-left: 3px solid #8ec5ff; padding: 16px 20px; border-radius: 6px;">
-                                <p style="margin: 0; color: #8ec5ff; font-size: 13px; line-height: 20px;">
-                                  <strong>🔒 Security:</strong> This link expires in 15 minutes
+                              <div style="background: rgba(107, 163, 232, 0.12); padding: 16px 20px; border-radius: 6px;">
+                                <p style="margin: 0; color: #6ba3e8; font-size: 13px; line-height: 20px;">
+                                  <strong>Security:</strong> This link expires in 15 minutes
                                 </p>
                               </div>
                             </td>
