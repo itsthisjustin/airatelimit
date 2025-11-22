@@ -45,7 +45,6 @@
             <div class="flex items-center space-x-2">
               <!-- Project Key -->
               <div class="">
-                <!-- <label class="block text-sm font-medium text-gray-400 mb-2">Project Key</label> -->
                 <div class="flex items-center bg-gray-500/10 border border-gray-500/10 rounded-lg overflow-hidden">
                   <code class="flex-1 px-3 py-2 font-mono text-xs">
                     {{ showProjectKey ? project.projectKey : maskedProjectKey }}
@@ -71,18 +70,18 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                     </svg>
-                    <!-- <span>Copy</span> -->
                   </button>
                 </div>
               </div>
               <button
-                @click="handleDeleteRequest"
+                @click="showSettingsModal = true"
                 class="px-3 py-2 bg-gray-500/10 text-gray-400 border border-gray-500/10 rounded-lg hover:bg-gray-500/15 hover:text-white text-sm transition-colors inline-flex items-center space-x-2"
+                title="Project Settings"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <!-- <span>Delete</span> -->
               </button>
             </div>
           </div>
@@ -133,203 +132,6 @@
           </div>
         </div>
 
-        <!-- Edit Configuration -->
-        <div class="bg-gray-500/10 border border-gray-500/10 p-6 rounded-lg shadow-md">
-          <h3 class="text-lg font-semibold text-white mb-4">Configuration</h3>
-          
-          <!-- Tabs -->
-          <div class="mb-6 border-b border-gray-500/10">
-            <nav class="-mb-px flex space-x-8">
-              <button
-                @click="activeTab = 'basic'"
-                :class="activeTab === 'basic' ? 'border-blue-300 text-blue-300' : 'border-transparent text-gray-400 hover:text-gray-400 hover:border-gray-300'"
-                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
-              >
-                Basic Limits
-              </button>
-              <button
-                @click="activeTab = 'tiers'"
-                :class="activeTab === 'tiers' ? 'border-blue-300 text-blue-300' : 'border-transparent text-gray-400 hover:text-gray-400 hover:border-gray-300'"
-                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
-              >
-                Plan Tiers
-              </button>
-              <button
-                @click="activeTab = 'rules'"
-                :class="activeTab === 'rules' ? 'border-blue-300 text-blue-300' : 'border-transparent text-gray-400 hover:text-gray-400 hover:border-gray-300'"
-                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
-              >
-                Visual Rules
-              </button>
-            </nav>
-          </div>
-
-          <!-- Basic Limits Tab -->
-          <form v-show="activeTab === 'basic'" @submit.prevent="handleUpdate">
-            <div class="mb-4">
-              <label class="block text-sm font-medium text-white mb-2">Project Name</label>
-              <input
-                v-model="editForm.name"
-                type="text"
-                class="w-full px-4 py-2 border border-gray-500/10 rounded-lg focus:ring-2 focus:ring-blue-300/50 focus:border-transparent"
-              />
-            </div>
-
-            <!-- Phase 1: Limit Type -->
-            <div class="mb-4">
-              <label class="block text-sm font-medium text-white mb-2">Limit Type</label>
-              <div class="relative">
-                <select
-                  v-model="editForm.limitType"
-                  class="w-full px-4 py-2.5 text-white bg-gray-500/10 border border-gray-500/20 rounded-lg focus:ring-2 focus:ring-blue-300/50 focus:border-transparent appearance-none cursor-pointer pr-10 transition-all hover:bg-gray-500/20"
-                >
-                  <option value="both">Both Requests & Tokens</option>
-                  <option value="requests">Requests Only (Image Gen)</option>
-                  <option value="tokens">Tokens Only (Chat)</option>
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-              </div>
-              <p class="text-xs text-gray-400 mt-1">
-                Choose how to track usage: requests for image generation, tokens for chat, or both
-              </p>
-            </div>
-
-            <div v-if="editForm.limitType !== 'tokens'" class="mb-4">
-              <label class="block text-sm font-medium text-white mb-2">Daily Request Limit</label>
-              <input
-                v-model.number="editForm.dailyRequestLimit"
-                type="number"
-                min="0"
-                class="w-full px-4 py-2 border border-gray-500/10 rounded-lg focus:ring-2 focus:ring-blue-300/50 focus:border-transparent"
-              />
-              <p class="text-xs text-gray-500 mt-1">Leave empty for unlimited</p>
-            </div>
-
-            <div v-if="editForm.limitType !== 'requests'" class="mb-4">
-              <label class="block text-sm font-medium text-white mb-2">Daily Token Limit</label>
-              <input
-                v-model.number="editForm.dailyTokenLimit"
-                type="number"
-                min="0"
-                class="w-full px-4 py-2 border border-gray-500/10 rounded-lg focus:ring-2 focus:ring-blue-300/50 focus:border-transparent"
-              />
-              <p class="text-xs text-gray-500 mt-1">Leave empty for unlimited</p>
-            </div>
-
-            <div class="mb-6">
-              <label class="block text-sm font-medium text-white mb-2">
-                Limit Exceeded Message
-              </label>
-              <textarea
-                v-model="editForm.limitMessage"
-                rows="3"
-                placeholder='{"error": "limit_exceeded", "message": "Upgrade to Pro!", "deepLink": "myapp://upgrade"}'
-                class="w-full px-4 py-2 border border-gray-500/10 rounded-lg focus:ring-2 focus:ring-blue-300/50 focus:border-transparent"
-              />
-              <p class="text-xs text-gray-500 mt-1">
-                Custom JSON response sent when limits are exceeded
-              </p>
-            </div>
-
-            <div v-if="updateError" class="mb-4 p-3 bg-red-400/10 text-red-400 rounded-lg text-sm">
-              {{ updateError }}
-            </div>
-
-            <div v-if="updateSuccess" class="mb-4 p-3 bg-green-300/10 text-green-300 rounded-lg text-sm">
-              Configuration updated successfully!
-            </div>
-
-            <button
-              type="submit"
-              :disabled="updating"
-              class="px-6 py-2 bg-blue-300 text-black text-sm font-medium rounded-lg hover:bg-blue-300/20 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {{ updating ? 'Saving...' : 'Save Changes' }}
-            </button>
-          </form>
-
-          <!-- Tiers Tab (Phase 2) -->
-          <div v-show="activeTab === 'tiers'" class="space-y-4">
-            <div class="bg-gray-500/10 border border-gray-500/10 rounded-lg p-4 mb-4">
-              <p class="text-sm text-white">
-                This allows you to define different limits for free, pro, enterprise, etc.
-                Your app passes a <code class="bg-gray-500/10 text-white px-1 rounded">tier</code> parameter in API calls.
-              </p>
-            </div>
-
-            <div v-for="(tier, tierName) in editForm.tiers" :key="tierName" class="border border-gray-500/10 rounded-lg p-4">
-              <div class="flex justify-between items-center mb-3">
-                <h4 class="font-semibold text-white capitalize">{{ tierName }} Tier</h4>
-                <button
-                  @click="deleteTier(tierName)"
-                  class="text-red-400 hover:text-red-400/80 text-sm"
-                >
-                  Remove
-                </button>
-              </div>
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-xs font-medium text-white mb-1">Request Limit</label>
-                  <input
-                    v-model.number="tier.requestLimit"
-                    type="number"
-                    min="0"
-                    class="w-full px-3 py-2 text-sm bg-gray-500/10 border border-gray-500/10 rounded-lg"
-                  />
-                </div>
-                <div>
-                  <label class="block text-xs font-medium text-white mb-1">Token Limit</label>
-                  <input
-                    v-model.number="tier.tokenLimit"
-                    type="number"
-                    min="0"
-                    class="w-full px-3 py-2 text-sm bg-gray-500/10 border border-gray-500/10 rounded-lg"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div class="flex items-center space-x-2">
-              <input
-                v-model="newTierName"
-                type="text"
-                placeholder="e.g., free, pro, enterprise"
-                class="flex-1 px-4 py-2 bg-gray-500/10 border border-gray-500/10 rounded-lg text-sm"
-              />
-              <button
-                @click="addTier"
-                class="px-4 py-2 bg-gray-500/10 border border-gray-500/10 text-white text-sm font-medium rounded-lg hover:bg-gray-500/15 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                + Add Tier
-              </button>
-            </div>
-
-            <button
-              @click="handleUpdate"
-              :disabled="updating"
-              class="mt-4 px-6 py-2 bg-blue-300 text-black text-sm font-medium rounded-lg hover:bg-blue-300/20 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {{ updating ? 'Saving...' : 'Save Tiers' }}
-            </button>
-          </div>
-
-          <!-- Rules Tab (Phase 3) -->
-          <div v-show="activeTab === 'rules'">
-            <RuleBuilder v-model="editForm.rules" />
-            <button
-              @click="handleUpdate"
-              :disabled="updating"
-              class="mt-4 px-6 py-2 bg-blue-300 text-black text-sm font-medium rounded-lg hover:bg-blue-300/20 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {{ updating ? 'Saving...' : 'Save Rules' }}
-            </button>
-          </div>
-        </div>
-
         <!-- Usage by Identity -->
         <div class="bg-gray-500/10 border border-gray-500/10 p-6 rounded-lg shadow-md">
           <h3 class="text-lg font-semibold text-white mb-4">Usage by Identity (Today)</h3>
@@ -376,6 +178,20 @@
       </div>
     </div>
 
+    <!-- Settings Modal -->
+    <ProjectSettingsModal
+      v-if="project"
+      :is-open="showSettingsModal"
+      :project="project"
+      :edit-form="editForm"
+      :updating="updating"
+      :update-error="updateError"
+      :update-success="updateSuccess"
+      @close="showSettingsModal = false"
+      @update="handleUpdate"
+      @delete="handleDeleteRequest"
+    />
+
     <!-- Delete Confirmation Dialog -->
     <ConfirmDialog
       v-if="project"
@@ -407,6 +223,7 @@ const identities = ref<any[]>([])
 const loading = ref(true)
 const error = ref('')
 const showDeleteConfirm = ref(false)
+const showSettingsModal = ref(false)
 
 // Dynamic page title based on project name
 const pageTitle = computed(() => {
@@ -420,8 +237,6 @@ useHead({
   title: pageTitle
 })
 
-const activeTab = ref('basic')
-const newTierName = ref('')
 const showProjectKey = ref(false)
 
 const maskedProjectKey = computed(() => {
@@ -494,22 +309,6 @@ const copyProjectKey = () => {
   copy(project.value.projectKey, 'Project key copied!')
 }
 
-const addTier = () => {
-  if (newTierName.value && !editForm.value.tiers[newTierName.value]) {
-    editForm.value.tiers[newTierName.value] = {
-      requestLimit: 0,
-      tokenLimit: 0,
-    }
-    newTierName.value = ''
-  }
-}
-
-const deleteTier = (tierName: string) => {
-  if (confirm(`Delete tier "${tierName}"?`)) {
-    delete editForm.value.tiers[tierName]
-  }
-}
-
 const handleUpdate = async () => {
   updating.value = true
   updateError.value = ''
@@ -557,7 +356,8 @@ const handleUpdate = async () => {
 
     setTimeout(() => {
       updateSuccess.value = false
-    }, 3000)
+      showSettingsModal.value = false
+    }, 1500)
   } catch (err: any) {
     updateError.value = err.message || 'Failed to update project'
   } finally {
