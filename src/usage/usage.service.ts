@@ -74,11 +74,11 @@ export class UsageService {
     const shouldCheckRequests = project.limitType === 'requests' || project.limitType === 'both';
     const shouldCheckTokens = project.limitType === 'tokens' || project.limitType === 'both';
 
-  // Check request limit
-  if (shouldCheckRequests && limits.requestLimit && nextRequests > limits.requestLimit) {
+    // Check request limit
+    if (shouldCheckRequests && limits.requestLimit && nextRequests > limits.requestLimit) {
     const response = limits.customResponse || this.getLimitResponse(project);
-    return {
-      allowed: false,
+      return {
+        allowed: false,
       limitResponse: this.interpolateVariables(response, {
         tier,
         limit: limits.requestLimit,
@@ -86,14 +86,14 @@ export class UsageService {
         limitType: 'requests',
         period: project.limitPeriod || 'daily',
       }),
-    };
-  }
+      };
+    }
 
-  // Check token limit
-  if (shouldCheckTokens && limits.tokenLimit && nextTokens > limits.tokenLimit) {
+    // Check token limit
+    if (shouldCheckTokens && limits.tokenLimit && nextTokens > limits.tokenLimit) {
     const response = limits.customResponse || this.getLimitResponse(project);
-    return {
-      allowed: false,
+      return {
+        allowed: false,
       limitResponse: this.interpolateVariables(response, {
         tier,
         limit: limits.tokenLimit,
@@ -101,8 +101,8 @@ export class UsageService {
         limitType: 'tokens',
         period: project.limitPeriod || 'daily',
       }),
-    };
-  }
+      };
+    }
 
     // Calculate usage percentages for rule engine
     const usagePercent = {

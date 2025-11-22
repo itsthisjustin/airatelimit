@@ -11,13 +11,13 @@ export class EmailService {
   constructor(private configService: ConfigService) {
     this.isProduction = this.configService.get('nodeEnv') === 'production';
 
-    if (this.isProduction) {
-      const apiKey = this.configService.get<string>('resendApiKey');
-      if (apiKey) {
-        this.resend = new Resend(apiKey);
-      } else {
-        this.logger.warn('RESEND_API_KEY not set in production mode');
-      }
+    // Initialize Resend if API key is available (works in both dev and prod)
+    const apiKey = this.configService.get<string>('resendApiKey');
+    if (apiKey) {
+      this.resend = new Resend(apiKey);
+      this.logger.log('Resend email service initialized');
+    } else {
+      this.logger.warn('RESEND_API_KEY not set - emails will be logged to console');
     }
   }
 
@@ -26,9 +26,11 @@ export class EmailService {
     magicLink: string,
     isNewUser: boolean = false,
   ): Promise<void> {
-    if (this.isProduction && this.resend) {
+    if (this.resend) {
+      // Send via Resend if API key is configured
       await this.sendViaResend(email, magicLink, isNewUser);
     } else {
+      // Fall back to console logging if no API key
       this.logMagicLinkToConsole(email, magicLink, isNewUser);
     }
   }
@@ -75,7 +77,7 @@ export class EmailService {
                   <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
                     <!-- Header -->
                     <tr>
-                      <td style="padding: 40px 40px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                      <td style="padding: 40px 40px 30px; background: #8ec5ff;">
                         <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-family: Arial, sans-serif; font-weight: 600;">
                           AI Ratelimit
                         </h1>
@@ -97,7 +99,7 @@ export class EmailService {
                           <tr>
                             <td align="center" style="padding: 20px 0;">
                               <a href="${magicLink}" 
-                                 style="display: inline-block; background-color: #2563eb; color: #ffffff; font-size: 16px; font-weight: 600; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-family: Arial, sans-serif;">
+                                 style="display: inline-block; background-color: #8ec5ff; color: #000000; font-size: 16px; font-weight: 600; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-family: Arial, sans-serif;">
                                 ${buttonText}
                               </a>
                             </td>
