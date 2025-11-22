@@ -21,6 +21,18 @@ export default defineNuxtConfig({
     port: 3001,
   },
 
+  app: {
+    head: {
+      script: [
+        {
+          src: 'https://cdn.seline.com/seline.js',
+          async: true,
+          'data-token': '504d53ab24b600c',
+        },
+      ],
+    },
+  },
+
   // Use static generation for deployment
   ssr: false,
 })
