@@ -188,10 +188,24 @@
               <!-- Tiers Tab -->
               <div v-show="configTab === 'tiers'" class="space-y-4 px-6">
                 <div class="bg-gray-500/10 border border-gray-500/10 rounded-lg p-4">
-                  <p class="text-sm text-white">
-                    This allows you to define different limits for free, pro, enterprise, etc.
+                  <h3 class="font-semibold text-white mb-2">How Tier-Based Limits Work</h3>
+                  <p class="text-sm text-white mb-2">
+                    Define different limits for <strong>free</strong>, <strong>pro</strong>, <strong>enterprise</strong>, etc.
                     Your app passes a <code class="bg-gray-500/10 text-white px-1 rounded">tier</code> parameter in API calls.
                   </p>
+                  <div class="mt-3 p-3 bg-gray-500/5 rounded border-l-2 border-blue-300">
+                    <p class="text-xs text-gray-300 font-semibold mb-1">Template Variables</p>
+                    <p class="text-xs text-gray-400">
+                      Use in custom messages: <code class="bg-gray-500/10 text-white px-1 rounded text-xs">{{"{{"}}tier}}</code>, 
+                      <code class="bg-gray-500/10 text-white px-1 rounded text-xs">{{"{{"}}limit}}</code>, 
+                      <code class="bg-gray-500/10 text-white px-1 rounded text-xs">{{"{{"}}usage}}</code>, 
+                      <code class="bg-gray-500/10 text-white px-1 rounded text-xs">{{"{{"}}limitType}}</code>, 
+                      <code class="bg-gray-500/10 text-white px-1 rounded text-xs">{{"{{"}}period}}</code>
+                    </p>
+                    <p class="text-xs text-gray-400 mt-2">
+                      <strong>Example:</strong> "You've used {{"{{"}}usage}}/{{"{{"}}limit}} {{"{{"}}tier}} requests. [Upgrade](app://upgrade)!"
+                    </p>
+                  </div>
                 </div>
 
                 <!-- Empty State -->
@@ -219,7 +233,9 @@
                       </svg>
                     </button>
                   </div>
-                  <div class="grid grid-cols-2 gap-4">
+                  
+                  <!-- Limits -->
+                  <div class="grid grid-cols-2 gap-4 mb-3">
                     <div>
                       <label class="block text-xs font-medium text-white mb-1">Request Limit</label>
                       <input
@@ -238,6 +254,23 @@
                         class="w-full px-3 py-2 text-sm text-white bg-gray-500/10 border border-gray-500/10 rounded-lg"
                       />
                     </div>
+                  </div>
+
+                  <!-- Custom Message -->
+                  <div>
+                    <label class="block text-xs font-medium text-white mb-1">
+                      Custom Message (Optional)
+                      <span class="text-gray-500 font-normal ml-1">- Supports {{"{{"}}tier}}, {{"{{"}}limit}}, {{"{{"}}usage}}, {{"{{"}}limitType}}, {{"{{"}}period}}</span>
+                    </label>
+                    <textarea
+                      v-model="tier.customMessage"
+                      rows="3"
+                      placeholder='You&apos;ve used {{usage}}/{{limit}} {{tier}} {{limitType}} this {{period}}. [Upgrade](app://upgrade)!'
+                      class="w-full px-3 py-2 text-sm text-white bg-gray-500/10 border border-gray-500/10 rounded-lg focus:ring-2 focus:ring-blue-300/50 focus:border-transparent font-mono"
+                    />
+                    <p class="text-xs text-gray-500 mt-1">
+                      Shown when this tier hits its limit. Use markdown for links: [Text](url)
+                    </p>
                   </div>
                 </div>
 
@@ -453,6 +486,7 @@ const addTier = () => {
     props.editForm.tiers[newTierName.value] = {
       requestLimit: 0,
       tokenLimit: 0,
+      customMessage: '',
     }
     newTierName.value = ''
   }

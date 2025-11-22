@@ -309,7 +309,7 @@ const editForm = ref({
   dailyRequestLimit: null as number | null,
   dailyTokenLimit: null as number | null,
   limitMessage: '',
-  tiers: {} as Record<string, { requestLimit?: number; tokenLimit?: number }>,
+  tiers: {} as Record<string, { requestLimit?: number; tokenLimit?: number; customMessage?: string }>,
   rules: [] as any[],
 })
 
@@ -337,7 +337,21 @@ const loadProject = async () => {
     editForm.value.limitType = project.value.limitType || 'both'
     editForm.value.dailyRequestLimit = project.value.dailyRequestLimit
     editForm.value.dailyTokenLimit = project.value.dailyTokenLimit
-    editForm.value.tiers = project.value.tiers || {}
+    
+    // Load tiers and extract customMessage from customResponse
+    editForm.value.tiers = {}
+    if (project.value.tiers) {
+      for (const [tierName, tier] of Object.entries(project.value.tiers)) {
+        editForm.value.tiers[tierName] = {
+          requestLimit: (tier as any).requestLimit,
+          tokenLimit: (tier as any).tokenLimit,
+          customMessage: (tier as any).customResponse ? 
+            (typeof (tier as any).customResponse === 'string' ? (tier as any).customResponse : (tier as any).customResponse.message || '') : 
+            '',
+        }
+      }
+    }
+    
     editForm.value.rules = project.value.rules || []
     
     // Extract limit message from JSON
@@ -411,8 +425,28 @@ const handleUpdate = async () => {
       }
     }
 
-    // Tiers
-    payload.tiers = editForm.value.tiers
+    // Tiers - transform customMessage into customResponse
+    payload.tiers = {}
+    for (const [tierName, tier] of Object.entries(editForm.value.tiers)) {
+      payload.tiers[tierName] = {
+        requestLimit: (tier as any).requestLimit,
+        tokenLimit: (tier as any).tokenLimit,
+      }
+      
+      // If customMessage is provided, convert to customResponse
+      if ((tier as any).customMessage) {
+        try {
+          // Try to parse as JSON first
+          payload.tiers[tierName].customResponse = JSON.parse((tier as any).customMessage)
+        } catch {
+          // If not JSON, treat as plain message with optional markdown
+          payload.tiers[tierName].customResponse = {
+            error: 'limit_exceeded',
+            message: (tier as any).customMessage,
+          }
+        }
+      }
+    }
 
     // Rules
     payload.rules = editForm.value.rules
