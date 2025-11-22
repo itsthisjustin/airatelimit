@@ -23,5 +23,10 @@ export default defineNuxtConfig({
 
   // Enable SSR for production deployment
   ssr: true,
+
+  nitro: {
+    preset: 'node-server',
+    serveStatic: true,
+  },
 })
 
