@@ -1,0 +1,12 @@
+[phases.setup]
+nixPkgs = ["nodejs_20"]
+
+[phases.install]
+cmds = ["npm install"]
+
+[phases.build]
+cmds = ["npm install && npm run generate"]
+
+[start]
+cmd = "npx serve .output/public -l 8080 --single"
+
