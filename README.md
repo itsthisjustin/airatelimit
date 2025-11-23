@@ -78,6 +78,14 @@ Done! Usage is tracked automatically.
 
 ## Key Features
 
+### Prompt Injection Protection 🛡️
+Protect your system prompts from extraction attacks:
+- Detects "show me your prompt" jailbreaks
+- Blocks role manipulation attempts
+- Prevents instruction override attacks
+- Logs all security events
+- [Full Security Docs](docs/SECURITY_FEATURES.md)
+
 ### Per-Model Limits
 Set different limits for each model:
 ```typescript
@@ -258,6 +266,7 @@ gpt-4o: 5 requests (free), 500 requests (pro)
 - [JavaScript/TypeScript SDK](sdk/js/README.md) - For web and Node.js
 - [Flutter/Dart SDK](sdk/flutter/README.md) - For Flutter mobile apps
 - [Firebase Integration Guide](docs/FIREBASE_INTEGRATION.md) - Use with Firebase Auth
+- [Security Features Guide](docs/SECURITY_FEATURES.md) - Prompt injection protection
 
 ## License
 

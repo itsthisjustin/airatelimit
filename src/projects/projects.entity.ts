@@ -117,6 +117,26 @@ export class Project {
     };
   }>;
 
+  // Security configuration
+  @Column({ default: false })
+  securityEnabled: boolean;
+
+  @Column({ 
+    type: 'enum', 
+    enum: ['block', 'log'], 
+    default: 'block' 
+  })
+  securityMode: 'block' | 'log';
+
+  @Column({ 
+    type: 'jsonb', 
+    default: ['systemPromptExtraction', 'roleManipulation', 'instructionOverride', 'boundaryBreaking', 'obfuscation', 'directLeakage']
+  })
+  securityCategories: string[];
+
+  @Column({ default: false })
+  securityHeuristicsEnabled: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 

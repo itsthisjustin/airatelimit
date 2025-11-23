@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsInt, IsObject, IsIn, IsArray } from 'class-validator';
+import { IsString, IsOptional, IsInt, IsObject, IsIn, IsArray, IsBoolean } from 'class-validator';
 
 export class UpdateProjectDto {
   @IsOptional()
@@ -65,5 +65,22 @@ export class UpdateProjectDto {
     condition: any;
     action: any;
   }>;
+
+  // Security configuration
+  @IsOptional()
+  @IsBoolean()
+  securityEnabled?: boolean;
+
+  @IsOptional()
+  @IsIn(['block', 'log'])
+  securityMode?: 'block' | 'log';
+
+  @IsOptional()
+  @IsArray()
+  securityCategories?: string[];
+
+  @IsOptional()
+  @IsBoolean()
+  securityHeuristicsEnabled?: boolean;
 }
 

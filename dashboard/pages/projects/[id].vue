@@ -341,6 +341,10 @@ const editForm = ref({
     modelLimits?: Record<string, { requestLimit?: number; tokenLimit?: number }>;
   }>,
   rules: [] as any[],
+  securityEnabled: false,
+  securityMode: 'block' as 'block' | 'log',
+  securityCategories: ['systemPromptExtraction', 'roleManipulation', 'instructionOverride', 'boundaryBreaking', 'obfuscation', 'directLeakage'] as string[],
+  securityHeuristicsEnabled: false,
 })
 
 const updating = ref(false)
@@ -389,6 +393,12 @@ const loadProject = async () => {
     editForm.value.modelLimits = project.value.modelLimits || {}
     
     editForm.value.rules = project.value.rules || []
+    
+    // Load security settings
+    editForm.value.securityEnabled = project.value.securityEnabled || false
+    editForm.value.securityMode = project.value.securityMode || 'block'
+    editForm.value.securityCategories = project.value.securityCategories || ['systemPromptExtraction', 'roleManipulation', 'instructionOverride', 'boundaryBreaking', 'obfuscation', 'directLeakage']
+    editForm.value.securityHeuristicsEnabled = project.value.securityHeuristicsEnabled || false
     
     // Extract limit message from JSON
     if (project.value.limitExceededResponse) {
@@ -503,6 +513,12 @@ const handleUpdate = async () => {
 
     // Rules
     payload.rules = editForm.value.rules
+
+    // Security settings
+    payload.securityEnabled = editForm.value.securityEnabled
+    payload.securityMode = editForm.value.securityMode
+    payload.securityCategories = editForm.value.securityCategories
+    payload.securityHeuristicsEnabled = editForm.value.securityHeuristicsEnabled
 
     await api(`/projects/${projectId}`, {
       method: 'PATCH',

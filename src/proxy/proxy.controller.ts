@@ -9,11 +9,15 @@ import {
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { ProjectsService } from '../projects/projects.service';
 import { UsageService } from '../usage/usage.service';
 import { RuleEngineService } from '../usage/rule-engine.service';
 import { RuleAnalyticsService } from '../usage/rule-analytics.service';
 import { ProxyService } from './proxy.service';
+import { SecurityService } from '../security/security.service';
+import { SecurityEvent } from '../security/security-event.entity';
 import { ChatProxyRequestDto } from './dto/chat-proxy-request.dto';
 
 @Controller('v1/proxy')
@@ -24,6 +28,9 @@ export class ProxyController {
     private readonly ruleEngineService: RuleEngineService,
     private readonly ruleAnalyticsService: RuleAnalyticsService,
     private readonly proxyService: ProxyService,
+    private readonly securityService: SecurityService,
+    @InjectRepository(SecurityEvent)
+    private readonly securityEventRepository: Repository<SecurityEvent>,
   ) {}
 
   @Post('chat')
@@ -42,6 +49,57 @@ export class ProxyController {
     try {
       // Get project
       const project = await this.projectsService.findByProjectKey(projectKey);
+
+      // SECURITY: Check for prompt injection if enabled
+      if (project.securityEnabled) {
+        const securityResult = this.securityService.checkMessages(
+          body.messages,
+          project.securityCategories,
+        );
+
+        // Run advanced heuristics if enabled
+        if (!securityResult.allowed || project.securityHeuristicsEnabled) {
+          for (const message of body.messages.filter(m => m.role === 'user')) {
+            const heuristicResult = this.securityService.checkAdvancedHeuristics(message.content);
+            if (!heuristicResult.allowed) {
+              securityResult.allowed = false;
+              securityResult.reason = heuristicResult.reason;
+              securityResult.pattern = heuristicResult.pattern;
+              securityResult.severity = heuristicResult.severity;
+              break;
+            }
+          }
+        }
+
+        // Log security event
+        if (!securityResult.allowed) {
+          await this.securityEventRepository.save({
+            projectId: project.id,
+            identity: body.identity,
+            pattern: securityResult.pattern || 'unknown',
+            severity: securityResult.severity || 'medium',
+            reason: securityResult.reason,
+            blocked: project.securityMode === 'block',
+            messagePreview: body.messages
+              .filter(m => m.role === 'user')
+              .map(m => m.content.substring(0, 100))
+              .join(' | '),
+          });
+        }
+
+        // Block if in block mode
+        if (!securityResult.allowed && project.securityMode === 'block') {
+          throw new HttpException(
+            {
+              error: 'security_policy_violation',
+              message: securityResult.reason || 'Request blocked by security policy',
+              pattern: securityResult.pattern,
+              severity: securityResult.severity,
+            },
+            HttpStatus.FORBIDDEN,
+          );
+        }
+      }
 
       // Get period start based on project's limit period (daily/weekly/monthly)
       const periodStart = this.getPeriodStart(project.limitPeriod || 'daily');
@@ -182,6 +240,55 @@ export class ProxyController {
     try {
       // Get project
       const project = await this.projectsService.findByProjectKey(projectKey);
+
+      // SECURITY: Check for prompt injection if enabled
+      if (project.securityEnabled) {
+        const securityResult = this.securityService.checkMessages(
+          body.messages,
+          project.securityCategories,
+        );
+
+        // Run advanced heuristics if enabled
+        if (!securityResult.allowed || project.securityHeuristicsEnabled) {
+          for (const message of body.messages.filter(m => m.role === 'user')) {
+            const heuristicResult = this.securityService.checkAdvancedHeuristics(message.content);
+            if (!heuristicResult.allowed) {
+              securityResult.allowed = false;
+              securityResult.reason = heuristicResult.reason;
+              securityResult.pattern = heuristicResult.pattern;
+              securityResult.severity = heuristicResult.severity;
+              break;
+            }
+          }
+        }
+
+        // Log security event
+        if (!securityResult.allowed) {
+          await this.securityEventRepository.save({
+            projectId: project.id,
+            identity: body.identity,
+            pattern: securityResult.pattern || 'unknown',
+            severity: securityResult.severity || 'medium',
+            reason: securityResult.reason,
+            blocked: project.securityMode === 'block',
+            messagePreview: body.messages
+              .filter(m => m.role === 'user')
+              .map(m => m.content.substring(0, 100))
+              .join(' | '),
+          });
+        }
+
+        // Block if in block mode
+        if (!securityResult.allowed && project.securityMode === 'block') {
+          res.status(HttpStatus.FORBIDDEN).json({
+            error: 'security_policy_violation',
+            message: securityResult.reason || 'Request blocked by security policy',
+            pattern: securityResult.pattern,
+            severity: securityResult.severity,
+          });
+          return;
+        }
+      }
 
       // Get period start based on project's limit period (daily/weekly/monthly)
       const periodStart = this.getPeriodStart(project.limitPeriod || 'daily');

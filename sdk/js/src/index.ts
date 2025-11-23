@@ -32,6 +32,20 @@ export class LimitExceededError extends Error {
   }
 }
 
+export class SecurityPolicyViolationError extends Error {
+  response: any;
+  pattern?: string;
+  severity?: string;
+
+  constructor(response: any) {
+    super(response.message || 'Security policy violation');
+    this.name = 'SecurityPolicyViolationError';
+    this.response = response;
+    this.pattern = response.pattern;
+    this.severity = response.severity;
+  }
+}
+
 export function createClient(options: AIProxyClientOptions) {
   const { baseUrl, projectKey } = options;
 
@@ -60,6 +74,11 @@ export function createClient(options: AIProxyClientOptions) {
       });
 
       const data = await response.json() as any;
+
+      // Check for security policy violation
+      if (response.status === 403 || data.error === 'security_policy_violation') {
+        throw new SecurityPolicyViolationError(data);
+      }
 
       // Check for limit exceeded
       if (response.status === 429 || data.error === 'limit_exceeded') {
@@ -103,6 +122,9 @@ export function createClient(options: AIProxyClientOptions) {
       const contentType = response.headers.get('content-type');
       if (contentType?.includes('application/json')) {
         const data = await response.json() as any;
+        if (response.status === 403 || data.error === 'security_policy_violation') {
+          throw new SecurityPolicyViolationError(data);
+        }
         if (response.status === 429 || data.error === 'limit_exceeded') {
           throw new LimitExceededError(data);
         }
