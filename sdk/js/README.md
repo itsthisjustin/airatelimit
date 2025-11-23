@@ -45,12 +45,17 @@ for await (const chunk of client.chatStream({
 ## Error Handling
 
 ```typescript
-import { LimitExceededError } from '@ai-ratelimit/sdk';
+import { LimitExceededError, SecurityPolicyViolationError } from '@ai-ratelimit/sdk';
 
 try {
   const result = await client.chat({ ... });
 } catch (err) {
-  if (err instanceof LimitExceededError) {
+  if (err instanceof SecurityPolicyViolationError) {
+    // Security violation - prompt injection detected
+    console.log('Security error:', err.message);
+    console.log('Attack pattern:', err.pattern);  // e.g., "systemPromptExtraction"
+    console.log('Severity:', err.severity);        // "low" | "medium" | "high"
+  } else if (err instanceof LimitExceededError) {
     // Limit exceeded - show upgrade prompt
     console.log(err.response.message);
     
@@ -61,6 +66,8 @@ try {
   }
 }
 ```
+
+**New in v1.1.0:** Added `SecurityPolicyViolationError` for prompt injection protection. Enable security features in your project dashboard.
 
 ## API
 
