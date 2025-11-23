@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-gray-500/10 border border-gray-500/10 p-6 rounded-lg shadow-md hover:shadow-xl transition-all duration-200 hover:border-gray-500/15 relative group"
+    class="bg-gray-500/10 border border-gray-500/10 p-4 rounded-lg shadow-md hover:shadow-xl transition-all duration-200 hover:border-gray-500/15 relative group"
   >
     <!-- Quick Actions Menu -->
     <div class="absolute top-4 right-4">
@@ -78,7 +78,7 @@
       </div> -->
 
       <!-- Usage Progress Bars -->
-      <div class="space-y-3 mb-4">
+      <div class="space-y-3 mb-1">
         <ProgressBar
           v-if="project.limitType !== 'tokens'"
           label="Requests"
