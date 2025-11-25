@@ -39,7 +39,7 @@ export class Project {
   @Index()
   organizationId: string;
 
-  // Provider configuration
+  // Provider configuration (legacy - single provider)
   @Column({
     type: 'enum',
     enum: ['openai', 'anthropic', 'google', 'xai', 'other'],
@@ -51,9 +51,14 @@ export class Project {
   baseUrl: string;
 
   // TODO: Encrypt at rest in production
-  // Stores API key for selected provider (OpenAI, Anthropic, Google, or xAI)
+  // Stores API key for selected provider (legacy - single provider)
   @Column({ nullable: true })
   openaiApiKey: string;
+
+  // Multi-provider configuration
+  // Example: { "openai": { "apiKey": "sk-...", "baseUrl": "..." }, "anthropic": { "apiKey": "sk-ant-..." } }
+  @Column({ type: 'jsonb', nullable: true })
+  providerKeys: Record<string, { apiKey: string; baseUrl?: string }>;
 
   @Column({ nullable: true })
   dailyRequestLimit: number;

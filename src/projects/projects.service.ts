@@ -82,8 +82,29 @@ export class ProjectsService {
 
     const updateData: any = { ...dto };
     
+    // Handle multi-provider configuration
+    if (dto.providerKeys) {
+      // Merge with existing providerKeys if any
+      updateData.providerKeys = {
+        ...(project.providerKeys || {}),
+        ...dto.providerKeys,
+      };
+      
+      // Generate project key if this is the first provider configured
+      if (!project.projectKey && Object.keys(updateData.providerKeys).length > 0) {
+        // Ensure at least one provider has an API key
+        const hasValidKey = Object.values(updateData.providerKeys).some(
+          (config: any) => config?.apiKey
+        );
+        if (hasValidKey) {
+          updateData.projectKey = this.generateProjectKey();
+        }
+      }
+    }
+    
+    // Handle legacy single-provider configuration
     // Generate project key when both provider and API key are set for the first time
-    if (dto.openaiApiKey && !project.projectKey) {
+    if (dto.openaiApiKey && !project.projectKey && !dto.providerKeys) {
       const finalProvider = dto.provider || project.provider;
       if (!finalProvider) {
         throw new Error('Provider must be configured before setting API key');
@@ -96,8 +117,8 @@ export class ProjectsService {
       updateData.baseUrl = this.getDefaultBaseUrl(dto.provider);
     }
     
-    // Provider can only be changed if project key doesn't exist yet
-    if (project.projectKey) {
+    // Provider can only be changed if project key doesn't exist yet (legacy mode)
+    if (project.projectKey && !dto.providerKeys) {
       delete updateData.provider;
     }
     

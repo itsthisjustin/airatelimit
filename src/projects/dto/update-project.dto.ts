@@ -6,6 +6,7 @@ export class UpdateProjectDto {
   name?: string;
 
   // Provider can be set during initial configuration (before project key is generated)
+  // Legacy single-provider configuration
   @IsOptional()
   @IsIn(['openai', 'anthropic', 'google', 'xai', 'other'])
   provider?: 'openai' | 'anthropic' | 'google' | 'xai' | 'other';
@@ -17,6 +18,12 @@ export class UpdateProjectDto {
   @IsOptional()
   @IsString()
   openaiApiKey?: string;
+
+  // Multi-provider configuration
+  // Example: { "openai": { "apiKey": "sk-...", "baseUrl": "..." }, "anthropic": { "apiKey": "sk-ant-..." } }
+  @IsOptional()
+  @IsObject()
+  providerKeys?: Record<string, { apiKey: string; baseUrl?: string }>;
 
   @IsOptional()
   @IsInt()

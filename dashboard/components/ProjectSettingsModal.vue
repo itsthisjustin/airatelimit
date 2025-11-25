@@ -105,62 +105,98 @@
                   />
                 </div>
 
-                <!-- Provider Selection (or Display if already set) -->
+                <!-- Multi-Provider Configuration -->
                 <div>
-                  <label class="block text-sm font-medium text-white mb-2">AI Provider</label>
-                  <div v-if="!project.openaiApiKey" class="relative">
-                    <select
-                      v-model="editForm.provider"
-                      class="w-full px-4 py-2.5 text-white bg-gray-500/10 border border-gray-500/20 rounded-lg focus:ring-2 focus:ring-blue-300/50 focus:border-transparent appearance-none cursor-pointer pr-10 transition-all hover:bg-gray-500/20"
+                  <label class="block text-sm font-medium text-white mb-2">AI Providers</label>
+                  <p class="text-xs text-gray-400 mb-3">Configure one or more AI providers. Models will be auto-routed to the correct provider.</p>
+                  
+                  <div class="space-y-2">
+                    <!-- Provider Cards -->
+                    <div 
+                      v-for="providerOption in availableProviders" 
+                      :key="providerOption.id"
+                      class="border rounded-lg transition-all"
+                      :class="isProviderConfigured(providerOption.id) ? 'border-green-300/30 bg-green-300/5' : 'border-gray-500/20 bg-gray-500/5'"
                     >
-                      <option :value="null" disabled>Select a provider...</option>
-                      <option value="openai">OpenAI</option>
-                      <option value="anthropic">Anthropic</option>
-                      <option value="google">Google</option>
-                      <option value="xai">xAI</option>
-                      <option value="other">Other (OpenAI-compatible)</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                      </svg>
+                      <div 
+                        class="flex items-center justify-between p-2 cursor-pointer"
+                        @click="toggleProviderExpand(providerOption.id)"
+                      >
+                        <div class="flex items-center space-x-2">
+                          <div 
+                            class="w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-semibold"
+                            :class="providerOption.bgClass"
+                          >
+                            {{ providerOption.icon }}
+                          </div>
+                          <div>
+                            <div class="text-sm font-medium text-white">{{ providerOption.name }}</div>
+                            <!-- <div class="text-xs text-gray-500">{{ providerOption.models }}</div> -->
+                          </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                          <span 
+                            v-if="isProviderConfigured(providerOption.id)" 
+                            class="text-xs px-2 py-0.5 bg-green-500/20 text-green-300 rounded"
+                          >
+                            Configured
+                          </span>
+                          <svg 
+                            class="w-4 h-4 text-gray-400 transition-transform" 
+                            :class="expandedProviders[providerOption.id] ? 'rotate-180' : ''"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                          >
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
+                      </div>
+                      
+                      <!-- Expanded Provider Config -->
+                      <div v-if="expandedProviders[providerOption.id]" class="px-3 pb-3 space-y-3 border-t border-gray-500/10 pt-3">
+                        <!-- API Key Input -->
+                        <div>
+                          <label class="block text-xs font-medium text-gray-400 mb-1">API Key</label>
+                          <input
+                            v-model="editForm.providerKeys[providerOption.id].apiKey"
+                            type="password"
+                            class="w-full px-3 py-2 text-white bg-gray-500/10 border border-gray-500/10 rounded-lg focus:ring-2 focus:ring-blue-300/50 focus:border-transparent font-mono text-sm"
+                            :placeholder="getProviderKeyPlaceholder(providerOption.id)"
+                          />
+                        </div>
+                        
+                        <!-- Base URL (optional, for custom endpoints) -->
+                        <div v-if="providerOption.id === 'other' || showAdvancedProviderConfig[providerOption.id]">
+                          <label class="block text-xs font-medium text-gray-400 mb-1">Base URL (optional)</label>
+                          <input
+                            v-model="editForm.providerKeys[providerOption.id].baseUrl"
+                            type="text"
+                            class="w-full px-3 py-2 text-white bg-gray-500/10 border border-gray-500/10 rounded-lg focus:ring-2 focus:ring-blue-300/50 focus:border-transparent font-mono text-sm"
+                            :placeholder="providerOption.defaultUrl"
+                          />
+                        </div>
+                        
+                        <!-- Advanced toggle for non-other providers -->
+                        <button 
+                          v-if="providerOption.id !== 'other'"
+                          type="button"
+                          @click="showAdvancedProviderConfig[providerOption.id] = !showAdvancedProviderConfig[providerOption.id]"
+                          class="text-xs text-blue-300 hover:text-blue-200"
+                        >
+                          {{ showAdvancedProviderConfig[providerOption.id] ? 'Hide' : 'Show' }} custom endpoint
+                        </button>
+                        
+                        <!-- Remove provider button -->
+                        <button 
+                          v-if="isProviderConfigured(providerOption.id)"
+                          type="button"
+                          @click="removeProvider(providerOption.id)"
+                          class="text-xs text-red-400 hover:text-red-300"
+                        >
+                          Remove this provider
+                        </button>
+                      </div>
                     </div>
                   </div>
-                  <div v-else class="w-full px-4 py-2 text-gray-400 bg-gray-500/5 border border-gray-500/10 rounded-lg">
-                    {{ project.provider ? providerLabels[project.provider] : 'Not configured' }}
-                  </div>
-                  <p class="text-xs text-gray-500 mt-1">
-                    {{ project.openaiApiKey ? 'Provider cannot be changed after API key is set' : 'Choose your AI provider' }}
-                  </p>
-                </div>
-
-                <!-- Base URL (only for Other provider) -->
-                <div v-if="editForm.provider === 'other'">
-                  <label class="block text-sm font-medium text-white mb-2">API Base URL</label>
-                  <input
-                    v-model="editForm.baseUrl"
-                    type="text"
-                    class="w-full px-4 py-2 text-white bg-gray-500/10 border border-gray-500/10 rounded-lg focus:ring-2 focus:ring-blue-300/50 focus:border-transparent font-mono text-sm"
-                    placeholder="https://api.your-provider.com/v1/chat/completions"
-                  />
-                  <p class="text-xs text-gray-400 mt-1">Full API endpoint URL for your provider</p>
-                </div>
-
-                <!-- API Key -->
-                <div>
-                  <label class="block text-sm font-medium text-white mb-2">
-                    {{ editForm.provider ? providerLabels[editForm.provider] : 'Provider' }} API Key
-                  </label>
-                  <input
-                    v-model="editForm.openaiApiKey"
-                    type="password"
-                    class="w-full px-4 py-2 text-white bg-gray-500/10 border border-gray-500/10 rounded-lg focus:ring-2 focus:ring-amber-300/50 focus:border-transparent font-mono text-sm"
-                    :placeholder="project.openaiApiKey ? '••••••••••••••••' : 'sk-...'"
-                    :disabled="!editForm.provider"
-                  />
-                  <p class="text-xs text-gray-400 mt-1">
-                    {{ project.openaiApiKey ? 'Leave empty to keep existing key' : 'Required to use this project' }}
-                  </p>
                 </div>
 
                 <!-- Limit Period -->
@@ -1034,6 +1070,94 @@ const securityEventsLoading = ref(false)
 const securityEventsError = ref('')
 const securityEvents = ref<any[]>([])
 
+// Multi-provider configuration
+const expandedProviders = ref<Record<string, boolean>>({})
+const showAdvancedProviderConfig = ref<Record<string, boolean>>({})
+
+const availableProviders = [
+  { 
+    id: 'openai', 
+    name: 'OpenAI', 
+    icon: 'O', 
+    bgClass: 'bg-green-500/20 text-green-300',
+    models: 'GPT-4o, GPT-3.5, o1, DALL-E',
+    defaultUrl: 'https://api.openai.com/v1/chat/completions'
+  },
+  { 
+    id: 'anthropic', 
+    name: 'Anthropic', 
+    icon: 'A', 
+    bgClass: 'bg-orange-500/20 text-orange-300',
+    models: 'Claude 3.5 Sonnet, Claude 3 Opus, Haiku',
+    defaultUrl: 'https://api.anthropic.com/v1/messages'
+  },
+  { 
+    id: 'google', 
+    name: 'Google', 
+    icon: 'G', 
+    bgClass: 'bg-blue-500/20 text-blue-300',
+    models: 'Gemini 2.5, Gemini 1.5 Pro/Flash',
+    defaultUrl: 'https://generativelanguage.googleapis.com/v1beta'
+  },
+  { 
+    id: 'xai', 
+    name: 'xAI', 
+    icon: 'X', 
+    bgClass: 'bg-gray-500/20 text-gray-300',
+    models: 'Grok 2, Grok Beta',
+    defaultUrl: 'https://api.x.ai/v1/chat/completions'
+  },
+  { 
+    id: 'other', 
+    name: 'Other (OpenAI-compatible)', 
+    icon: '?', 
+    bgClass: 'bg-purple-500/20 text-purple-300',
+    models: 'Any OpenAI-compatible API',
+    defaultUrl: ''
+  },
+]
+
+const isProviderConfigured = (providerId: string) => {
+  return props.editForm.providerKeys?.[providerId]?.apiKey?.length > 0
+}
+
+const toggleProviderExpand = (providerId: string) => {
+  expandedProviders.value[providerId] = !expandedProviders.value[providerId]
+  // Initialize providerKeys entry if it doesn't exist
+  if (!props.editForm.providerKeys) {
+    props.editForm.providerKeys = {}
+  }
+  if (!props.editForm.providerKeys[providerId]) {
+    props.editForm.providerKeys[providerId] = { apiKey: '', baseUrl: '' }
+  }
+}
+
+const getProviderKeyPlaceholder = (providerId: string) => {
+  const placeholders: Record<string, string> = {
+    openai: 'sk-...',
+    anthropic: 'sk-ant-...',
+    google: 'AIza...',
+    xai: 'xai-...',
+    other: 'Your API key'
+  }
+  return placeholders[providerId] || 'API key'
+}
+
+const removeProvider = (providerId: string) => {
+  if (props.editForm.providerKeys?.[providerId]) {
+    delete props.editForm.providerKeys[providerId]
+    expandedProviders.value[providerId] = false
+  }
+}
+
+// Get list of configured provider IDs
+const configuredProviderIds = computed(() => {
+  if (!props.editForm.providerKeys) return []
+  return Object.entries(props.editForm.providerKeys)
+    .filter(([_, config]) => (config as any)?.apiKey?.length > 0)
+    .map(([id]) => id)
+})
+
 const securityCategories = ref([
   {
     id: 'systemPromptExtraction',
@@ -1116,12 +1240,45 @@ const knownModels = [
 ]
 
 const filteredModelSuggestions = computed(() => {
+  // Get configured providers (multi-provider mode)
+  const configuredProviders = configuredProviderIds.value.map(id => {
+    // Map provider IDs to display names used in knownModels
+    const mapping: Record<string, string> = {
+      openai: 'OpenAI',
+      anthropic: 'Anthropic', 
+      google: 'Google',
+      xai: 'xAI',
+      other: 'Other'
+    }
+    return mapping[id] || id
+  })
+  
+  // Also check legacy single provider
+  if (props.project.provider && !configuredProviders.length) {
+    const mapping: Record<string, string> = {
+      openai: 'OpenAI',
+      anthropic: 'Anthropic', 
+      google: 'Google',
+      xai: 'xAI',
+      other: 'Other'
+    }
+    configuredProviders.push(mapping[props.project.provider] || props.project.provider)
+  }
+
+  // Filter models by configured providers (if any configured)
+  let availableModels = knownModels
+  if (configuredProviders.length > 0) {
+    availableModels = knownModels.filter(m => 
+      configuredProviders.includes(m.provider)
+    )
+  }
+
   if (!newModelName.value) {
     // Show popular models first when empty
-    return knownModels.filter(m => m.recommended).slice(0, 8)
+    return availableModels.filter(m => m.recommended).slice(0, 8)
   }
   const search = newModelName.value.toLowerCase()
-  return knownModels.filter(m => 
+  return availableModels.filter(m => 
     m.name.toLowerCase().includes(search) ||
     m.provider.toLowerCase().includes(search)
   ).slice(0, 10)
@@ -1143,11 +1300,43 @@ const hideModelSuggestions = () => {
 }
 
 const getTierFilteredModels = (tierName: string) => {
+  // Get configured providers
+  const configuredProviders = configuredProviderIds.value.map(id => {
+    const mapping: Record<string, string> = {
+      openai: 'OpenAI',
+      anthropic: 'Anthropic', 
+      google: 'Google',
+      xai: 'xAI',
+      other: 'Other'
+    }
+    return mapping[id] || id
+  })
+  
+  // Also check legacy single provider
+  if (props.project.provider && !configuredProviders.length) {
+    const mapping: Record<string, string> = {
+      openai: 'OpenAI',
+      anthropic: 'Anthropic', 
+      google: 'Google',
+      xai: 'xAI',
+      other: 'Other'
+    }
+    configuredProviders.push(mapping[props.project.provider] || props.project.provider)
+  }
+
+  // Filter models by configured providers (if any configured)
+  let availableModels = knownModels
+  if (configuredProviders.length > 0) {
+    availableModels = knownModels.filter(m => 
+      configuredProviders.includes(m.provider)
+    )
+  }
+
   const search = tierNewModelNames.value[tierName]
   if (!search) {
-    return knownModels.filter(m => m.recommended).slice(0, 6)
+    return availableModels.filter(m => m.recommended).slice(0, 6)
   }
-  return knownModels.filter(m => 
+  return availableModels.filter(m => 
     m.name.toLowerCase().includes(search.toLowerCase()) ||
     m.provider.toLowerCase().includes(search.toLowerCase())
   ).slice(0, 8)

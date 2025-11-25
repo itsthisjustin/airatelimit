@@ -39,12 +39,22 @@
                   <span :class="['w-1.5 h-1.5 rounded-full mr-1.5', statusBadge.dotClass]"></span>
                   {{ statusBadge.text }}
                 </span>
-                <template v-if="project.provider">
+                <!--                 <template v-if="configuredProviders.length > 0">
+                  <span class="text-xs text-gray-500">•</span>
+                  <span 
+                    v-for="provider in configuredProviders" 
+                    :key="provider"
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-500/20 text-gray-400 mr-1"
+                  >
+                    {{ provider }}
+                  </span>
+                </template>
+                <template v-else-if="project.provider">
                   <span class="text-xs text-gray-500">•</span>
                   <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-500/20 text-gray-400">
                     {{ providerLabel }}
                   </span>
-                </template>
+                </template> -->
               </div>
             </div>
             <div class="flex items-center space-x-2">
@@ -319,6 +329,21 @@ const providerLabel = computed(() => {
   return labels[project.value.provider as keyof typeof labels] || project.value.provider
 })
 
+// Get list of configured providers for multi-provider display
+const configuredProviders = computed(() => {
+  if (!project.value?.providerKeys) return []
+  const labels: Record<string, string> = {
+    openai: 'OpenAI',
+    anthropic: 'Anthropic',
+    google: 'Google',
+    xai: 'xAI',
+    other: 'Custom'
+  }
+  return Object.keys(project.value.providerKeys)
+    .filter(key => project.value.providerKeys[key]?.apiKey)
+    .map(key => labels[key] || key)
+})
+
 // Calculate status badge (same logic as ProjectCard)
 const statusBadge = computed(() => {
   if (!project.value) {
@@ -380,6 +405,7 @@ const editForm = ref({
   provider: null as 'openai' | 'anthropic' | 'google' | 'xai' | 'other' | null,
   baseUrl: '',
   openaiApiKey: '',
+  providerKeys: {} as Record<string, { apiKey: string; baseUrl?: string }>,
   limitPeriod: 'daily' as 'daily' | 'weekly' | 'monthly',
   limitType: 'both' as 'requests' | 'tokens' | 'both',
   dailyRequestLimit: null as number | null,
@@ -421,6 +447,18 @@ const loadProject = async () => {
     editForm.value.provider = project.value.provider || null
     editForm.value.baseUrl = project.value.baseUrl || ''
     editForm.value.openaiApiKey = '' // Don't load existing key for security
+    
+    // Load multi-provider configuration (without API keys for security)
+    editForm.value.providerKeys = {}
+    if (project.value.providerKeys) {
+      for (const [providerId, config] of Object.entries(project.value.providerKeys)) {
+        // Initialize with empty apiKey (don't show existing keys) but keep baseUrl
+        editForm.value.providerKeys[providerId] = {
+          apiKey: '', // Don't expose existing keys
+          baseUrl: (config as any).baseUrl || ''
+        }
+      }
+    }
     editForm.value.limitPeriod = project.value.limitPeriod || 'daily'
     editForm.value.limitType = project.value.limitType || 'both'
     editForm.value.dailyRequestLimit = project.value.dailyRequestLimit
@@ -503,17 +541,32 @@ const handleUpdate = async () => {
       limitType: editForm.value.limitType,
     }
 
-    // Provider settings (only if API key not already set)
-    if (!project.value.openaiApiKey) {
+    // Provider settings (only if API key not already set) - legacy single provider
+    if (!project.value.openaiApiKey && !project.value.providerKeys) {
       payload.provider = editForm.value.provider
       if (editForm.value.baseUrl) {
         payload.baseUrl = editForm.value.baseUrl
       }
     }
 
-    // API key (only if changed)
+    // API key (only if changed) - legacy single provider
     if (editForm.value.openaiApiKey) {
       payload.openaiApiKey = editForm.value.openaiApiKey
+    }
+    
+    // Multi-provider configuration
+    // Only send providerKeys entries that have an API key set
+    const providerKeysToSend: Record<string, { apiKey: string; baseUrl?: string }> = {}
+    for (const [providerId, config] of Object.entries(editForm.value.providerKeys || {})) {
+      if (config.apiKey) {
+        providerKeysToSend[providerId] = {
+          apiKey: config.apiKey,
+          ...(config.baseUrl && { baseUrl: config.baseUrl })
+        }
+      }
+    }
+    if (Object.keys(providerKeysToSend).length > 0) {
+      payload.providerKeys = providerKeysToSend
     }
 
     // Basic limits
