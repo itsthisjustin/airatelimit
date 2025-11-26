@@ -22,6 +22,10 @@ export class Project {
   @Column({ unique: true, nullable: true })
   projectKey: string;
 
+  // Secret key for programmatic API access (server-side only, never expose to clients)
+  @Column({ unique: true, nullable: true })
+  secretKey: string;
+
   // Owner relationship
   @ManyToOne(() => User, (user) => user.projects, { nullable: true })
   @JoinColumn({ name: 'ownerId' })

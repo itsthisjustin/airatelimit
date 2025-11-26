@@ -10,18 +10,47 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  Req,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ProjectAuthGuard } from '../common/guards/project-auth.guard';
 import { IdentityLimitsService, CreateIdentityLimitDto, UpdateIdentityLimitDto } from './identity-limits.service';
 import { ProjectsService } from '../projects/projects.service';
 
+/**
+ * Identity Limits Controller
+ * 
+ * Supports two authentication methods:
+ * 1. JWT token from dashboard login (for UI access)
+ * 2. Project secret key (for programmatic/server-side access)
+ * 
+ * Example with secret key:
+ *   curl -X POST /api/projects/pk_xxx/identities \
+ *     -H "Authorization: Bearer sk_xxx" \
+ *     -d '{"identity": "user-123", "requestLimit": 1000}'
+ */
 @Controller('api/projects/:projectKey/identities')
-@UseGuards(JwtAuthGuard)
+@UseGuards(ProjectAuthGuard)
 export class IdentityLimitsController {
   constructor(
     private readonly identityLimitsService: IdentityLimitsService,
     private readonly projectsService: ProjectsService,
   ) {}
+
+  /**
+   * Get the project - either from secret key auth or by looking up projectKey
+   */
+  private async getProject(projectKey: string, request: any) {
+    // If authenticated via secret key, project is already attached
+    if (request.authType === 'secret_key' && request.project) {
+      // Verify the projectKey matches the authenticated project
+      if (request.project.projectKey !== projectKey) {
+        throw new Error('Project key does not match authenticated project');
+      }
+      return request.project;
+    }
+    // Otherwise, look up by projectKey (JWT auth)
+    return this.projectsService.findByProjectKey(projectKey);
+  }
 
   /**
    * List all identity limits for a project
@@ -32,8 +61,9 @@ export class IdentityLimitsController {
     @Param('projectKey') projectKey: string,
     @Query('limit') limit?: string,
     @Query('offset') offset?: string,
+    @Req() request?: any,
   ) {
-    const project = await this.projectsService.findByProjectKey(projectKey);
+    const project = await this.getProject(projectKey, request);
     
     const result = await this.identityLimitsService.listForProject(project.id, {
       limit: limit ? parseInt(limit, 10) : 100,
@@ -56,8 +86,9 @@ export class IdentityLimitsController {
   async get(
     @Param('projectKey') projectKey: string,
     @Param('identity') identity: string,
+    @Req() request?: any,
   ) {
-    const project = await this.projectsService.findByProjectKey(projectKey);
+    const project = await this.getProject(projectKey, request);
     const identityLimit = await this.identityLimitsService.getForIdentity(
       project.id,
       identity,
@@ -82,8 +113,9 @@ export class IdentityLimitsController {
   async create(
     @Param('projectKey') projectKey: string,
     @Body() dto: CreateIdentityLimitDto,
+    @Req() request?: any,
   ) {
-    const project = await this.projectsService.findByProjectKey(projectKey);
+    const project = await this.getProject(projectKey, request);
     const identityLimit = await this.identityLimitsService.upsert(
       project.id,
       dto,
@@ -101,8 +133,9 @@ export class IdentityLimitsController {
     @Param('projectKey') projectKey: string,
     @Param('identity') identity: string,
     @Body() dto: UpdateIdentityLimitDto,
+    @Req() request?: any,
   ) {
-    const project = await this.projectsService.findByProjectKey(projectKey);
+    const project = await this.getProject(projectKey, request);
     const identityLimit = await this.identityLimitsService.update(
       project.id,
       identity,
@@ -121,8 +154,9 @@ export class IdentityLimitsController {
   async delete(
     @Param('projectKey') projectKey: string,
     @Param('identity') identity: string,
+    @Req() request?: any,
   ) {
-    const project = await this.projectsService.findByProjectKey(projectKey);
+    const project = await this.getProject(projectKey, request);
     await this.identityLimitsService.delete(project.id, identity);
   }
 
@@ -134,8 +168,9 @@ export class IdentityLimitsController {
   async bulkUpsert(
     @Param('projectKey') projectKey: string,
     @Body() body: { items: CreateIdentityLimitDto[] },
+    @Req() request?: any,
   ) {
-    const project = await this.projectsService.findByProjectKey(projectKey);
+    const project = await this.getProject(projectKey, request);
     const results = await this.identityLimitsService.bulkUpsert(
       project.id,
       body.items,

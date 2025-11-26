@@ -82,6 +82,20 @@ export class UserProjectsController {
     return { message: 'Project deleted' };
   }
 
+  @Post(':id/regenerate-secret')
+  async regenerateSecretKey(@Request() req, @Param('id') id: string) {
+    const project = await this.projectsService.findById(id);
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+    if (project.ownerId !== req.user.userId) {
+      throw new ForbiddenException('Access denied');
+    }
+
+    const newSecretKey = await this.projectsService.regenerateSecretKey(id);
+    return { secretKey: newSecretKey };
+  }
+
   private maskApiKey(project: any) {
     if (project.openaiApiKey) {
       const key = project.openaiApiKey;

@@ -114,19 +114,20 @@ pro:  { gpt-4o: 500, gemini: unlimited }
 
 ### Per-Identity Limits (Optional)
 
-Cap specific users via API:
+Cap specific users programmatically using your project's **secret key** (`sk_xxx`):
 
 ```bash
 # Set limits for one user
 curl -X POST https://api.airatelimit.com/api/projects/pk_xxx/identities \
-  -H "Authorization: Bearer $JWT" \
+  -H "Authorization: Bearer sk_xxx" \
+  -H "Content-Type: application/json" \
   -d '{"identity": "user-123", "requestLimit": 1000, "tokenLimit": 50000}'
 
 # Disable a user
 curl -X POST .../identities -d '{"identity": "user-123", "enabled": false}'
 ```
 
-Manage via dashboard or API. Identity limits override all other limits.
+Find your secret key in Dashboard → Project Settings → API Access. Identity limits override all other limits.
 
 ### Custom Messages
 

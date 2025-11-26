@@ -45,6 +45,7 @@ export class ProjectsService {
     // TRANSPARENT PROXY MODE: Always generate project key on creation
     // API keys are now passed per-request, not stored
     const projectKey = this.generateProjectKey();
+    const secretKey = this.generateSecretKey();
     
     // Only set provider and baseUrl if actually provided in DTO (legacy support)
     const provider = dto.provider || null;
@@ -53,6 +54,7 @@ export class ProjectsService {
     const project = this.projectsRepository.create({
       ...dto,
       projectKey,
+      secretKey,
       ownerId: userId,
       organizationId,
       provider,
@@ -140,6 +142,26 @@ export class ProjectsService {
   private generateProjectKey(): string {
     const random = randomBytes(16).toString('hex');
     return `pk_${random}`;
+  }
+
+  private generateSecretKey(): string {
+    const random = randomBytes(24).toString('hex');
+    return `sk_${random}`;
+  }
+
+  async regenerateSecretKey(id: string): Promise<string> {
+    const project = await this.findById(id);
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+
+    const newSecretKey = this.generateSecretKey();
+    await this.projectsRepository.update(id, { secretKey: newSecretKey });
+    return newSecretKey;
+  }
+
+  async findBySecretKey(secretKey: string): Promise<Project | null> {
+    return this.projectsRepository.findOne({ where: { secretKey } });
   }
 
   private getDefaultBaseUrl(provider: string): string {

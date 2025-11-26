@@ -61,6 +61,13 @@
                   >
                     Security
                   </button>
+                  <button
+                    @click="configTab = 'api'"
+                    :class="configTab === 'api' ? 'border-blue-300 text-blue-300' : 'border-transparent text-gray-400 hover:text-gray-400 hover:border-gray-300'"
+                    class="whitespace-nowrap py-3 px-6 border-b-2 font-medium text-sm"
+                  >
+                    API Access
+                  </button>
                 </nav>
               </div>
 
@@ -97,6 +104,12 @@
                 :updating="updating"
                 @update="handleUpdate"
               />
+
+              <ApiAccessTab
+                v-show="configTab === 'api'"
+                :project="project"
+                @update="handleUpdate"
+              />
             </div>
           </div>
         </div>
@@ -110,6 +123,7 @@ import BasicLimitsTab from './settings/BasicLimitsTab.vue'
 import TiersTab from './settings/TiersTab.vue'
 import IdentitiesTab from './settings/IdentitiesTab.vue'
 import SecurityTab from './settings/SecurityTab.vue'
+import ApiAccessTab from './settings/ApiAccessTab.vue'
 
 const props = defineProps<{
   isOpen: boolean
