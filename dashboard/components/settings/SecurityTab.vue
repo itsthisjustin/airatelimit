@@ -34,7 +34,7 @@
         <label class="block text-sm font-medium text-white mb-3">When threats are detected</label>
         <div class="space-y-2">
           <label 
-            :class="editForm.securityMode === 'block' ? 'border-blue-300/50 bg-blue-300/5' : 'border-gray-500/10 bg-gray-500/5 hover:bg-gray-500/10'"
+            :class="editForm.securityMode === 'block' ? 'border-blue-300/10 bg-blue-300/5' : 'border-gray-500/10 bg-gray-500/5 hover:bg-gray-500/10'"
             class="flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-all"
           >
             <div class="relative flex items-center justify-center mt-0.5">
@@ -61,7 +61,7 @@
             </div>
           </label>
           <label 
-            :class="editForm.securityMode === 'log' ? 'border-blue-300/50 bg-blue-300/5' : 'border-gray-500/10 bg-gray-500/5 hover:bg-gray-500/10'"
+            :class="editForm.securityMode === 'log' ? 'border-blue-300/10 bg-blue-300/5' : 'border-gray-500/10 bg-gray-500/5 hover:bg-gray-500/10'"
             class="flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-all"
           >
             <div class="relative flex items-center justify-center mt-0.5">
@@ -115,19 +115,35 @@
       <div v-if="editForm.securityEnabled" class="mt-4 pt-4 border-t border-gray-500/20">
         <label class="block text-sm font-medium text-white mb-3">Detection Categories</label>
         <div class="space-y-2">
-          <div
+          <label
             v-for="category in securityCategories"
             :key="category.id"
-            class="flex items-start gap-3 p-3 bg-gray-500/5 border border-gray-500/10 rounded-lg"
+            :class="editForm.securityCategories.includes(category.id) ? 'border-blue-300/10 bg-blue-300/5' : 'border-gray-500/10 bg-gray-500/5 hover:bg-gray-500/10'"
+            class="flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-all"
           >
-            <input
-              type="checkbox"
-              :id="`cat-${category.id}`"
-              :checked="editForm.securityCategories.includes(category.id)"
-              @change="toggleCategory(category.id)"
-              class="mt-1 w-4 h-4 rounded border-gray-500 text-blue-300 focus:ring-blue-300/50"
-            />
-            <label :for="`cat-${category.id}`" class="flex-1 cursor-pointer">
+            <div class="relative flex items-center justify-center mt-0.5">
+              <input
+                type="checkbox"
+                :checked="editForm.securityCategories.includes(category.id)"
+                @change="toggleCategory(category.id)"
+                class="sr-only"
+              />
+              <div 
+                :class="editForm.securityCategories.includes(category.id) ? 'bg-blue-300 border-blue-300' : 'border-gray-500 bg-transparent'"
+                class="w-4 h-4 rounded border-2 transition-all flex items-center justify-center"
+              >
+                <svg 
+                  v-if="editForm.securityCategories.includes(category.id)"
+                  class="w-2.5 h-2.5 text-black" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            </div>
+            <div class="flex-1">
               <div class="flex items-center gap-2 mb-1">
                 <span class="text-sm font-medium text-white">{{ category.name }}</span>
                 <span
@@ -142,8 +158,8 @@
                 </span>
               </div>
               <p class="text-xs text-gray-400">{{ category.description }}</p>
-            </label>
-          </div>
+            </div>
+          </label>
         </div>
       </div>
 
@@ -154,7 +170,7 @@
         :disabled="updating"
         class="mt-6 w-full px-6 py-2 bg-blue-300 text-black text-sm font-medium rounded-lg hover:bg-blue-400 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {{ updating ? 'Saving...' : 'Save Security Settings' }}
+        {{ updating ? 'Saving...' : 'Save changes' }}
       </button>
     </div>
 
