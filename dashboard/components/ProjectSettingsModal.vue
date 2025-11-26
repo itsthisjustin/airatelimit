@@ -48,6 +48,13 @@
                     Plan Tiers
                   </button>
                   <button
+                    @click="handleIdentitiesTabClick"
+                    :class="configTab === 'identities' ? 'border-blue-300 text-blue-300' : 'border-transparent text-gray-400 hover:text-gray-400 hover:border-gray-300'"
+                    class="whitespace-nowrap py-3 px-6 border-b-2 font-medium text-sm"
+                  >
+                    Identities
+                  </button>
+                  <button
                     @click="handleSecurityTabClick"
                     :class="configTab === 'security' ? 'border-blue-300 text-blue-300' : 'border-transparent text-gray-400 hover:text-gray-400 hover:border-gray-300'"
                     class="whitespace-nowrap py-3 px-6 border-b-2 font-medium text-sm"
@@ -76,6 +83,12 @@
                 @delete-tier="deleteTier"
               />
 
+              <IdentitiesTab
+                v-show="configTab === 'identities'"
+                ref="identitiesTabRef"
+                :project-key="project?.projectKey"
+              />
+
               <SecurityTab
                 v-show="configTab === 'security'"
                 ref="securityTabRef"
@@ -95,6 +108,7 @@
 <script setup lang="ts">
 import BasicLimitsTab from './settings/BasicLimitsTab.vue'
 import TiersTab from './settings/TiersTab.vue'
+import IdentitiesTab from './settings/IdentitiesTab.vue'
 import SecurityTab from './settings/SecurityTab.vue'
 
 const props = defineProps<{
@@ -113,9 +127,18 @@ const emit = defineEmits<{
 
 const configTab = ref('basic')
 const securityTabRef = ref<InstanceType<typeof SecurityTab> | null>(null)
+const identitiesTabRef = ref<InstanceType<typeof IdentitiesTab> | null>(null)
 
 const handleUpdate = () => {
   emit('update')
+}
+
+const handleIdentitiesTabClick = () => {
+  configTab.value = 'identities'
+  // Refresh identities when switching to the tab
+  nextTick(() => {
+    identitiesTabRef.value?.loadIdentities()
+  })
 }
 
 const handleSecurityTabClick = () => {

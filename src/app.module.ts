@@ -7,6 +7,7 @@ import { OrganizationsModule } from './organizations/organizations.module';
 import { ProjectsModule } from './projects/projects.module';
 import { UsageModule } from './usage/usage.module';
 import { ProxyModule } from './proxy/proxy.module';
+import { IdentityLimitsModule } from './identity-limits/identity-limits.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ProxyModule } from './proxy/proxy.module';
     ProjectsModule,
     UsageModule,
     ProxyModule,
+    IdentityLimitsModule,
   ],
 })
 export class AppModule {}

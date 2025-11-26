@@ -112,6 +112,22 @@ free: { gpt-4o: 5, gemini: unlimited }
 pro:  { gpt-4o: 500, gemini: unlimited }
 ```
 
+### Per-Identity Limits (Optional)
+
+Cap specific users via API:
+
+```bash
+# Set limits for one user
+curl -X POST https://api.airatelimit.com/api/projects/pk_xxx/identities \
+  -H "Authorization: Bearer $JWT" \
+  -d '{"identity": "user-123", "requestLimit": 1000, "tokenLimit": 50000}'
+
+# Disable a user
+curl -X POST .../identities -d '{"identity": "user-123", "enabled": false}'
+```
+
+Manage via dashboard or API. Identity limits override all other limits.
+
 ### Custom Messages
 
 Show upgrade prompts with deep links when limits are hit:

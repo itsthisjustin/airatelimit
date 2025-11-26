@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UsageCounter } from './usage.entity';
 import { Project } from '../projects/projects.entity';
+import { IdentityLimitsService } from '../identity-limits/identity-limits.service';
 
 const DEFAULT_LIMIT_RESPONSE = {
   error: 'limit_exceeded',
@@ -39,12 +40,30 @@ export class UsageService {
   constructor(
     @InjectRepository(UsageCounter)
     private usageRepository: Repository<UsageCounter>,
+    @Inject(forwardRef(() => IdentityLimitsService))
+    private identityLimitsService: IdentityLimitsService,
   ) {}
 
   async checkAndUpdateUsage(
     params: CheckAndUpdateParams,
   ): Promise<CheckAndUpdateResult> {
     const { project, identity, tier, model = '', periodStart, requestedTokens = 0, requestedRequests = 0 } = params;
+
+    // Check if this identity is enabled (identity-level kill switch)
+    const identityLimit = await this.identityLimitsService.getForIdentity(
+      project.id,
+      identity,
+    );
+
+    if (identityLimit && !identityLimit.enabled) {
+      return {
+        allowed: false,
+        limitResponse: identityLimit.customResponse || {
+          error: 'identity_disabled',
+          message: 'This identity has been disabled.',
+        },
+      };
+    }
 
     // Load or create usage counter (per-model tracking)
     let usage = await this.usageRepository.findOne({
@@ -71,8 +90,8 @@ export class UsageService {
     const nextRequests = usage.requestsUsed + requestedRequests;
     const nextTokens = usage.tokensUsed + requestedTokens;
 
-    // Get limits with model-aware hierarchy
-    const limits = this.getLimitsForTier(project, tier, model);
+    // Get limits with identity-aware hierarchy (identity > tier > model > project)
+    const limits = this.getLimitsForIdentity(project, tier, model, identityLimit);
 
     // Check limits based on limit type
     const shouldCheckRequests = project.limitType === 'requests' || project.limitType === 'both';
@@ -126,13 +145,14 @@ export class UsageService {
     };
   }
 
-  // Get limits with model-aware hierarchy
-  // Priority: tier.modelLimits[model] > project.modelLimits[model] > tier general > project general
+  // Get limits with identity-aware hierarchy
+  // Priority: identity limits > tier.modelLimits[model] > project.modelLimits[model] > tier general > project general
   // Note: -1 or null = explicitly unlimited (no fallback), undefined = fallback to next level
-  private getLimitsForTier(
+  private getLimitsForIdentity(
     project: Project,
     tier?: string,
     model?: string,
+    identityLimit?: { requestLimit?: number | null; tokenLimit?: number | null; customResponse?: any } | null,
   ): { requestLimit?: number | null; tokenLimit?: number | null; customResponse?: any } {
     let limits: { requestLimit?: number | null; tokenLimit?: number | null; customResponse?: any } = {};
 
@@ -166,7 +186,7 @@ export class UsageService {
       }
     }
 
-    // Override with tier model-specific limits (highest priority)
+    // Override with tier model-specific limits
     if (tier && model && project.tiers && project.tiers[tier]?.modelLimits && project.tiers[tier].modelLimits[model]) {
       const tierModelConfig = project.tiers[tier].modelLimits[model];
       if (tierModelConfig.requestLimit !== undefined) {
@@ -175,6 +195,20 @@ export class UsageService {
       }
       if (tierModelConfig.tokenLimit !== undefined) {
         limits.tokenLimit = (tierModelConfig.tokenLimit === -1 || tierModelConfig.tokenLimit === null) ? null : tierModelConfig.tokenLimit;
+      }
+    }
+
+    // Override with identity-specific limits (HIGHEST PRIORITY)
+    if (identityLimit) {
+      if (identityLimit.requestLimit !== undefined && identityLimit.requestLimit !== null) {
+        // -1 means explicitly unlimited
+        limits.requestLimit = identityLimit.requestLimit === -1 ? null : identityLimit.requestLimit;
+      }
+      if (identityLimit.tokenLimit !== undefined && identityLimit.tokenLimit !== null) {
+        limits.tokenLimit = identityLimit.tokenLimit === -1 ? null : identityLimit.tokenLimit;
+      }
+      if (identityLimit.customResponse !== undefined) {
+        limits.customResponse = identityLimit.customResponse;
       }
     }
 
