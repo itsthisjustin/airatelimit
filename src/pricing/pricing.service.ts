@@ -23,7 +23,13 @@ export class PricingService {
     // OpenAI Models (https://openai.com/api/pricing)
     // ═══════════════════════════════════════════════════════════════
     
-    // GPT-4o family (latest flagship)
+    // GPT-5 family (newest)
+    'gpt-5': { input: 5.00, output: 20.00 },
+    'gpt-5.1': { input: 5.00, output: 20.00 },
+    'gpt-5-turbo': { input: 5.00, output: 20.00 },
+    'gpt-5-mini': { input: 0.50, output: 2.00 },
+    
+    // GPT-4o family
     'gpt-4o': { input: 2.50, output: 10.00 },
     'gpt-4o-2024-11-20': { input: 2.50, output: 10.00 },
     'gpt-4o-2024-08-06': { input: 2.50, output: 10.00 },
@@ -72,11 +78,20 @@ export class PricingService {
     // Anthropic Models (https://anthropic.com/pricing)
     // ═══════════════════════════════════════════════════════════════
     
-    // Claude 3.5 Sonnet (latest)
+    // Claude 4.5 / Claude 4 (newest)
+    'claude-4.5-sonnet': { input: 3.00, output: 15.00 },
+    'claude-4.5-opus': { input: 15.00, output: 75.00 },
+    'claude-4-sonnet': { input: 3.00, output: 15.00 },
+    'claude-4-opus': { input: 15.00, output: 75.00 },
+    'claude-sonnet-4': { input: 3.00, output: 15.00 },
+    'claude-opus-4': { input: 15.00, output: 75.00 },
+    'claude-sonnet-4-20250514': { input: 3.00, output: 15.00 },
+    'claude-opus-4-20250514': { input: 15.00, output: 75.00 },
+    
+    // Claude 3.5 Sonnet
     'claude-3-5-sonnet-20241022': { input: 3.00, output: 15.00 },
     'claude-3-5-sonnet-20240620': { input: 3.00, output: 15.00 },
     'claude-3-5-sonnet-latest': { input: 3.00, output: 15.00 },
-    'claude-sonnet-4-20250514': { input: 3.00, output: 15.00 }, // Future
     
     // Claude 3.5 Haiku (fast & cheap)
     'claude-3-5-haiku-20241022': { input: 0.80, output: 4.00 },
@@ -85,7 +100,6 @@ export class PricingService {
     // Claude 3 Opus (most capable)
     'claude-3-opus-20240229': { input: 15.00, output: 75.00 },
     'claude-3-opus-latest': { input: 15.00, output: 75.00 },
-    'claude-opus-4-20250514': { input: 15.00, output: 75.00 }, // Future
     
     // Claude 3 Sonnet
     'claude-3-sonnet-20240229': { input: 3.00, output: 15.00 },
@@ -97,9 +111,22 @@ export class PricingService {
     // Google Models (https://ai.google.dev/pricing)
     // ═══════════════════════════════════════════════════════════════
     
+    // Gemini 3 (newest)
+    'gemini-3-pro': { input: 2.00, output: 8.00 },
+    'gemini-3-ultra': { input: 5.00, output: 20.00 },
+    'gemini-3-flash': { input: 0.15, output: 0.60 },
+    'gemini-3.0-pro': { input: 2.00, output: 8.00 },
+    'gemini-3.0-ultra': { input: 5.00, output: 20.00 },
+    'gemini-3.0-flash': { input: 0.15, output: 0.60 },
+    
+    // Gemini 2.5
+    'gemini-2.5-pro': { input: 1.50, output: 6.00 },
+    'gemini-2.5-flash': { input: 0.10, output: 0.40 },
+    
     // Gemini 2.0
     'gemini-2.0-flash-exp': { input: 0.10, output: 0.40 },
     'gemini-2.0-flash': { input: 0.10, output: 0.40 },
+    'gemini-2.0-pro': { input: 1.25, output: 5.00 },
     
     // Gemini 1.5 Pro
     'gemini-1.5-pro': { input: 1.25, output: 5.00 },
@@ -167,34 +194,53 @@ export class PricingService {
 
   // Model family patterns for fuzzy matching (checked if exact match fails)
   private readonly modelFamilyPatterns: Array<{ pattern: RegExp; pricing: ModelPricing }> = [
-    // OpenAI
+    // OpenAI - order matters (more specific first)
+    { pattern: /^gpt-5-mini/i, pricing: { input: 0.50, output: 2.00 } },
+    { pattern: /^gpt-5/i, pricing: { input: 5.00, output: 20.00 } },
     { pattern: /^gpt-4o-mini/i, pricing: { input: 0.15, output: 0.60 } },
     { pattern: /^gpt-4o/i, pricing: { input: 2.50, output: 10.00 } },
     { pattern: /^o1-mini/i, pricing: { input: 3.00, output: 12.00 } },
     { pattern: /^o1/i, pricing: { input: 15.00, output: 60.00 } },
     { pattern: /^o3-mini/i, pricing: { input: 1.10, output: 4.40 } },
+    { pattern: /^o3/i, pricing: { input: 10.00, output: 40.00 } },
     { pattern: /^gpt-4-turbo/i, pricing: { input: 10.00, output: 30.00 } },
     { pattern: /^gpt-4-32k/i, pricing: { input: 60.00, output: 120.00 } },
     { pattern: /^gpt-4/i, pricing: { input: 30.00, output: 60.00 } },
     { pattern: /^gpt-3\.5-turbo-16k/i, pricing: { input: 3.00, output: 4.00 } },
     { pattern: /^gpt-3\.5/i, pricing: { input: 0.50, output: 1.50 } },
     
-    // Anthropic
+    // Anthropic - order matters (more specific first)
+    { pattern: /^claude-4\.5-opus|^claude-opus-4\.5/i, pricing: { input: 15.00, output: 75.00 } },
+    { pattern: /^claude-4\.5-sonnet|^claude-sonnet-4\.5/i, pricing: { input: 3.00, output: 15.00 } },
+    { pattern: /^claude-4-opus|^claude-opus-4/i, pricing: { input: 15.00, output: 75.00 } },
+    { pattern: /^claude-4-sonnet|^claude-sonnet-4/i, pricing: { input: 3.00, output: 15.00 } },
+    { pattern: /^claude-4/i, pricing: { input: 3.00, output: 15.00 } },
     { pattern: /^claude-3-5-sonnet/i, pricing: { input: 3.00, output: 15.00 } },
     { pattern: /^claude-3-5-haiku/i, pricing: { input: 0.80, output: 4.00 } },
     { pattern: /^claude-3-opus/i, pricing: { input: 15.00, output: 75.00 } },
     { pattern: /^claude-3-sonnet/i, pricing: { input: 3.00, output: 15.00 } },
     { pattern: /^claude-3-haiku/i, pricing: { input: 0.25, output: 1.25 } },
-    { pattern: /^claude-sonnet-4/i, pricing: { input: 3.00, output: 15.00 } },
-    { pattern: /^claude-opus-4/i, pricing: { input: 15.00, output: 75.00 } },
+    { pattern: /^claude.*opus/i, pricing: { input: 15.00, output: 75.00 } },
+    { pattern: /^claude.*sonnet/i, pricing: { input: 3.00, output: 15.00 } },
+    { pattern: /^claude.*haiku/i, pricing: { input: 0.80, output: 4.00 } },
     { pattern: /^claude/i, pricing: { input: 3.00, output: 15.00 } }, // Default Claude
     
-    // Google
+    // Google - order matters (more specific first)
+    { pattern: /^gemini-3.*ultra/i, pricing: { input: 5.00, output: 20.00 } },
+    { pattern: /^gemini-3.*pro/i, pricing: { input: 2.00, output: 8.00 } },
+    { pattern: /^gemini-3.*flash/i, pricing: { input: 0.15, output: 0.60 } },
+    { pattern: /^gemini-3/i, pricing: { input: 2.00, output: 8.00 } },
+    { pattern: /^gemini-2\.5-pro/i, pricing: { input: 1.50, output: 6.00 } },
+    { pattern: /^gemini-2\.5/i, pricing: { input: 0.10, output: 0.40 } },
     { pattern: /^gemini-2\.0/i, pricing: { input: 0.10, output: 0.40 } },
+    { pattern: /^gemini-2/i, pricing: { input: 0.10, output: 0.40 } },
     { pattern: /^gemini-1\.5-pro/i, pricing: { input: 1.25, output: 5.00 } },
     { pattern: /^gemini-1\.5-flash-8b/i, pricing: { input: 0.0375, output: 0.15 } },
     { pattern: /^gemini-1\.5-flash/i, pricing: { input: 0.075, output: 0.30 } },
-    { pattern: /^gemini/i, pricing: { input: 0.50, output: 1.50 } }, // Default Gemini
+    { pattern: /^gemini.*ultra/i, pricing: { input: 5.00, output: 20.00 } },
+    { pattern: /^gemini.*pro/i, pricing: { input: 1.25, output: 5.00 } },
+    { pattern: /^gemini.*flash/i, pricing: { input: 0.075, output: 0.30 } },
+    { pattern: /^gemini/i, pricing: { input: 1.25, output: 5.00 } }, // Default Gemini
     
     // xAI
     { pattern: /^grok-2/i, pricing: { input: 2.00, output: 10.00 } },
