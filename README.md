@@ -9,8 +9,8 @@ const openai = new OpenAI({
   apiKey: 'sk-xxx',
   baseURL: 'https://api.airatelimit.com/v1',  // ← Point to our proxy
   defaultHeaders: {
-    'x-project-key': 'pk_xxx',   // Your project key
-    'x-identity': 'user-123',     // User ID for rate limiting
+    'x-project-key': 'pk_xxx',              // From dashboard
+    'x-identity': getCurrentUserId(),        // Your user's ID (for per-user limits)
   },
 });
 
@@ -108,8 +108,10 @@ Your App → Our Proxy → OpenAI/Anthropic/etc.
 |--------|-------------|---------|
 | `Authorization` | Your AI provider API key | `Bearer sk-xxx` |
 | `x-project-key` | Your project key from dashboard | `pk_abc123` |
-| `x-identity` | User/session/device ID for tracking | `user-123` |
+| `x-identity` | Your user's ID (from your app) | `user_abc`, `session_xyz` |
 | `x-tier` | (Optional) Pricing tier | `free`, `pro` |
+
+> **`x-identity`** is whatever you use to identify users in your app—a user ID, session ID, or device ID. Each identity gets its own usage limits.
 
 ## Key Features
 
