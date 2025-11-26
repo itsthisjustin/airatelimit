@@ -235,7 +235,3 @@ Security events store:
 - ✅ Identity, timestamp, pattern type
 - ❌ Never store full message content (only 100-char preview)
 - ✅ GDPR/CCPA compliant
-
-## License
-
-Security features are included in the core AI Ratelimit package under the FSL-1.1-MIT license.

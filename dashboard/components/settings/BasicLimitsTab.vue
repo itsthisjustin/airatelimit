@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-4">
     <!-- Transparent Proxy Mode Info -->
-    <div class="mx-6 mt-4 bg-blue-300/10 border border-blue-300/20 rounded-lg p-4">
+    <!-- <div class="mx-6 mt-4 bg-blue-300/10 border border-blue-300/20 rounded-lg p-4">
       <div class="flex">
         <svg class="w-5 h-5 text-blue-300 mt-0.5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -18,7 +18,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- Basic Limits Form -->
     <form @submit.prevent="$emit('update')" class="space-y-4 px-6">

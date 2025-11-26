@@ -34,7 +34,7 @@
         <!-- Main Heading -->
          <div class="mb-12">
           <h1 class="mb-5 text-3xl font-bold sm:mb-6 sm:text-5xl leading-tight text-white">
-            <span class="text-blue-300">Usage limits and tier-based</span><br />pricing for AI APIs
+            <span class="text-blue-300">Usage limits</span> for AI apps
           </h1>
           
           <!-- Subheading -->
