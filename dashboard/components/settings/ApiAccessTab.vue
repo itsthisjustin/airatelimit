@@ -19,7 +19,7 @@
         <code class="flex-1 px-4 py-3 font-mono text-sm text-white">{{ project.projectKey }}</code>
         <button
           @click="copyKey(project.projectKey, 'Project key copied!')"
-          class="px-4 py-3 bg-gray-500/10 hover:bg-gray-500/20 text-white transition-colors border-l border-gray-500/10"
+          class="px-2.5 py-2 mr-2 rounded-lg bg-transparent hover:bg-gray-500/10 text-white transition-colors"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -27,7 +27,7 @@
         </button>
       </div>
       <p class="text-xs text-gray-500">
-        Use in your app: <code class="bg-gray-500/20 px-1 rounded">x-project-key: {{ project.projectKey }}</code>
+        Use in your app: <code class="bg-gray-500/20 px-1 py-1 rounded text-white">x-project-key: {{ project.projectKey }}</code>
       </p>
     </div>
 
@@ -43,7 +43,7 @@
         </code>
         <button
           @click="showSecretKey = !showSecretKey"
-          class="px-3 py-3 bg-transparent hover:bg-gray-500/10 text-gray-400 transition-colors"
+          class="px-2.5 py-2 mr-2 rounded-lg bg-transparent hover:bg-gray-500/10 text-gray-400 transition-colors"
           :title="showSecretKey ? 'Hide' : 'Show'"
         >
           <svg v-if="showSecretKey" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,7 +57,7 @@
         <button
           v-if="project.secretKey"
           @click="copyKey(project.secretKey, 'Secret key copied!')"
-          class="px-3 py-3 bg-transparent hover:bg-gray-500/10 text-white transition-colors border-l border-gray-500/10"
+          class="px-2.5 py-2 mr-2 rounded-lg bg-transparent hover:bg-gray-500/10 text-white transition-colors"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -65,7 +65,7 @@
         </button>
       </div>
       <p class="text-xs text-gray-500">
-        For programmatic API access: <code class="bg-gray-500/20 px-1 rounded">Authorization: Bearer sk_xxx</code>
+        For programmatic API access: <code class="bg-gray-500/20 px-1 py-1 rounded text-white">Authorization: Bearer sk_xxx</code>
       </p>
     </div>
 
@@ -79,7 +79,7 @@
         <button
           @click="regenerateSecretKey"
           :disabled="regenerating"
-          class="px-4 py-2 bg-red-500/10 text-red-400 text-sm font-medium rounded-lg hover:bg-red-500/20 disabled:opacity-50 transition-colors"
+          class="px-4 py-2 bg-gray-500/10 border border-gray-500/10 text-gray-400 text-sm font-medium rounded-lg hover:bg-gray-500/15 hover:text-white disabled:opacity-50 transition-colors"
         >
           {{ regenerating ? 'Regenerating...' : 'Regenerate' }}
         </button>

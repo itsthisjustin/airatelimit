@@ -3,7 +3,7 @@
     <!-- Security Header -->
     <div class="bg-gray-500/10 border border-gray-500/10 rounded-lg p-4">
       <h3 class="font-semibold text-white mb-2">Prompt Injection Protection</h3>
-      <p class="text-sm text-white">
+      <p class="text-sm text-gray-400">
         Protect your system prompts from being extracted or leaked through prompt injection attacks. 
         Enable intelligent detection and blocking of malicious patterns.
       </p>

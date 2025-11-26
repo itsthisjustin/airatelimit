@@ -3,8 +3,8 @@
     <!-- Info Box -->
     <div class="bg-gray-500/10 border border-gray-500/10 rounded-lg p-4">
       <h3 class="font-semibold text-white mb-2">Per-Identity Limits</h3>
-      <p class="text-sm text-white mb-2">
-        Override limits for <strong>specific users</strong> or <strong>identities</strong>.
+      <p class="text-sm text-gray-400 mb-2">
+        Override limits for <strong class="text-white">specific users</strong> or <strong class="text-white">identities</strong>.
         These take priority over tier and project-level limits.
       </p>
       <div class="mt-3 p-3 bg-gray-500/5 border border-gray-500/10 rounded-lg font-mono text-xs text-gray-300">
