@@ -56,7 +56,7 @@
               <div>
                 <label class="block text-sm font-medium text-gray-400 mb-2">Add to your app</label>
                 <div class="relative">
-                  <pre class="bg-gray-900 border border-gray-500/20 rounded-lg p-4 overflow-x-auto text-sm"><code class="text-gray-300"><span class="text-blue-300">import</span> OpenAI <span class="text-blue-300">from</span> <span class="text-green-300">'openai'</span>;
+                  <pre class="bg-black border border-gray-500/20 rounded-lg p-4 overflow-x-auto text-sm"><code class="text-gray-300"><span class="text-blue-300">import</span> OpenAI <span class="text-blue-300">from</span> <span class="text-green-300">'openai'</span>;
 
 <span class="text-blue-300">const</span> openai = <span class="text-blue-300">new</span> <span class="text-yellow-300">OpenAI</span>({
   <span class="text-white">apiKey</span>: <span class="text-green-300">'sk-your-openai-key'</span>,
@@ -68,7 +68,7 @@
 });</code></pre>
                   <button
                     @click="copyIntegrationCode"
-                    class="absolute top-2 right-2 px-2 py-1 bg-gray-700 hover:bg-gray-600 text-xs text-white rounded transition-colors"
+                    class="absolute top-2 right-2 px-2 py-1 bg-gray-500/15 hover:bg-gray-500/20 text-xs text-white rounded transition-colors"
                   >
                     {{ copied ? '✓ Copied' : 'Copy' }}
                   </button>

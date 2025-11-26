@@ -192,8 +192,8 @@
               </div>
 
               <!-- Curl Command -->
-              <div class="relative">
-                <pre class="bg-gray-900 border border-gray-500/20 rounded-lg p-4 overflow-x-auto text-xs"><code class="text-gray-300">curl https://api.airatelimit.com/v1/chat/completions \
+              <div class="relative max-w-lg mx-auto">
+                <pre class="bg-black border border-gray-500/20 rounded-lg p-4 overflow-x-auto text-xs"><code class="text-gray-300">curl https://api.airatelimit.com/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer sk-your-openai-key" \
   -H "x-project-key: <span class="text-blue-300">{{ project.projectKey }}</span>" \
@@ -204,14 +204,14 @@
   }'</code></pre>
                 <button
                   @click="copyCurlCommand"
-                  class="absolute top-2 right-2 px-2 py-1 bg-gray-700 hover:bg-gray-600 text-xs text-white rounded transition-colors"
+                  class="absolute top-2 right-2 px-2 py-1 bg-gray-500/15 hover:bg-gray-500/20 text-xs text-white rounded transition-colors"
                 >
                   {{ curlCopied ? '✓ Copied' : 'Copy' }}
                 </button>
               </div>
 
               <p class="text-center text-gray-500 text-xs">
-                Replace <code class="bg-gray-500/20 px-1 rounded">sk-your-openai-key</code> with your actual API key
+                Replace <code class="bg-gray-500/20 px-1 py-0.5 rounded text-white">sk-your-openai-key</code> with your actual API key
               </p>
             </div>
             <div v-else class="overflow-x-auto">
