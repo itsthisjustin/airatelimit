@@ -19,7 +19,7 @@
         <button
           type="button"
           @click="editForm.securityEnabled = !editForm.securityEnabled"
-          :class="editForm.securityEnabled ? 'bg-blue-300' : 'bg-gray-600'"
+          :class="editForm.securityEnabled ? 'bg-blue-300' : 'bg-gray-500/20'"
           class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors"
         >
           <span
@@ -33,27 +33,55 @@
       <div v-if="editForm.securityEnabled" class="mt-4 pt-4 border-t border-gray-500/20">
         <label class="block text-sm font-medium text-white mb-3">When threats are detected</label>
         <div class="space-y-2">
-          <label class="flex items-start gap-3 p-3 bg-gray-500/10 border border-gray-500/20 rounded-lg cursor-pointer hover:bg-gray-500/15 transition-colors">
-            <input
-              type="radio"
-              name="securityMode"
-              value="block"
-              v-model="editForm.securityMode"
-              class="mt-0.5 w-4 h-4 text-blue-300 border-gray-500 focus:ring-blue-300/50"
-            />
+          <label 
+            :class="editForm.securityMode === 'block' ? 'border-blue-300/50 bg-blue-300/5' : 'border-gray-500/10 bg-gray-500/5 hover:bg-gray-500/10'"
+            class="flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-all"
+          >
+            <div class="relative flex items-center justify-center mt-0.5">
+              <input
+                type="radio"
+                name="securityMode"
+                value="block"
+                v-model="editForm.securityMode"
+                class="sr-only"
+              />
+              <div 
+                :class="editForm.securityMode === 'block' ? 'border-blue-300' : 'border-gray-500'"
+                class="w-4 h-4 rounded-full border-2 transition-colors"
+              >
+                <div 
+                  v-if="editForm.securityMode === 'block'"
+                  class="w-2 h-2 m-0.5 rounded-full bg-blue-300"
+                ></div>
+              </div>
+            </div>
             <div>
               <span class="text-sm font-medium text-white">Block request</span>
               <p class="text-xs text-gray-400">Reject suspicious requests with an error</p>
             </div>
           </label>
-          <label class="flex items-start gap-3 p-3 bg-gray-500/10 border border-gray-500/20 rounded-lg cursor-pointer hover:bg-gray-500/15 transition-colors">
-            <input
-              type="radio"
-              name="securityMode"
-              value="log"
-              v-model="editForm.securityMode"
-              class="mt-0.5 w-4 h-4 text-blue-300 border-gray-500 focus:ring-blue-300/50"
-            />
+          <label 
+            :class="editForm.securityMode === 'log' ? 'border-blue-300/50 bg-blue-300/5' : 'border-gray-500/10 bg-gray-500/5 hover:bg-gray-500/10'"
+            class="flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-all"
+          >
+            <div class="relative flex items-center justify-center mt-0.5">
+              <input
+                type="radio"
+                name="securityMode"
+                value="log"
+                v-model="editForm.securityMode"
+                class="sr-only"
+              />
+              <div 
+                :class="editForm.securityMode === 'log' ? 'border-blue-300' : 'border-gray-500'"
+                class="w-4 h-4 rounded-full border-2 transition-colors"
+              >
+                <div 
+                  v-if="editForm.securityMode === 'log'"
+                  class="w-2 h-2 m-0.5 rounded-full bg-blue-300"
+                ></div>
+              </div>
+            </div>
             <div>
               <span class="text-sm font-medium text-white">Log only</span>
               <p class="text-xs text-gray-400">Allow request but record the attempt</p>
@@ -72,7 +100,7 @@
           <button
             type="button"
             @click="editForm.securityHeuristicsEnabled = !editForm.securityHeuristicsEnabled"
-            :class="editForm.securityHeuristicsEnabled ? 'bg-blue-300' : 'bg-gray-600'"
+            :class="editForm.securityHeuristicsEnabled ? 'bg-blue-300' : 'bg-gray-500/20'"
             class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors"
           >
             <span
@@ -90,7 +118,7 @@
           <div
             v-for="category in securityCategories"
             :key="category.id"
-            class="flex items-start gap-3 p-3 bg-gray-500/10 border border-gray-500/20 rounded-lg"
+            class="flex items-start gap-3 p-3 bg-gray-500/5 border border-gray-500/10 rounded-lg"
           >
             <input
               type="checkbox"
