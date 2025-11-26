@@ -3,7 +3,7 @@
     class="bg-gray-500/10 border border-gray-500/10 p-4 rounded-lg shadow-md hover:shadow-xl transition-all duration-200 hover:border-gray-500/15 relative group"
   >
     <!-- Quick Actions Menu -->
-    <div class="absolute top-4 right-4">
+    <div class="absolute top-3 right-1">
       <button
         @click.prevent="toggleMenu"
         class="p-1.5 rounded-lg hover:bg-gray-500/10 transition-colors"
@@ -50,7 +50,7 @@
     </div>
 
     <!-- Status Badge -->
-    <div class="mb-3">
+    <!-- <div class="mb-3">
       <span
         :class="[
           'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
@@ -60,7 +60,7 @@
         <span :class="['w-1.5 h-1.5 rounded-full mr-1.5', statusBadge.dotClass]"></span>
         {{ statusBadge.text }}
       </span>
-    </div>
+    </div> -->
 
     <!-- Click to view details -->
     <NuxtLink :to="`/projects/${project.id}`" class="block">
