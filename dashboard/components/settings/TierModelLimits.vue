@@ -26,7 +26,7 @@
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block text-xs text-gray-400 mb-1">Requests</label>
-            <div class="flex items-center space-x-1">
+            <div class="flex items-center space-x-2">
               <input
                 v-model.number="modelLimit.requestLimit"
                 type="number"
@@ -34,19 +34,33 @@
                 :disabled="modelLimit.requestLimit === -1"
                 class="flex-1 px-2 py-1 text-xs text-white bg-gray-500/10 border border-gray-500/10 rounded disabled:opacity-50"
               />
-              <label class="flex items-center cursor-pointer" title="Unlimited">
+              <label class="flex items-center cursor-pointer group" title="Unlimited">
                 <input
                   type="checkbox"
                   :checked="modelLimit.requestLimit === -1"
                   @change="modelLimit.requestLimit = ($event.target as HTMLInputElement).checked ? -1 : 0"
-                  class="w-3 h-3 rounded border-gray-500/20 bg-gray-500/10 text-blue-300"
+                  class="sr-only"
                 />
+                <div 
+                  :class="modelLimit.requestLimit === -1 ? 'bg-blue-300 border-blue-300' : 'border-gray-500 bg-transparent group-hover:border-gray-400'"
+                  class="w-3.5 h-3.5 rounded border-2 transition-all flex items-center justify-center"
+                >
+                  <svg 
+                    v-if="modelLimit.requestLimit === -1"
+                    class="w-2 h-2 text-black" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
               </label>
             </div>
           </div>
           <div>
             <label class="block text-xs text-gray-400 mb-1">Tokens</label>
-            <div class="flex items-center space-x-1">
+            <div class="flex items-center space-x-2">
               <input
                 v-model.number="modelLimit.tokenLimit"
                 type="number"
@@ -54,13 +68,27 @@
                 :disabled="modelLimit.tokenLimit === -1"
                 class="flex-1 px-2 py-1 text-xs text-white bg-gray-500/10 border border-gray-500/10 rounded disabled:opacity-50"
               />
-              <label class="flex items-center cursor-pointer" title="Unlimited">
+              <label class="flex items-center cursor-pointer group" title="Unlimited">
                 <input
                   type="checkbox"
                   :checked="modelLimit.tokenLimit === -1"
                   @change="modelLimit.tokenLimit = ($event.target as HTMLInputElement).checked ? -1 : 0"
-                  class="w-3 h-3 rounded border-gray-500/20 bg-gray-500/10 text-blue-300"
+                  class="sr-only"
                 />
+                <div 
+                  :class="modelLimit.tokenLimit === -1 ? 'bg-blue-300 border-blue-300' : 'border-gray-500 bg-transparent group-hover:border-gray-400'"
+                  class="w-3.5 h-3.5 rounded border-2 transition-all flex items-center justify-center"
+                >
+                  <svg 
+                    v-if="modelLimit.tokenLimit === -1"
+                    class="w-2 h-2 text-black" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
               </label>
             </div>
           </div>
