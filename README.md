@@ -16,7 +16,7 @@ Your App → AI Ratelimit → OpenAI / Anthropic / Google / Any AI
 ```diff
 - baseURL: 'https://api.openai.com/v1'
 + baseURL: 'https://api.airatelimit.com/v1'
-+ headers: { 'x-project-key': 'pk_xxx', 'x-identity': userId }
++ headers: { 'x-project-key': 'pk_xxx', 'x-identity': userId, 'x-tier': 'free' }
 ```
 
 That's it. Works with any AI provider.
@@ -146,13 +146,8 @@ Protect your system prompts from extraction attacks:
 - Prevents instruction override attacks
 - Logs all security events
 
-### Multi-Provider Support
-Works with any OpenAI-compatible API:
-- OpenAI (GPT-4o, o1, etc.)
-- Anthropic (Claude 3.5 Sonnet)
-- Google (Gemini 2.5)
-- xAI (Grok)
-- Together.ai, Groq, Perplexity, etc.
+### Works With Any AI
+We just forward your requests. Use any OpenAI-compatible API, we handle the rest.
 
 ### Privacy-First
 - Never stores prompts or responses
@@ -256,7 +251,7 @@ gpt-4o: 5 requests (expensive)
 
 ## Language Examples
 
-All providers (OpenAI, Anthropic, Google, xAI) use the **OpenAI SDK format**. Just change the model name and API key.
+Use the OpenAI SDK. Just change the model name and API key—we forward to the right place.
 
 ### Python
 
@@ -305,7 +300,7 @@ const openai = new OpenAI({
 
 ### Anthropic / Claude
 
-> **Note:** All providers use the OpenAI SDK format. We automatically route to the correct provider based on the model name.
+> Use the same OpenAI SDK—just change the model name and API key.
 
 ```typescript
 import OpenAI from 'openai';
@@ -319,9 +314,8 @@ const client = new OpenAI({
   },
 });
 
-// Claude models are automatically routed to Anthropic's API
 const response = await client.chat.completions.create({
-  model: 'claude-3-5-sonnet-20241022',
+  model: 'claude-3-5-sonnet-20241022',  // Just change the model
   messages: [{ role: 'user', content: 'Hello!' }],
 });
 ```
