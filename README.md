@@ -5,9 +5,9 @@ Add usage limits to your AI app in 5 minutes. Track usage per user, set limits p
 ```typescript
 import OpenAI from 'openai';
 
-// Use your existing OpenAI SDK - just change the base URL
-const openai = new OpenAI({
-  apiKey: 'sk-your-key',  // Your key - we never store it
+// Works with ANY provider using the OpenAI SDK
+const client = new OpenAI({
+  apiKey: 'sk-your-key',  // Your API key (OpenAI, Anthropic, etc.) - we never store it
   baseURL: 'https://api.airatelimit.com/v1',
   defaultHeaders: {
     'x-project-key': 'pk_xxx',   // From dashboard
@@ -16,9 +16,9 @@ const openai = new OpenAI({
   },
 });
 
-// That's it! Use your SDK as normal
-const response = await openai.chat.completions.create({
-  model: 'gpt-4o',
+// Use any model - we route to the right provider automatically
+const response = await client.chat.completions.create({
+  model: 'gpt-4o',  // or 'claude-3-5-sonnet-20241022', 'gemini-1.5-pro', etc.
   messages: [{ role: 'user', content: 'Hello!' }],
 });
 ```
@@ -256,6 +256,8 @@ gpt-4o: 5 requests (expensive)
 
 ## Language Examples
 
+All providers (OpenAI, Anthropic, Google, xAI) use the **OpenAI SDK format**. Just change the model name and API key.
+
 ### Python
 
 ```python
@@ -301,13 +303,15 @@ const openai = new OpenAI({
 });
 ```
 
-### Anthropic (via OpenAI SDK)
+### Anthropic / Claude
+
+> **Note:** All providers use the OpenAI SDK format. We automatically route to the correct provider based on the model name.
 
 ```typescript
 import OpenAI from 'openai';
 
-const anthropic = new OpenAI({
-  apiKey: 'sk-ant-your-key',
+const client = new OpenAI({
+  apiKey: 'sk-ant-your-key',  // Your Anthropic API key
   baseURL: 'https://api.airatelimit.com/v1',
   defaultHeaders: {
     'x-project-key': 'pk_xxx',
@@ -315,7 +319,8 @@ const anthropic = new OpenAI({
   },
 });
 
-const response = await anthropic.chat.completions.create({
+// Claude models are automatically routed to Anthropic's API
+const response = await client.chat.completions.create({
   model: 'claude-3-5-sonnet-20241022',
   messages: [{ role: 'user', content: 'Hello!' }],
 });
