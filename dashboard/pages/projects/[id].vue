@@ -300,7 +300,7 @@ const settingsDropdownRef = ref(null)
 // Dynamic page title based on project name
 const pageTitle = computed(() => {
   if (project.value?.name) {
-    return `${project.value.name} - Projects - AI Ratelimit`
+    return `${project.value.name} - AI Ratelimit`
   }
   return 'Project Details - AI Ratelimit'
 })

@@ -34,7 +34,7 @@
 
 <script setup lang="ts">
 useHead({
-  title: 'Verifying - AI Rate Limiting'
+  title: 'Verifying - AI Ratelimit'
 })
 
 const route = useRoute()
