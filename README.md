@@ -1,25 +1,24 @@
 # AI Ratelimit
 
-Add usage limits to your AI app in 5 minutes. Track usage per user, set limits per model, create pricing tiers—all without storing prompts or API keys.
+Add usage limits to your AI app in 5 minutes.
 
-```typescript
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  apiKey: 'sk-xxx',
-  baseURL: 'https://api.airatelimit.com/v1',  // ← Point to our proxy
-  defaultHeaders: {
-    'x-project-key': 'pk_xxx',              // From dashboard
-    'x-identity': getCurrentUserId(),        // Your user's ID (for per-user limits)
-  },
-});
-
-// Use normally - we track usage and enforce limits
-const response = await openai.chat.completions.create({
-  model: 'gpt-4o',
-  messages: [{ role: 'user', content: 'Hello!' }],
-});
 ```
+Your App → AI Ratelimit → OpenAI / Anthropic / Google / Any AI
+                ↓
+          Check limits
+          Track usage
+          Forward request
+```
+
+**How it works:** Point your AI requests at our proxy. We check limits, then forward to the real API. Your API key passes through—we never store it.
+
+```diff
+- baseURL: 'https://api.openai.com/v1'
++ baseURL: 'https://api.airatelimit.com/v1'
++ headers: { 'x-project-key': 'pk_xxx', 'x-identity': userId }
+```
+
+That's it. Works with any AI provider.
 
 ## Why?
 
