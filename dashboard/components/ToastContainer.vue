@@ -54,10 +54,10 @@
 const { toasts, removeToast } = useToast()
 
 const toastStyles = {
-  success: 'bg-green-50 text-green-800 border border-green-200',
-  error: 'bg-red-50 text-red-800 border border-red-200',
-  warning: 'bg-yellow-50 text-yellow-800 border border-yellow-200',
-  info: 'bg-blue-50 text-blue-800 border border-blue-200',
+  success: 'bg-black text-green-300 border border-green-300/20',
+  error: 'bg-black text-red-400 border border-red-400/20',
+  warning: 'bg-black text-yellow-300 border border-yellow-300/20',
+  info: 'bg-black text-blue-300 border border-blue-300/20',
 }
 </script>
 
