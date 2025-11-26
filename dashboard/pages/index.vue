@@ -86,9 +86,9 @@
               <!-- API Tab -->
               <pre v-if="activeTab === 'api'" class="text-sm text-gray-300 font-mono leading-relaxed"><code><span class="text-gray-500">$</span> curl -X POST <span class="text-blue-300">https://api.airatelimit.com/v1/chat/completions</span> \
   -H <span class="text-green-300">"Authorization: Bearer sk-your-key"</span> \
-  -H <span class="text-green-300">"x-project-key: pk_xxx"</span> \
-  -H <span class="text-green-300">"x-identity: user-123"</span> \
-  -H <span class="text-green-300">"x-tier: free"</span> \
+  -H <span class="text-blue-300">"x-project-key: pk_xxx"</span> \
+  -H <span class="text-blue-300">"x-identity: user-123"</span> \
+  -H <span class="text-blue-300">"x-tier: free"</span> \
   -H <span class="text-green-300">"Content-Type: application/json"</span> \
   -d <span class="text-green-300">'{
     "model": "gpt-4o",
@@ -170,7 +170,7 @@
 
 <script setup lang="ts">
 useHead({
-  title: 'AI Ratelimit - Usage limits and tier-based pricing for AI APIs'
+  title: 'AI Ratelimit - Usage limits for AI apps'
 })
 
 type TabId = 'javascript' | 'api'
