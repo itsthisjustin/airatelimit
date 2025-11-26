@@ -29,23 +29,25 @@
     </nav>
 
     <!-- Hero Section -->
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24 antialiased">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24 antialiased">
       <div class="text-center">
         <!-- Main Heading -->
          <div class="mb-12">
-          <h1 class="mb-5 text-3xl font-bold sm:mb-6 sm:text-5xl leading-tight text-white">
+          <h1 class="mx-auto w-full text-balance text-center font-semibold tracking-tight text-white max-w-3xl text-2xl !leading-[1.2] sm:text-4xl md:text-5xl">
             <span class="text-blue-300">Usage limits</span> for AI apps
           </h1>
           
           <!-- Subheading -->
-          <p class="text-gray-400 text-sm leading-[1.6] sm:text-base">
-            Track usage, enforce limits, and monetize your AI app without storing conversations
+          <p class="font-normal text-center text-gray-400 max-w-xl mx-auto mb-1 sm:mt-4 text-pretty text-base sm:text-lg sm:leading-6">
+            Track usage, enforce limits, and monetize your AI app without storing conversations.
           </p>
         </div>
         
         <!-- Code Snippet -->
-        <div class="max-w-3xl mx-auto mb-12">
-          <div class="bg-gray-500/10 border border-gray-500/10 rounded-xl font-mono overflow-hidden shadow-2xl relative">
+        <div class="mb-12 relative z-10">
+          <div class="bg-gray-500/10 inner-container mb-[-1px] ml-[-1px] relative border border-gray-500/10 font-mono">
+            <div class="divide-y divide-gray-500/15">
+              <div class="border-b-0 border-t-0 border-l-0 border-r-0 border-gray-500/10">
             <!-- Terminal Header -->
             <div class="border-b border-gray-500/10 flex items-center space-x-3 text-xs">
               <button 
@@ -97,7 +99,7 @@
               
               <button 
                 @click="copyCode"
-                class="absolute top-20 right-6 p-2 text-gray-500 hover:text-white transition"
+                class="absolute top-20 right-6 p-2 text-gray-500 hover:text-white transition cursor-pointer"
                 :class="{ 'text-green-300': copied }"
               >
                 <svg v-if="!copied" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -108,6 +110,20 @@
                 </svg>
               </button>
             </div>
+          </div>
+          </div>
+          <span
+						class="main-section bottom-l absolute w-[1px] h-[1px] bottom-[-1px] left-[-1px]"
+					></span
+					><span
+						class="main-section bottom-l absolute w-[1px] h-[1px] bottom-[-1px] right-[-1px]"
+					></span
+					><span
+						class="main-section bottom-l absolute w-[1px] h-[1px] top-[-1px] right-[-1px]"
+					></span
+					><span
+						class="main-section bottom-l absolute w-[1px] h-[1px] top-[-1px] left-[-1px]"
+					></span>
           </div>
         </div>
       </div>

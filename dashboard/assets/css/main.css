@@ -12,9 +12,9 @@ html {
 	line-height: 1.5;
 }
 
-.jetmono {
+/* .jetmono {
 	font-family: "JetBrains Mono", "SFMono-Regular", "Menlo", "Consolas", "ui-monospace", "Monaco", "Courier New", monospace;
-}
+} */
 
 body, html {
 	@apply bg-black w-full;
