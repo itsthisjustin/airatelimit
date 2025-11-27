@@ -1,23 +1,26 @@
 <template>
-  <div class="budget-limit-node">
+  <div class="check-limit-node">
     <Handle type="target" :position="Position.Top" class="handle-top" />
     
-    <div class="node-badge">BUDGET LIMIT</div>
+    <div class="node-badge">CHECK LIMIT</div>
     <div class="node-content">
       <div class="node-icon">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"/>
-          <path d="M12 6v12M9 10h6M9 14h6"/>
+          <polyline points="12 6 12 12 16 14"/>
         </svg>
       </div>
       
       <div class="config">
         <div class="config-row">
-          <span class="config-label">On</span>
-          <select v-model="data.identifier" class="config-select">
+          <select v-model="data.limitType" class="config-select">
+            <option value="requests">Requests</option>
+            <option value="tokens">Tokens</option>
+          </select>
+          <span class="config-label">per</span>
+          <select v-model="data.scope" class="config-select">
             <option value="identity">identity</option>
             <option value="session">session</option>
-            <option value="project">project</option>
           </select>
         </div>
         <div class="config-row">
@@ -26,16 +29,11 @@
             type="number" 
             class="config-number"
           />
-          <select v-model="data.currency" class="config-select-sm">
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-          </select>
-          <span class="config-unit">/</span>
-          <select v-model="data.window" class="config-select-sm">
-            <option value="min">min</option>
+          <span class="config-label">/</span>
+          <select v-model="data.period" class="config-select-sm">
+            <option value="minute">min</option>
             <option value="hour">hour</option>
             <option value="day">day</option>
-            <option value="month">month</option>
           </select>
         </div>
       </div>
@@ -43,11 +41,12 @@
 
     <div class="outputs">
       <div class="output">
+        <span class="output-label pass">Within Limit</span>
         <Handle id="pass" type="source" :position="Position.Bottom" class="handle-pass" />
       </div>
       <div class="output">
-        <span class="output-label">Fallback</span>
-        <Handle id="fallback" type="source" :position="Position.Right" class="handle-fallback" />
+        <span class="output-label exceeded">Exceeded</span>
+        <Handle id="exceeded" type="source" :position="Position.Bottom" class="handle-exceeded" />
       </div>
     </div>
   </div>
@@ -58,17 +57,17 @@ import { Handle, Position } from '@vue-flow/core'
 
 defineProps<{
   data: { 
+    limitType: 'requests' | 'tokens'
+    scope: 'identity' | 'session'
     limit: number
-    currency: string
-    window: string
-    identifier: string
+    period: string
   }
 }>()
 </script>
 
 <style scoped>
-.budget-limit-node {
-  @apply relative bg-gray-900/95 border border-amber-500/40 rounded-xl px-4 py-3 min-w-[200px];
+.check-limit-node {
+  @apply relative bg-gray-900/95 border border-amber-500/40 rounded-xl px-4 py-3 min-w-[220px];
   @apply shadow-lg shadow-amber-500/10;
 }
 
@@ -94,7 +93,7 @@ defineProps<{
 }
 
 .config-label {
-  @apply text-gray-400;
+  @apply text-gray-500;
 }
 
 .config-select, .config-select-sm {
@@ -107,24 +106,28 @@ defineProps<{
 }
 
 .config-number {
-  @apply bg-gray-800/80 border border-gray-700/50 rounded px-1.5 py-0.5 text-white text-xs w-12;
+  @apply bg-gray-800/80 border border-gray-700/50 rounded px-1.5 py-0.5 text-white text-xs w-16;
   @apply focus:outline-none focus:border-amber-500/50;
 }
 
-.config-unit {
-  @apply text-gray-500;
-}
-
 .outputs {
-  @apply flex justify-between items-center mt-3 pt-2 border-t border-gray-700/30;
+  @apply flex justify-between mt-3 pt-2 border-t border-gray-700/30;
 }
 
 .output {
-  @apply flex items-center gap-1;
+  @apply flex flex-col items-center gap-1;
 }
 
 .output-label {
-  @apply text-[10px] text-gray-500;
+  @apply text-[10px] font-medium px-2 py-0.5 rounded-full;
+}
+
+.output-label.pass {
+  @apply bg-emerald-500/20 text-emerald-400;
+}
+
+.output-label.exceeded {
+  @apply bg-rose-500/20 text-rose-400;
 }
 
 .handle-top {
@@ -132,11 +135,11 @@ defineProps<{
 }
 
 .handle-pass {
-  @apply !bg-amber-400 !border-2 !border-gray-900 !w-3 !h-3;
+  @apply !bg-emerald-400 !border-2 !border-gray-900 !w-3 !h-3 !relative !left-0 !transform-none;
 }
 
-.handle-fallback {
-  @apply !bg-rose-400 !border-2 !border-gray-900 !w-3 !h-3;
+.handle-exceeded {
+  @apply !bg-rose-400 !border-2 !border-gray-900 !w-3 !h-3 !relative !left-0 !transform-none;
 }
 </style>
 

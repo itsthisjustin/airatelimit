@@ -65,12 +65,10 @@ import '@vue-flow/controls/dist/style.css'
 import '@vue-flow/minimap/dist/style.css'
 
 import StartNode from './nodes/StartNode.vue'
-import SplitNode from './nodes/SplitNode.vue'
-import RateLimitNode from './nodes/RateLimitNode.vue'
-import BudgetLimitNode from './nodes/BudgetLimitNode.vue'
-import ResponseNode from './nodes/ResponseNode.vue'
-import ModelNode from './nodes/ModelNode.vue'
-import EndNode from './nodes/EndNode.vue'
+import CheckTierNode from './nodes/CheckTierNode.vue'
+import CheckLimitNode from './nodes/CheckLimitNode.vue'
+import LimitResponseNode from './nodes/LimitResponseNode.vue'
+import AllowNode from './nodes/AllowNode.vue'
 
 const props = defineProps<{
   projectId: string
@@ -83,15 +81,13 @@ const emit = defineEmits<{
 
 const { addEdges } = useVueFlow()
 
-// Custom node types
+// Custom node types - only what ai-ratelimit actually does
 const customNodeTypes = {
   start: markRaw(StartNode),
-  split: markRaw(SplitNode),
-  rateLimit: markRaw(RateLimitNode),
-  budgetLimit: markRaw(BudgetLimitNode),
-  response: markRaw(ResponseNode),
-  model: markRaw(ModelNode),
-  end: markRaw(EndNode),
+  checkTier: markRaw(CheckTierNode),
+  checkLimit: markRaw(CheckLimitNode),
+  limitResponse: markRaw(LimitResponseNode),
+  allow: markRaw(AllowNode),
 }
 
 // Node type definitions for toolbar
@@ -103,51 +99,37 @@ const nodeTypes = [
     icon: 'IconPlay'
   },
   { 
-    type: 'split', 
-    label: 'If/Else', 
+    type: 'checkTier', 
+    label: 'Check Tier', 
     color: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
-    icon: 'IconGitBranch'
+    icon: 'IconUsers'
   },
   { 
-    type: 'rateLimit', 
-    label: 'Rate Limit', 
-    color: 'bg-rose-500/20 text-rose-400 border-rose-500/30',
+    type: 'checkLimit', 
+    label: 'Check Limit', 
+    color: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
     icon: 'IconGauge'
   },
   { 
-    type: 'budgetLimit', 
-    label: 'Budget Limit', 
-    color: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-    icon: 'IconCoin'
+    type: 'limitResponse', 
+    label: 'Limit Response', 
+    color: 'bg-rose-500/20 text-rose-400 border-rose-500/30',
+    icon: 'IconBlock'
   },
   { 
-    type: 'response', 
-    label: 'Response', 
+    type: 'allow', 
+    label: 'Allow', 
     color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-    icon: 'IconMessage'
-  },
-  { 
-    type: 'model', 
-    label: 'Model', 
-    color: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
-    icon: 'IconCpu'
-  },
-  { 
-    type: 'end', 
-    label: 'End', 
-    color: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
-    icon: 'IconStop'
+    icon: 'IconCheck'
   },
 ]
 
 // Simple icon components
 const IconPlay = { template: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>' }
-const IconGitBranch = { template: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>' }
+const IconUsers = { template: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' }
 const IconGauge = { template: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>' }
-const IconCoin = { template: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M9 10h6M9 14h6"/></svg>' }
-const IconMessage = { template: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' }
-const IconCpu = { template: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg>' }
-const IconStop = { template: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="8" y="8" width="8" height="8" rx="1"/></svg>' }
+const IconBlock = { template: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>' }
+const IconCheck = { template: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>' }
 
 // Nodes and edges
 const nodes = ref(props.initialFlow?.nodes || [
@@ -167,7 +149,7 @@ const addNode = (type: string) => {
   const newNode = {
     id: `${type}-${nodeId++}`,
     type,
-    position: { x: 250, y: 100 + nodes.value.length * 100 },
+    position: { x: 250, y: 100 + nodes.value.length * 120 },
     data: getDefaultData(type)
   }
   nodes.value.push(newNode)
@@ -177,21 +159,21 @@ const getDefaultData = (type: string) => {
   switch (type) {
     case 'start':
       return { label: 'Request In' }
-    case 'split':
-      return { condition: 'tier', operator: '==', value: 'free' }
-    case 'rateLimit':
-      return { limit: 100, window: 'day', identifier: 'identity' }
-    case 'budgetLimit':
-      return { limit: 10, currency: 'USD', window: 'day', identifier: 'identity' }
-    case 'response':
+    case 'checkTier':
+      return { tiers: ['free', 'pro'] }
+    case 'checkLimit':
       return { 
-        status: 429, 
-        message: 'Rate limit exceeded', 
+        limitType: 'requests', 
+        scope: 'identity',
+        limit: 100,
+        period: 'day'
+      }
+    case 'limitResponse':
+      return { 
+        message: 'Rate limit exceeded. Upgrade to continue.',
         includeUpgradeUrl: true 
       }
-    case 'model':
-      return { provider: 'openai', model: 'gpt-4o-mini' }
-    case 'end':
+    case 'allow':
       return {}
     default:
       return {}
@@ -212,12 +194,10 @@ const onConnect = (params: any) => {
 const nodeColor = (node: any) => {
   const colors: Record<string, string> = {
     start: '#3b82f6',
-    split: '#a855f7',
-    rateLimit: '#f43f5e',
-    budgetLimit: '#f59e0b',
-    response: '#10b981',
-    model: '#06b6d4',
-    end: '#6b7280',
+    checkTier: '#a855f7',
+    checkLimit: '#f59e0b',
+    limitResponse: '#f43f5e',
+    allow: '#10b981',
   }
   return colors[node.type] || '#666'
 }
@@ -273,4 +253,3 @@ const clearFlow = () => {
   border-color: rgba(75, 85, 99, 0.5) !important;
 }
 </style>
-
