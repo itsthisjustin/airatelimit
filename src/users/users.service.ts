@@ -58,4 +58,3 @@ export class UsersService {
     return bcrypt.compare(password, user.passwordHash);
   }
 }
-

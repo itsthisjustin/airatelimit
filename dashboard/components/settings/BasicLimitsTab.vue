@@ -97,18 +97,48 @@
         <p class="text-xs text-gray-500 mt-1">Leave empty for unlimited</p>
       </div>
 
+      <!-- Upgrade URL Section -->
+      <div class="">
+        <div class="flex items-start gap-3">
+          <!-- <div class="p-2 bg-blue-300/10 rounded-lg">
+            <svg class="w-5 h-5 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+          </div> -->
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-white mb-1">Upgrade URL</label>
+            <p class="text-xs text-gray-400 mb-3">
+              Auto-injected into all rate limit responses. Supports variables: 
+              <code class="bg-gray-500/20 px-1 rounded">{{"{{"}}tier}}</code>, 
+              <code class="bg-gray-500/20 px-1 rounded">{{"{{"}}identity}}</code>, 
+              <code class="bg-gray-500/20 px-1 rounded">{{"{{"}}usage}}</code>
+            </p>
+            <input
+              v-model="editForm.upgradeUrl"
+              type="url"
+              placeholder="https://yourapp.com/upgrade or myapp://upgrade"
+              class="w-full px-4 py-2 text-white bg-gray-500/10 border border-gray-500/10 rounded-lg focus:ring-2 focus:ring-gray-500/20 focus:border-transparent"
+            />
+            <p class="text-xs text-gray-500 mt-2">
+              When set, responses will include <code class="bg-gray-500/20 px-1 rounded text-blue-300">upgradeUrl</code> 
+              and <code class="bg-gray-500/20 px-1 rounded text-blue-300">upgradeDeepLink</code> (with query params)
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div>
         <label class="block text-sm font-medium text-white mb-2">Limit Exceeded Message</label>
         <textarea
           v-model="editForm.limitMessage"
           rows="3"
-          placeholder='{"error": "limit_exceeded", "message": "Upgrade to Pro!", "deepLink": "myapp://upgrade"}'
+          placeholder='{"error": "limit_exceeded", "message": "Upgrade to Pro for more requests!"}'
           class="w-full px-4 py-2 text-white bg-gray-500/10 border border-gray-500/10 rounded-lg focus:ring-2 focus:ring-blue-300/50 focus:border-transparent font-mono text-sm"
         />
         <p class="text-xs text-gray-500 mt-1">Custom JSON response sent when limits are exceeded</p>
         
         <!-- Live Preview -->
-        <div v-if="editForm.limitMessage" class="mt-3">
+        <div v-if="editForm.limitMessage || editForm.upgradeUrl" class="mt-3">
           <div class="text-xs font-medium text-gray-400 mb-2 flex items-center gap-2">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -161,14 +191,28 @@ defineEmits<{
 }>()
 
 const formattedPreview = computed(() => {
-  if (!props.editForm.limitMessage) return ''
-  try {
-    const parsed = JSON.parse(props.editForm.limitMessage)
-    return JSON.stringify(parsed, null, 2)
-  } catch {
-    // If not valid JSON, show as-is
-    return props.editForm.limitMessage
+  let response: any = { error: 'limit_exceeded', message: 'Rate limit exceeded' }
+  
+  // Try to parse custom message
+  if (props.editForm.limitMessage) {
+    try {
+      response = JSON.parse(props.editForm.limitMessage)
+    } catch {
+      response = { error: 'limit_exceeded', message: props.editForm.limitMessage }
+    }
   }
+  
+  // Add upgrade URLs if configured
+  if (props.editForm.upgradeUrl) {
+    response.upgradeUrl = props.editForm.upgradeUrl
+    const exampleUrl = props.editForm.upgradeUrl.replace(/\{\{(\w+)\}\}/g, (_, key) => {
+      const examples: Record<string, string> = { tier: 'free', identity: 'user-123', usage: '100', limit: '100' }
+      return examples[key] || `{${key}}`
+    })
+    response.upgradeDeepLink = exampleUrl + (exampleUrl.includes('?') ? '&' : '?') + 'tier=free&identity=user-123&limitType=requests'
+  }
+  
+  return JSON.stringify(response, null, 2)
 })
 </script>
 

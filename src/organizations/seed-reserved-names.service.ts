@@ -19,13 +19,13 @@ export class SeedReservedNamesService {
    */
   async seed(): Promise<void> {
     this.logger.log('Syncing reserved organization names...');
-    
+
     let addedCount = 0;
     let skippedCount = 0;
 
     for (const reservedName of RESERVED_ORG_NAMES) {
       const nameLower = reservedName.name.toLowerCase();
-      
+
       // Check if already exists
       const existing = await this.reservedNamesRepository.findOne({
         where: { name: nameLower },
@@ -48,7 +48,7 @@ export class SeedReservedNamesService {
     if (skippedCount > 0) {
       this.logger.debug(`ℹ️  Skipped ${skippedCount} existing reserved names`);
     }
-    
+
     this.logger.log(`📝 Total reserved names: ${RESERVED_ORG_NAMES.length}`);
   }
 
@@ -58,15 +58,14 @@ export class SeedReservedNamesService {
    */
   async reseed(): Promise<void> {
     this.logger.log('Re-seeding reserved organization names...');
-    
+
     // Clear all existing
     await this.reservedNamesRepository.clear();
     this.logger.log('🧹 Cleared all existing reserved names');
-    
+
     // Re-seed from constants
     await this.seed();
-    
+
     this.logger.log('✅ Re-seeding complete');
   }
 }
-

@@ -1,4 +1,8 @@
-import { Injectable, ConflictException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Organization } from './organization.entity';
@@ -17,7 +21,9 @@ export class OrganizationsService {
     // Check if name is reserved
     const reserved = await this.isNameReserved(name);
     if (reserved) {
-      throw new BadRequestException('This organization name is reserved and cannot be used');
+      throw new BadRequestException(
+        'This organization name is reserved and cannot be used',
+      );
     }
 
     // Check if organization name already exists
@@ -40,7 +46,10 @@ export class OrganizationsService {
     return !!reserved;
   }
 
-  async reserveName(name: string, reason?: string): Promise<ReservedOrganizationName> {
+  async reserveName(
+    name: string,
+    reason?: string,
+  ): Promise<ReservedOrganizationName> {
     const existing = await this.reservedNamesRepository.findOne({
       where: { name: name.toLowerCase() },
     });
@@ -88,4 +97,3 @@ export class OrganizationsService {
     return this.findById(id);
   }
 }
-

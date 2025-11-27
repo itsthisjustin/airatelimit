@@ -7,7 +7,9 @@ import { ProjectsModule } from '../projects/projects.module';
 import { UsageModule } from '../usage/usage.module';
 import { SecurityModule } from '../security/security.module';
 import { PricingModule } from '../pricing/pricing.module';
+import { AnonymizationModule } from '../anonymization/anonymization.module';
 import { SecurityEvent } from '../security/security-event.entity';
+import { AnonymizationLog } from '../anonymization/anonymization-log.entity';
 
 @Module({
   imports: [
@@ -15,7 +17,8 @@ import { SecurityEvent } from '../security/security-event.entity';
     UsageModule,
     SecurityModule,
     PricingModule,
-    TypeOrmModule.forFeature([SecurityEvent]),
+    AnonymizationModule,
+    TypeOrmModule.forFeature([SecurityEvent, AnonymizationLog]),
     HttpModule,
   ],
   controllers: [TransparentProxyController],

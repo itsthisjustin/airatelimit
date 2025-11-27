@@ -1,4 +1,12 @@
-import { IsString, IsOptional, IsInt, IsObject, IsIn, IsArray, IsBoolean } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsInt,
+  IsObject,
+  IsIn,
+  IsArray,
+  IsBoolean,
+} from 'class-validator';
 
 export class UpdateProjectDto {
   @IsOptional()
@@ -47,6 +55,11 @@ export class UpdateProjectDto {
   @IsObject()
   limitExceededResponse?: any;
 
+  // Upgrade URL for limit-exceeded responses
+  @IsOptional()
+  @IsString()
+  upgradeUrl?: string;
+
   // Model-specific limits
   @IsOptional()
   @IsObject()
@@ -55,12 +68,18 @@ export class UpdateProjectDto {
   // Tier configuration
   @IsOptional()
   @IsObject()
-  tiers?: Record<string, { 
-    requestLimit?: number; 
-    tokenLimit?: number; 
-    customResponse?: any;
-    modelLimits?: Record<string, { requestLimit?: number; tokenLimit?: number }>;
-  }>;
+  tiers?: Record<
+    string,
+    {
+      requestLimit?: number;
+      tokenLimit?: number;
+      customResponse?: any;
+      modelLimits?: Record<
+        string,
+        { requestLimit?: number; tokenLimit?: number }
+      >;
+    }
+  >;
 
   // Rules configuration
   @IsOptional()
@@ -89,5 +108,38 @@ export class UpdateProjectDto {
   @IsOptional()
   @IsBoolean()
   securityHeuristicsEnabled?: boolean;
-}
 
+  // Privacy / Anonymization configuration
+  @IsOptional()
+  @IsBoolean()
+  anonymizationEnabled?: boolean;
+
+  @IsOptional()
+  @IsObject()
+  anonymizationConfig?: {
+    detectEmail?: boolean;
+    detectPhone?: boolean;
+    detectSSN?: boolean;
+    detectCreditCard?: boolean;
+    detectIpAddress?: boolean;
+    maskingStyle?: 'redact' | 'hash' | 'placeholder';
+    customPatterns?: Array<{
+      name: string;
+      pattern: string;
+      replacement?: string;
+    }>;
+  };
+
+  // Session-based limits
+  @IsOptional()
+  @IsBoolean()
+  sessionLimitsEnabled?: boolean;
+
+  @IsOptional()
+  @IsInt()
+  sessionRequestLimit?: number;
+
+  @IsOptional()
+  @IsInt()
+  sessionTokenLimit?: number;
+}

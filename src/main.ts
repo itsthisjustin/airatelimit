@@ -11,12 +11,18 @@ async function bootstrap() {
   // Enable CORS for dashboard
   const corsOrigin = configService.get<string>('corsOrigin');
   app.enableCors({
-    origin: corsOrigin?.includes(',') 
-      ? corsOrigin.split(',').map(o => o.trim()) 
+    origin: corsOrigin?.includes(',')
+      ? corsOrigin.split(',').map((o) => o.trim())
       : corsOrigin || true,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-project-key', 'x-identity', 'x-tier'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'x-project-key',
+      'x-identity',
+      'x-tier',
+    ],
   });
 
   // Enable validation
@@ -36,4 +42,3 @@ async function bootstrap() {
   console.log(`AI Rate Limit API running on http://localhost:${port}`);
 }
 bootstrap();
-

@@ -76,23 +76,28 @@ export class Project {
   dailyTokenLimit: number;
 
   // Limit period configuration
-  @Column({ 
-    type: 'enum', 
-    enum: ['daily', 'weekly', 'monthly'], 
-    default: 'daily' 
+  @Column({
+    type: 'enum',
+    enum: ['daily', 'weekly', 'monthly'],
+    default: 'daily',
   })
   limitPeriod: 'daily' | 'weekly' | 'monthly';
 
   // Limit type configuration
-  @Column({ 
-    type: 'enum', 
-    enum: ['requests', 'tokens', 'both'], 
-    default: 'both' 
+  @Column({
+    type: 'enum',
+    enum: ['requests', 'tokens', 'both'],
+    default: 'both',
   })
   limitType: 'requests' | 'tokens' | 'both';
 
   @Column({ type: 'text', nullable: true })
   limitExceededResponse: string;
+
+  // Upgrade URL for limit-exceeded responses (auto-injected into all limit responses)
+  // Supports template variables: {{tier}}, {{identity}}, {{usage}}, {{limit}}
+  @Column({ type: 'text', nullable: true })
+  upgradeUrl: string;
 
   // Model-specific limits (JSON structure)
   // Example: { "gpt-4o": { "requestLimit": 100, "tokenLimit": 50000 }, "claude-3-5-sonnet": { ... } }
@@ -102,12 +107,19 @@ export class Project {
   // Tier-based limits (JSON structure)
   // Example: { "free": { "requestLimit": 5, "tokenLimit": 1000, "modelLimits": { "gpt-4o": {...} } }, "pro": { ... } }
   @Column({ type: 'jsonb', nullable: true })
-  tiers: Record<string, { 
-    requestLimit?: number; 
-    tokenLimit?: number; 
-    customResponse?: any;
-    modelLimits?: Record<string, { requestLimit?: number; tokenLimit?: number }>;
-  }>;
+  tiers: Record<
+    string,
+    {
+      requestLimit?: number;
+      tokenLimit?: number;
+      customResponse?: any;
+      modelLimits?: Record<
+        string,
+        { requestLimit?: number; tokenLimit?: number }
+      >;
+      sessionLimits?: { requestLimit?: number; tokenLimit?: number };
+    }
+  >;
 
   // Visual rule engine (JSON structure)
   // Example: [{ "condition": { "type": "usage_percent", "threshold": 80 }, "action": { "type": "response", "data": {...} } }]
@@ -135,21 +147,69 @@ export class Project {
   @Column({ default: false })
   securityEnabled: boolean;
 
-  @Column({ 
-    type: 'enum', 
-    enum: ['block', 'log'], 
-    default: 'block' 
+  @Column({
+    type: 'enum',
+    enum: ['block', 'log'],
+    default: 'block',
   })
   securityMode: 'block' | 'log';
 
-  @Column({ 
-    type: 'jsonb', 
-    default: ['systemPromptExtraction', 'roleManipulation', 'instructionOverride', 'boundaryBreaking', 'obfuscation', 'directLeakage']
+  @Column({
+    type: 'jsonb',
+    default: [
+      'systemPromptExtraction',
+      'roleManipulation',
+      'instructionOverride',
+      'boundaryBreaking',
+      'obfuscation',
+      'directLeakage',
+    ],
   })
   securityCategories: string[];
 
   @Column({ default: false })
   securityHeuristicsEnabled: boolean;
+
+  // Privacy / Anonymization configuration ("Tofu Box")
+  @Column({ default: false })
+  anonymizationEnabled: boolean;
+
+  @Column({
+    type: 'jsonb',
+    default: {
+      detectEmail: true,
+      detectPhone: true,
+      detectSSN: true,
+      detectCreditCard: true,
+      detectIpAddress: true,
+      maskingStyle: 'placeholder',
+    },
+  })
+  anonymizationConfig: {
+    detectEmail?: boolean;
+    detectPhone?: boolean;
+    detectSSN?: boolean;
+    detectCreditCard?: boolean;
+    detectIpAddress?: boolean;
+    maskingStyle?: 'redact' | 'hash' | 'placeholder';
+    customPatterns?: Array<{
+      name: string;
+      pattern: string;
+      replacement?: string;
+    }>;
+  };
+
+  // Session-based limits configuration
+  @Column({ default: false })
+  sessionLimitsEnabled: boolean;
+
+  @Column({ type: 'int', nullable: true })
+  sessionRequestLimit: number;
+
+  @Column({ type: 'int', nullable: true })
+  sessionTokenLimit: number;
+
+  // Session limits can also be tier-specific (stored in tiers.{tierName}.sessionLimits)
 
   @CreateDateColumn()
   createdAt: Date;
@@ -157,4 +217,3 @@ export class Project {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

@@ -17,7 +17,9 @@ export class EmailService {
       this.resend = new Resend(apiKey);
       this.logger.log('Resend email service initialized');
     } else {
-      this.logger.warn('RESEND_API_KEY not set - emails will be logged to console');
+      this.logger.warn(
+        'RESEND_API_KEY not set - emails will be logged to console',
+      );
     }
   }
 

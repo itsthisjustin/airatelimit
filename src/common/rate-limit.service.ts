@@ -12,7 +12,7 @@ interface RateLimitEntry {
 @Injectable()
 export class RateLimitService {
   private readonly limits = new Map<string, RateLimitEntry>();
-  
+
   // Cleanup old entries every 5 minutes
   constructor() {
     setInterval(() => this.cleanup(), 5 * 60 * 1000);
@@ -25,9 +25,13 @@ export class RateLimitService {
    * @param windowMs Time window in milliseconds
    * @returns Object with allowed status and remaining requests
    */
-  check(key: string, maxRequests: number, windowMs: number): { 
-    allowed: boolean; 
-    remaining: number; 
+  check(
+    key: string,
+    maxRequests: number,
+    windowMs: number,
+  ): {
+    allowed: boolean;
+    remaining: number;
     resetAt: Date;
     retryAfter?: number;
   } {
@@ -85,4 +89,3 @@ export class RateLimitService {
     }
   }
 }
-

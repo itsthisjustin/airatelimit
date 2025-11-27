@@ -34,4 +34,3 @@ export class Organization {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

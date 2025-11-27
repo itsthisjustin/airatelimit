@@ -1,4 +1,11 @@
-import { IsString, IsOptional, IsInt, IsObject, IsIn, IsArray } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsInt,
+  IsObject,
+  IsIn,
+  IsArray,
+} from 'class-validator';
 
 export class CreateProjectDto {
   @IsString()
@@ -40,12 +47,18 @@ export class CreateProjectDto {
   // Tier configuration
   @IsOptional()
   @IsObject()
-  tiers?: Record<string, { 
-    requestLimit?: number; 
-    tokenLimit?: number; 
-    customResponse?: any;
-    modelLimits?: Record<string, { requestLimit?: number; tokenLimit?: number }>;
-  }>;
+  tiers?: Record<
+    string,
+    {
+      requestLimit?: number;
+      tokenLimit?: number;
+      customResponse?: any;
+      modelLimits?: Record<
+        string,
+        { requestLimit?: number; tokenLimit?: number }
+      >;
+    }
+  >;
 
   // Rules configuration
   @IsOptional()
@@ -58,4 +71,3 @@ export class CreateProjectDto {
     action: any;
   }>;
 }
-

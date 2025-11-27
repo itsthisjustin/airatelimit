@@ -12,7 +12,7 @@ import { Project } from '../projects/projects.entity';
 
 /**
  * Per-identity limit overrides
- * 
+ *
  * Allows setting custom limits for specific identities within a project.
  * These override project-level and tier-level limits when present.
  */
@@ -58,4 +58,3 @@ export class IdentityLimit {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

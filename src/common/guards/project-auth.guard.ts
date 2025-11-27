@@ -12,7 +12,7 @@ import { ProjectsService } from '../../projects/projects.service';
  * Guard that accepts either:
  * 1. JWT token from dashboard login (Authorization: Bearer <jwt>)
  * 2. Project secret key (Authorization: Bearer sk_xxx)
- * 
+ *
  * For secret key auth, the project is attached to request.project
  * For JWT auth, the user is attached to request.user
  */
@@ -43,7 +43,10 @@ export class ProjectAuthGuard implements CanActivate {
     return this.validateJwt(token, request);
   }
 
-  private async validateSecretKey(secretKey: string, request: any): Promise<boolean> {
+  private async validateSecretKey(
+    secretKey: string,
+    request: any,
+  ): Promise<boolean> {
     const project = await this.projectsService.findBySecretKey(secretKey);
 
     if (!project) {
@@ -51,7 +54,10 @@ export class ProjectAuthGuard implements CanActivate {
     }
 
     // Verify with constant-time comparison or bcrypt
-    const isValid = await this.projectsService.verifySecretKey(secretKey, project);
+    const isValid = await this.projectsService.verifySecretKey(
+      secretKey,
+      project,
+    );
     if (!isValid) {
       throw new UnauthorizedException('Invalid secret key');
     }
@@ -78,4 +84,3 @@ export class ProjectAuthGuard implements CanActivate {
     }
   }
 }
-

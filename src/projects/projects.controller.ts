@@ -62,7 +62,7 @@ export class ProjectsController {
     @Query('limit') limit?: string,
   ) {
     const limitNum = limit ? parseInt(limit, 10) : 50;
-    
+
     const events = await this.securityEventRepository.find({
       where: { projectId },
       order: { createdAt: 'DESC' },

@@ -17,7 +17,9 @@ import { ProjectAuthGuard } from '../common/guards/project-auth.guard';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('jwtSecret') || configService.get<string>('JWT_SECRET'),
+        secret:
+          configService.get<string>('jwtSecret') ||
+          configService.get<string>('JWT_SECRET'),
       }),
     }),
   ],
@@ -26,4 +28,3 @@ import { ProjectAuthGuard } from '../common/guards/project-auth.guard';
   exports: [IdentityLimitsService],
 })
 export class IdentityLimitsModule {}
-

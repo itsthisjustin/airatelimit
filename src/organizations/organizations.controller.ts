@@ -12,7 +12,7 @@ export class OrganizationsController {
     const organization = await this.organizationsService.findById(
       req.user.organizationId,
     );
-    
+
     if (!organization) {
       return { id: null, name: 'Unknown Organization' };
     }
@@ -25,4 +25,3 @@ export class OrganizationsController {
     };
   }
 }
-

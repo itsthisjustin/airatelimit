@@ -14,7 +14,7 @@ import { ConfigService } from '@nestjs/config';
 
         const url = new URL(databaseUrl);
         const nodeEnv = configService.get<string>('nodeEnv');
-        
+
         return {
           type: 'postgres',
           host: url.hostname,
@@ -27,11 +27,11 @@ import { ConfigService } from '@nestjs/config';
           synchronize: true,
           // migrationsRun: true,
           // Only log errors and schema changes, not every query
-          logging: nodeEnv === 'development' ? ['error', 'warn', 'schema'] : ['error'],
+          logging:
+            nodeEnv === 'development' ? ['error', 'warn', 'schema'] : ['error'],
         };
       },
     }),
   ],
 })
 export class DatabaseModule {}
-

@@ -8,9 +8,12 @@ import {
 } from 'typeorm';
 
 @Entity('usage_counters')
-@Index(['projectId', 'identity', 'periodStart', 'model'], { unique: true })
+@Index(['projectId', 'identity', 'periodStart', 'model', 'session'], {
+  unique: true,
+})
 @Index(['projectId', 'periodStart'])
 @Index(['projectId', 'model'])
+@Index(['projectId', 'session'])
 export class UsageCounter {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -26,6 +29,10 @@ export class UsageCounter {
 
   @Column({ default: '' })
   model: string;
+
+  // Session identifier for session-based rate limiting
+  @Column({ default: '' })
+  session: string;
 
   @Column({ default: 0 })
   requestsUsed: number;
@@ -54,4 +61,3 @@ export class UsageCounter {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

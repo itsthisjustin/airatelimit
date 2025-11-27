@@ -83,7 +83,10 @@ export class SecurityService {
   /**
    * Check if a message contains prompt injection attempts
    */
-  checkMessage(content: string, enabledCategories?: string[]): SecurityCheckResult {
+  checkMessage(
+    content: string,
+    enabledCategories?: string[],
+  ): SecurityCheckResult {
     const categories = enabledCategories || Object.keys(this.injectionPatterns);
 
     for (const category of categories) {
@@ -224,8 +227,7 @@ export class SecurityService {
         'Detects attempts to inject system-level commands or overrides',
       boundaryBreaking:
         'Detects attempts to break out of the conversation context',
-      obfuscation:
-        'Detects suspicious encoding or obfuscation techniques',
+      obfuscation: 'Detects suspicious encoding or obfuscation techniques',
       directLeakage:
         'Detects direct requests to leak internal context or memory',
     };
@@ -233,4 +235,3 @@ export class SecurityService {
     return descriptions[category] || 'Security pattern detection';
   }
 }
-

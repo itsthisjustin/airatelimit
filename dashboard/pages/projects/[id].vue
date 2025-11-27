@@ -403,6 +403,7 @@ const editForm = ref({
   dailyRequestLimit: null as number | null,
   dailyTokenLimit: null as number | null,
   limitMessage: '',
+  upgradeUrl: '', // Auto-injected into limit responses
   tiers: {} as Record<string, { 
     requestLimit?: number; 
     tokenLimit?: number; 
@@ -413,6 +414,20 @@ const editForm = ref({
   securityMode: 'block' as 'block' | 'log',
   securityCategories: ['systemPromptExtraction', 'roleManipulation', 'instructionOverride', 'boundaryBreaking', 'obfuscation', 'directLeakage'] as string[],
   securityHeuristicsEnabled: false,
+  // Privacy settings
+  anonymizationEnabled: false,
+  anonymizationConfig: {
+    detectEmail: true,
+    detectPhone: true,
+    detectSSN: true,
+    detectCreditCard: true,
+    detectIpAddress: true,
+    maskingStyle: 'placeholder' as 'redact' | 'hash' | 'placeholder',
+  },
+  // Session limits
+  sessionLimitsEnabled: false,
+  sessionRequestLimit: null as number | null,
+  sessionTokenLimit: null as number | null,
 })
 
 const updating = ref(false)
@@ -471,6 +486,25 @@ const loadProject = async () => {
     editForm.value.securityMode = project.value.securityMode || 'block'
     editForm.value.securityCategories = project.value.securityCategories || ['systemPromptExtraction', 'roleManipulation', 'instructionOverride', 'boundaryBreaking', 'obfuscation', 'directLeakage']
     editForm.value.securityHeuristicsEnabled = project.value.securityHeuristicsEnabled || false
+    
+    // Load privacy settings
+    editForm.value.anonymizationEnabled = project.value.anonymizationEnabled || false
+    editForm.value.anonymizationConfig = project.value.anonymizationConfig || {
+      detectEmail: true,
+      detectPhone: true,
+      detectSSN: true,
+      detectCreditCard: true,
+      detectIpAddress: true,
+      maskingStyle: 'placeholder',
+    }
+    
+    // Load session limits
+    editForm.value.sessionLimitsEnabled = project.value.sessionLimitsEnabled || false
+    editForm.value.sessionRequestLimit = project.value.sessionRequestLimit || null
+    editForm.value.sessionTokenLimit = project.value.sessionTokenLimit || null
+    
+    // Load upgrade URL
+    editForm.value.upgradeUrl = project.value.upgradeUrl || ''
     
     // Extract limit message from JSON
     if (project.value.limitExceededResponse) {
@@ -588,6 +622,18 @@ const handleUpdate = async () => {
     payload.securityMode = editForm.value.securityMode
     payload.securityCategories = editForm.value.securityCategories
     payload.securityHeuristicsEnabled = editForm.value.securityHeuristicsEnabled
+
+    // Privacy settings
+    payload.anonymizationEnabled = editForm.value.anonymizationEnabled
+    payload.anonymizationConfig = editForm.value.anonymizationConfig
+
+    // Session limits
+    payload.sessionLimitsEnabled = editForm.value.sessionLimitsEnabled
+    payload.sessionRequestLimit = editForm.value.sessionRequestLimit || null
+    payload.sessionTokenLimit = editForm.value.sessionTokenLimit || null
+
+    // Upgrade URL for deep links
+    payload.upgradeUrl = editForm.value.upgradeUrl || null
 
     await api(`/projects/${projectId}`, {
       method: 'PATCH',

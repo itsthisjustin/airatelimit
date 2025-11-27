@@ -28,10 +28,10 @@ export class AuthController {
   @Post('magic-link/verify')
   async verifyMagicLink(@Body() dto: VerifyMagicLinkDto, @Req() req: Request) {
     // Get client IP for rate limiting (handles proxies)
-    const clientIp = req.headers['x-forwarded-for']?.toString().split(',')[0] || 
-                     req.socket.remoteAddress || 
-                     'unknown';
+    const clientIp =
+      req.headers['x-forwarded-for']?.toString().split(',')[0] ||
+      req.socket.remoteAddress ||
+      'unknown';
     return this.authService.verifyMagicLink(dto, clientIp);
   }
 }
-

@@ -18,7 +18,11 @@ export class CryptoService {
     const key = this.configService.get<string>('ENCRYPTION_KEY');
     if (key) {
       // Derive a consistent 32-byte key from the provided key
-      this.encryptionKey = crypto.scryptSync(key, 'airatelimit-salt', this.keyLength);
+      this.encryptionKey = crypto.scryptSync(
+        key,
+        'airatelimit-salt',
+        this.keyLength,
+      );
     }
   }
 
@@ -40,13 +44,17 @@ export class CryptoService {
     }
 
     const iv = crypto.randomBytes(this.ivLength);
-    const cipher = crypto.createCipheriv(this.algorithm, this.encryptionKey, iv);
-    
+    const cipher = crypto.createCipheriv(
+      this.algorithm,
+      this.encryptionKey,
+      iv,
+    );
+
     let ciphertext = cipher.update(plaintext, 'utf8', 'base64');
     ciphertext += cipher.final('base64');
-    
+
     const authTag = cipher.getAuthTag();
-    
+
     return `enc:${iv.toString('base64')}:${authTag.toString('base64')}:${ciphertext}`;
   }
 
@@ -76,13 +84,17 @@ export class CryptoService {
     const [, ivB64, authTagB64, ciphertext] = parts;
     const iv = Buffer.from(ivB64, 'base64');
     const authTag = Buffer.from(authTagB64, 'base64');
-    
-    const decipher = crypto.createDecipheriv(this.algorithm, this.encryptionKey, iv);
+
+    const decipher = crypto.createDecipheriv(
+      this.algorithm,
+      this.encryptionKey,
+      iv,
+    );
     decipher.setAuthTag(authTag);
-    
+
     let plaintext = decipher.update(ciphertext, 'base64', 'utf8');
     plaintext += decipher.final('utf8');
-    
+
     return plaintext;
   }
 
@@ -119,4 +131,3 @@ export class CryptoService {
     return crypto.randomBytes(bytes).toString('hex');
   }
 }
-

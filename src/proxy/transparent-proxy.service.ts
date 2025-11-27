@@ -2,11 +2,16 @@ import { Injectable, BadGatewayException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 
-export type ProviderType = 'openai' | 'anthropic' | 'google' | 'xai' | 'unknown';
+export type ProviderType =
+  | 'openai'
+  | 'anthropic'
+  | 'google'
+  | 'xai'
+  | 'unknown';
 
 /**
  * Transparent Proxy Service
- * 
+ *
  * Forwards requests to AI providers.
  * For most providers: forwards exactly as-is.
  * For Anthropic: transforms request/response to maintain OpenAI SDK compatibility.
@@ -21,7 +26,8 @@ export class TransparentProxyService {
   private transformRequestForAnthropic(body: any): any {
     // Extract system message if present
     const systemMessage = body.messages?.find((m: any) => m.role === 'system');
-    const nonSystemMessages = body.messages?.filter((m: any) => m.role !== 'system') || [];
+    const nonSystemMessages =
+      body.messages?.filter((m: any) => m.role !== 'system') || [];
 
     return {
       model: body.model,
@@ -56,7 +62,9 @@ export class TransparentProxyService {
       usage: {
         prompt_tokens: response.usage?.input_tokens || 0,
         completion_tokens: response.usage?.output_tokens || 0,
-        total_tokens: (response.usage?.input_tokens || 0) + (response.usage?.output_tokens || 0),
+        total_tokens:
+          (response.usage?.input_tokens || 0) +
+          (response.usage?.output_tokens || 0),
       },
     };
   }
@@ -66,9 +74,9 @@ export class TransparentProxyService {
    */
   private mapAnthropicStopReason(stopReason: string): string {
     const mapping: Record<string, string> = {
-      'end_turn': 'stop',
-      'max_tokens': 'length',
-      'stop_sequence': 'stop',
+      end_turn: 'stop',
+      max_tokens: 'length',
+      stop_sequence: 'stop',
     };
     return mapping[stopReason] || 'stop';
   }
@@ -76,7 +84,10 @@ export class TransparentProxyService {
   /**
    * Transform Anthropic streaming chunk to OpenAI format
    */
-  private transformStreamChunkFromAnthropic(chunk: any, model: string): any | null {
+  private transformStreamChunkFromAnthropic(
+    chunk: any,
+    model: string,
+  ): any | null {
     // Handle different Anthropic event types
     if (chunk.type === 'content_block_delta' && chunk.delta?.text) {
       return {
@@ -123,13 +134,17 @@ export class TransparentProxyService {
           {
             index: 0,
             delta: {},
-            finish_reason: this.mapAnthropicStopReason(chunk.delta?.stop_reason),
+            finish_reason: this.mapAnthropicStopReason(
+              chunk.delta?.stop_reason,
+            ),
           },
         ],
         usage: {
           prompt_tokens: chunk.usage?.input_tokens || 0,
           completion_tokens: chunk.usage?.output_tokens || 0,
-          total_tokens: (chunk.usage?.input_tokens || 0) + (chunk.usage?.output_tokens || 0),
+          total_tokens:
+            (chunk.usage?.input_tokens || 0) +
+            (chunk.usage?.output_tokens || 0),
         },
       };
     }
@@ -144,7 +159,8 @@ export class TransparentProxyService {
   private readonly providerUrls: Record<ProviderType, string> = {
     openai: 'https://api.openai.com/v1/chat/completions',
     anthropic: 'https://api.anthropic.com/v1/messages',
-    google: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
+    google:
+      'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
     xai: 'https://api.x.ai/v1/chat/completions',
     unknown: 'https://api.openai.com/v1/chat/completions', // Default to OpenAI-compatible
   };
@@ -202,7 +218,7 @@ export class TransparentProxyService {
   ): Promise<any> {
     try {
       const isAnthropic = providerUrl.includes('anthropic.com');
-      
+
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
       };
@@ -261,7 +277,7 @@ export class TransparentProxyService {
   ): AsyncGenerator<any, void, unknown> {
     try {
       const isAnthropic = providerUrl.includes('anthropic.com');
-      
+
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
       };
@@ -300,10 +316,13 @@ export class TransparentProxyService {
             }
             try {
               const parsed = JSON.parse(data);
-              
+
               // Transform Anthropic streaming chunks to OpenAI format
               if (isAnthropic) {
-                const transformed = this.transformStreamChunkFromAnthropic(parsed, body.model);
+                const transformed = this.transformStreamChunkFromAnthropic(
+                  parsed,
+                  body.model,
+                );
                 if (transformed) {
                   yield transformed;
                 }
@@ -333,4 +352,3 @@ export class TransparentProxyService {
     }
   }
 }
-

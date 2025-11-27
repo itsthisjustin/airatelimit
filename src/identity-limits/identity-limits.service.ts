@@ -103,9 +103,7 @@ export class IdentityLimitsService {
     const existing = await this.getForIdentity(projectId, identity);
 
     if (!existing) {
-      throw new NotFoundException(
-        `No limits found for identity: ${identity}`,
-      );
+      throw new NotFoundException(`No limits found for identity: ${identity}`);
     }
 
     Object.assign(existing, dto);
@@ -122,9 +120,7 @@ export class IdentityLimitsService {
     });
 
     if (result.affected === 0) {
-      throw new NotFoundException(
-        `No limits found for identity: ${identity}`,
-      );
+      throw new NotFoundException(`No limits found for identity: ${identity}`);
     }
   }
 
@@ -154,4 +150,3 @@ export class IdentityLimitsService {
     return limit?.enabled ?? true;
   }
 }
-

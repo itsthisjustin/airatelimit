@@ -13,16 +13,20 @@ import {
   Req,
 } from '@nestjs/common';
 import { ProjectAuthGuard } from '../common/guards/project-auth.guard';
-import { IdentityLimitsService, CreateIdentityLimitDto, UpdateIdentityLimitDto } from './identity-limits.service';
+import {
+  IdentityLimitsService,
+  CreateIdentityLimitDto,
+  UpdateIdentityLimitDto,
+} from './identity-limits.service';
 import { ProjectsService } from '../projects/projects.service';
 
 /**
  * Identity Limits Controller
- * 
+ *
  * Supports two authentication methods:
  * 1. JWT token from dashboard login (for UI access)
  * 2. Project secret key (for programmatic/server-side access)
- * 
+ *
  * Example with secret key:
  *   curl -X POST /api/projects/pk_xxx/identities \
  *     -H "Authorization: Bearer sk_xxx" \
@@ -64,7 +68,7 @@ export class IdentityLimitsController {
     @Req() request?: any,
   ) {
     const project = await this.getProject(projectKey, request);
-    
+
     const result = await this.identityLimitsService.listForProject(project.id, {
       limit: limit ? parseInt(limit, 10) : 100,
       offset: offset ? parseInt(offset, 10) : 0,
@@ -195,4 +199,3 @@ export class IdentityLimitsController {
     };
   }
 }
-

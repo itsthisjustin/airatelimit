@@ -45,4 +45,3 @@ export class SecurityEvent {
   @CreateDateColumn()
   createdAt: Date;
 }
-

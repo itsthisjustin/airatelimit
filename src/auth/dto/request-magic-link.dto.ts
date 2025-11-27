@@ -4,4 +4,3 @@ export class RequestMagicLinkDto {
   @IsEmail()
   email: string;
 }
-

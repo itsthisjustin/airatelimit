@@ -11,8 +11,11 @@ import { SecurityEvent } from '../security/security-event.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Project, SecurityEvent]), UsageModule],
   providers: [ProjectsService],
-  controllers: [ProjectsController, UserProjectsController, UserUsageController],
+  controllers: [
+    ProjectsController,
+    UserProjectsController,
+    UserUsageController,
+  ],
   exports: [ProjectsService],
 })
 export class ProjectsModule {}
-

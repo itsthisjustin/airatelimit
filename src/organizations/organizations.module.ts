@@ -22,4 +22,3 @@ export class OrganizationsModule implements OnModuleInit {
     await this.seedReservedNamesService.seed();
   }
 }
-

@@ -9,4 +9,3 @@ export class SignupDto {
   @MaxLength(100)
   organizationName: string;
 }
-
