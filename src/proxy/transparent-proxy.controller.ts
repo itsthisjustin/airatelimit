@@ -16,18 +16,19 @@ import { UsageService } from '../usage/usage.service';
 import { TransparentProxyService } from './transparent-proxy.service';
 import { SecurityService } from '../security/security.service';
 import { AnonymizationService } from '../anonymization/anonymization.service';
+import { FlowExecutorService } from '../flow/flow-executor.service';
 import { SecurityEvent } from '../security/security-event.entity';
 import { AnonymizationLog } from '../anonymization/anonymization-log.entity';
 import { PricingService } from '../pricing/pricing.service';
 
 /**
  * Transparent Proxy Controller
- *
+ * 
  * This controller acts as a true transparent proxy - it accepts standard OpenAI/Anthropic
  * API requests, checks rate limits, and forwards them exactly as-is to the provider.
- *
+ * 
  * The customer's API key is passed per-request (not stored in our system).
- *
+ * 
  * Usage:
  * - Point your OpenAI SDK baseURL to: https://api.airatelimit.com/v1
  * - Add headers: x-project-key, x-identity, x-tier (optional)
@@ -42,6 +43,7 @@ export class TransparentProxyController {
     private readonly securityService: SecurityService,
     private readonly anonymizationService: AnonymizationService,
     private readonly pricingService: PricingService,
+    private readonly flowExecutorService: FlowExecutorService,
     @InjectRepository(SecurityEvent)
     private readonly securityEventRepository: Repository<SecurityEvent>,
     @InjectRepository(AnonymizationLog)
@@ -178,13 +180,45 @@ export class TransparentProxyController {
       // Estimate tokens
       const estimatedTokens = processedBody.max_tokens || 0;
 
-      // Check and update usage (identity-based)
+      // FLOW EXECUTION: If project has a valid flow config, use flow executor
+      if (this.flowExecutorService.hasValidFlow(project.flowConfig)) {
+        const flowResult = await this.flowExecutorService.execute(
+          project.flowConfig,
+          {
+            projectId: project.id,
+            identity,
+            tier: tier || 'free',
+            session: sessionId,
+            model,
+          },
+          project.upgradeUrl,
+        );
+
+        if (flowResult.action === 'block' && flowResult.response) {
+          // Track savings from blocked request
+          const estimatedSavings = this.pricingService.estimateBlockedCost(model);
+          await this.usageService.trackBlockedRequest({
+            project,
+            identity,
+            model,
+            session: sessionId,
+            periodStart,
+            estimatedSavings,
+          });
+
+          res.status(flowResult.response.status).json(flowResult.response.body);
+          return;
+        }
+
+        // Flow allows - continue with request (still track usage after)
+      } else {
+        // FALLBACK: Use traditional limit checking when no flow configured
       const usageCheck = await this.usageService.checkAndUpdateUsage({
         project,
         identity,
         tier,
         model,
-        session: sessionId,
+          session: sessionId,
         periodStart,
         requestedTokens: estimatedTokens,
         requestedRequests: 1,
@@ -197,7 +231,7 @@ export class TransparentProxyController {
           project,
           identity,
           model,
-          session: sessionId,
+            session: sessionId,
           periodStart,
           estimatedSavings,
         });
@@ -210,6 +244,7 @@ export class TransparentProxyController {
           },
         });
         return;
+        }
       }
 
       // Check session limits if enabled
@@ -272,10 +307,10 @@ export class TransparentProxyController {
         // Handle regular response
         const providerResponse =
           await this.transparentProxyService.forwardRequest(
-            authorization,
-            providerBaseUrl,
+          authorization,
+          providerBaseUrl,
             processedBody,
-          );
+        );
 
         // Finalize usage with actual tokens and cost
         const inputTokens = providerResponse.usage?.prompt_tokens || 0;

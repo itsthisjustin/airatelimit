@@ -113,9 +113,9 @@
                         </svg>
                         <span>Configurations</span>
                       </button>
-                      <NuxtLink
-                        :to="`/projects/${projectId}/flow`"
-                        class="w-full text-left px-3 py-2 text-xs text-indigo-400 hover:bg-indigo-400/10 hover:text-indigo-300 transition-colors flex items-center space-x-2"
+                      <button
+                        @click.stop="openFlowDesigner"
+                        class="w-full text-left px-3 py-2 text-xs text-gray-300 hover:bg-gray-500/10 hover:text-white transition-colors flex items-center space-x-2"
                       >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <rect x="3" y="3" width="7" height="7" rx="1" stroke-width="2"/>
@@ -125,7 +125,7 @@
                           <line x1="17.5" y1="10" x2="17.5" y2="14" stroke-width="2"/>
                         </svg>
                         <span>Flow Designer</span>
-                      </NuxtLink>
+                      </button>
                       <button
                         @click="openDelete"
                         class="w-full text-left px-3 py-2 text-xs text-red-400 hover:bg-red-400/10 hover:text-red-300 transition-colors flex items-center space-x-2"
@@ -567,6 +567,11 @@ const toggleSettingsDropdown = () => {
 const openConfigurations = () => {
   showSettingsDropdown.value = false
   showSettingsModal.value = true
+}
+
+const openFlowDesigner = async () => {
+  showSettingsDropdown.value = false
+  await navigateTo(`/projects/${projectId}/flow`)
 }
 
 const openDelete = () => {

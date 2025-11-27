@@ -13,7 +13,7 @@
           @click="openFullscreen"
           class="btn-expand"
         >
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="15 3 21 3 21 9"/>
             <polyline points="9 21 3 21 3 15"/>
             <line x1="21" y1="3" x2="14" y2="10"/>
@@ -49,7 +49,7 @@
       </div>
       <div v-else class="empty-state">
         <div class="empty-icon">
-          <svg class="w-12 h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <rect x="3" y="3" width="7" height="7" rx="1"/>
             <rect x="14" y="3" width="7" height="7" rx="1"/>
             <rect x="8" y="14" width="8" height="7" rx="1"/>
@@ -105,106 +105,184 @@ const openFullscreen = () => {
 
 <style scoped>
 .flow-designer-tab {
-  @apply space-y-6;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .header {
-  @apply flex items-start justify-between;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
 }
 
 .title {
-  @apply text-lg font-semibold text-white;
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
 }
 
 .description {
-  @apply text-sm text-gray-400 mt-1;
+  font-size: 14px;
+  color: #9ca3af;
+  margin-top: 4px;
 }
 
 .header-actions {
-  @apply flex gap-2;
+  display: flex;
+  gap: 8px;
 }
 
 .btn-expand {
-  @apply flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg;
-  @apply bg-indigo-500/20 text-indigo-400 border border-indigo-500/30;
-  @apply hover:bg-indigo-500/30 transition-all;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  background: rgba(99, 102, 241, 0.2);
+  color: #818cf8;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-expand:hover {
+  background: rgba(99, 102, 241, 0.3);
+}
+
+.btn-icon {
+  width: 16px;
+  height: 16px;
 }
 
 .preview-container {
-  @apply rounded-xl border border-gray-700/50 bg-gray-800/30 overflow-hidden;
+  border-radius: 12px;
+  border: 1px solid rgba(75, 85, 99, 0.5);
+  background: rgba(31, 41, 55, 0.3);
+  overflow: hidden;
 }
 
 .flow-preview {
-  @apply p-6;
+  padding: 24px;
 }
 
 .flow-stats {
-  @apply flex gap-6 mb-4;
+  display: flex;
+  gap: 24px;
+  margin-bottom: 16px;
 }
 
 .stat {
-  @apply flex flex-col;
+  display: flex;
+  flex-direction: column;
 }
 
 .stat-value {
-  @apply text-2xl font-bold text-white;
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
 }
 
 .stat-label {
-  @apply text-xs text-gray-500;
+  font-size: 12px;
+  color: #6b7280;
 }
 
 .flow-mini-preview {
-  @apply flex flex-wrap gap-2 mt-4;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
 }
 
 .mini-node {
-  @apply px-2 py-1 text-xs font-medium rounded-md capitalize;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 6px;
+  text-transform: capitalize;
 }
 
 .mini-node.start {
-  @apply bg-blue-500/20 text-blue-400 border border-blue-500/30;
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
-.mini-node.split {
-  @apply bg-purple-500/20 text-purple-400 border border-purple-500/30;
+.mini-node.checkTier {
+  background: rgba(168, 85, 247, 0.2);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.3);
 }
 
-.mini-node.rateLimit {
-  @apply bg-rose-500/20 text-rose-400 border border-rose-500/30;
+.mini-node.checkLimit {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
-.mini-node.budgetLimit {
-  @apply bg-amber-500/20 text-amber-400 border border-amber-500/30;
+.mini-node.limitResponse {
+  background: rgba(244, 63, 94, 0.2);
+  color: #fb7185;
+  border: 1px solid rgba(244, 63, 94, 0.3);
 }
 
-.mini-node.response {
-  @apply bg-emerald-500/20 text-emerald-400 border border-emerald-500/30;
-}
-
-.mini-node.model {
-  @apply bg-cyan-500/20 text-cyan-400 border border-cyan-500/30;
+.mini-node.allow {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .empty-state {
-  @apply py-12 text-center;
+  padding: 48px 24px;
+  text-align: center;
 }
 
 .empty-icon {
-  @apply mx-auto w-16 h-16 rounded-xl bg-gray-800/50 flex items-center justify-center text-gray-600 mb-4;
+  margin: 0 auto 16px;
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  background: rgba(31, 41, 55, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4b5563;
+}
+
+.icon-lg {
+  width: 48px;
+  height: 48px;
 }
 
 .empty-title {
-  @apply text-lg font-medium text-gray-300 mb-2;
+  font-size: 18px;
+  font-weight: 500;
+  color: #d1d5db;
+  margin-bottom: 8px;
 }
 
 .empty-text {
-  @apply text-sm text-gray-500 mb-6;
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 24px;
 }
 
 .btn-create {
-  @apply px-6 py-2.5 text-sm font-medium rounded-lg;
-  @apply bg-indigo-500 text-white hover:bg-indigo-600 transition-all;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  background: #6366f1;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-create:hover {
+  background: #4f46e5;
 }
 </style>
-

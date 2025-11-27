@@ -76,17 +76,17 @@ export class Project {
   dailyTokenLimit: number;
 
   // Limit period configuration
-  @Column({
-    type: 'enum',
-    enum: ['daily', 'weekly', 'monthly'],
+  @Column({ 
+    type: 'enum', 
+    enum: ['daily', 'weekly', 'monthly'], 
     default: 'daily',
   })
   limitPeriod: 'daily' | 'weekly' | 'monthly';
 
   // Limit type configuration
-  @Column({
-    type: 'enum',
-    enum: ['requests', 'tokens', 'both'],
+  @Column({ 
+    type: 'enum', 
+    enum: ['requests', 'tokens', 'both'], 
     default: 'both',
   })
   limitType: 'requests' | 'tokens' | 'both';
@@ -110,9 +110,9 @@ export class Project {
   tiers: Record<
     string,
     {
-      requestLimit?: number;
-      tokenLimit?: number;
-      customResponse?: any;
+    requestLimit?: number; 
+    tokenLimit?: number; 
+    customResponse?: any;
       modelLimits?: Record<
         string,
         { requestLimit?: number; tokenLimit?: number }
@@ -147,15 +147,15 @@ export class Project {
   @Column({ default: false })
   securityEnabled: boolean;
 
-  @Column({
-    type: 'enum',
-    enum: ['block', 'log'],
+  @Column({ 
+    type: 'enum', 
+    enum: ['block', 'log'], 
     default: 'block',
   })
   securityMode: 'block' | 'log';
 
-  @Column({
-    type: 'jsonb',
+  @Column({ 
+    type: 'jsonb', 
     default: [
       'systemPromptExtraction',
       'roleManipulation',

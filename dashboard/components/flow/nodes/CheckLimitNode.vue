@@ -4,37 +4,52 @@
     
     <div class="node-badge">CHECK LIMIT</div>
     <div class="node-content">
-      <div class="node-icon">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/>
-          <polyline points="12 6 12 12 16 14"/>
-        </svg>
-      </div>
-      
       <div class="config">
         <div class="config-row">
-          <select v-model="data.limitType" class="config-select">
-            <option value="requests">Requests</option>
-            <option value="tokens">Tokens</option>
-          </select>
+          <div class="select-wrapper">
+            <select v-model="data.limitType" class="config-select">
+              <option value="requests">Requests</option>
+              <option value="tokens">Tokens</option>
+            </select>
+            <div class="select-chevron">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
           <span class="config-label">per</span>
-          <select v-model="data.scope" class="config-select">
-            <option value="identity">identity</option>
-            <option value="session">session</option>
-          </select>
+          <div class="select-wrapper">
+            <select v-model="data.scope" class="config-select">
+              <option value="identity">identity</option>
+              <option value="session">session</option>
+            </select>
+            <div class="select-chevron">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
         </div>
         <div class="config-row">
           <input 
             v-model.number="data.limit" 
             type="number" 
             class="config-number"
+            placeholder="100"
           />
           <span class="config-label">/</span>
-          <select v-model="data.period" class="config-select-sm">
-            <option value="minute">min</option>
-            <option value="hour">hour</option>
-            <option value="day">day</option>
-          </select>
+          <div class="select-wrapper select-sm">
+            <select v-model="data.period" class="config-select">
+              <option value="minute">min</option>
+              <option value="hour">hour</option>
+              <option value="day">day</option>
+            </select>
+            <div class="select-chevron">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -68,12 +83,11 @@ defineProps<{
 <style scoped>
 .check-limit-node {
   position: relative;
-  background: rgba(17, 24, 39, 0.95);
-  border: 1px solid rgba(245, 158, 11, 0.4);
-  border-radius: 12px;
-  padding: 12px 16px;
-  min-width: 220px;
-  box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.1);
+  background: rgb(245, 158, 11, 0.2);
+  border: 1px solid rgb(245, 158, 11, 0.4);
+  border-radius: 16px;
+  padding: 16px 18px;
+  min-width: 260px;
 }
 
 .node-badge {
@@ -81,110 +95,136 @@ defineProps<{
   top: -10px;
   left: 50%;
   transform: translateX(-50%);
-  padding: 2px 8px;
+  padding: 3px 10px;
   font-size: 10px;
-  font-weight: 700;
-  background: #f59e0b;
+  font-weight: 600;
+  background: #fbbf24;
   color: black;
-  border-radius: 9999px;
+  border-radius: 6px;
   letter-spacing: 0.05em;
   white-space: nowrap;
+  /* box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3); */
 }
 
 .node-content {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
   margin-top: 8px;
-}
-
-.node-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: rgba(245, 158, 11, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fbbf24;
-  flex-shrink: 0;
-}
-
-.node-icon .icon {
-  width: 16px;
-  height: 16px;
 }
 
 .config {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .config-row {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
+  gap: 8px;
+  font-size: 13px;
 }
 
 .config-label {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
 }
 
-.config-select, .config-select-sm {
-  background: rgba(31, 41, 55, 0.8);
-  border: 1px solid rgba(75, 85, 99, 0.5);
-  border-radius: 4px;
-  padding: 2px 6px;
-  color: white;
-  font-size: 12px;
+.select-wrapper {
+  position: relative;
+  flex: 1;
 }
 
-.config-select:focus, .config-select-sm:focus {
+.select-wrapper.select-sm {
+  flex: 0 0 70px;
+}
+
+.config-select {
+  width: 100%;
+  padding: 8px 28px 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fbbf24;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  appearance: none;
+  transition: all 0.2s ease;
+}
+
+.config-select:hover {
+  background: rgba(0, 0, 0, 0.5);
+  border-color: rgb(251, 191, 36, 0.4);
+}
+
+.config-select:focus {
   outline: none;
-  border-color: rgba(245, 158, 11, 0.5);
+  border-color: rgb(251, 191, 36, 0.5);
+  box-shadow: 0 0 0 2px rgb(251, 191, 36, 0.1);
 }
 
-.config-select-sm {
-  width: 56px;
+.config-select option {
+  background: #1a1a1a;
+  color: white;
+  padding: 8px;
+}
+
+.select-chevron {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: rgb(251, 191, 36, 0.6);
 }
 
 .config-number {
-  background: rgba(31, 41, 55, 0.8);
-  border: 1px solid rgba(75, 85, 99, 0.5);
-  border-radius: 4px;
-  padding: 2px 6px;
+  width: 70px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
   color: white;
-  font-size: 12px;
-  width: 64px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.config-number::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.config-number:hover {
+  background: rgba(0, 0, 0, 0.5);
+  border-color: rgb(251, 191, 36, 0.4);
 }
 
 .config-number:focus {
   outline: none;
-  border-color: rgba(245, 158, 11, 0.5);
+  border-color: rgb(251, 191, 36, 0.5);
+  box-shadow: 0 0 0 2px rgb(251, 191, 36, 0.1);
 }
 
 .outputs {
   display: flex;
   justify-content: space-between;
-  margin-top: 12px;
-  padding-top: 8px;
-  border-top: 1px solid rgba(75, 85, 99, 0.3);
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .output {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .output-label {
   font-size: 10px;
-  font-weight: 500;
-  padding: 2px 8px;
-  border-radius: 9999px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.02em;
 }
 
 .output-label.pass {
@@ -193,32 +233,32 @@ defineProps<{
 }
 
 .output-label.exceeded {
-  background: rgba(244, 63, 94, 0.2);
-  color: #fb7185;
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
 }
 
 .handle-top {
   background: #fbbf24 !important;
-  border: 2px solid #111827 !important;
-  width: 12px !important;
-  height: 12px !important;
+  width: 10px !important;
+  height: 10px !important;
+  border: none !important;
 }
 
 .handle-pass {
   background: #34d399 !important;
-  border: 2px solid #111827 !important;
-  width: 12px !important;
-  height: 12px !important;
+  width: 10px !important;
+  height: 10px !important;
+  border: none !important;
   position: relative !important;
   left: 0 !important;
   transform: none !important;
 }
 
 .handle-exceeded {
-  background: #fb7185 !important;
-  border: 2px solid #111827 !important;
-  width: 12px !important;
-  height: 12px !important;
+  background: #f87171 !important;
+  width: 10px !important;
+  height: 10px !important;
+  border: none !important;
   position: relative !important;
   left: 0 !important;
   transform: none !important;

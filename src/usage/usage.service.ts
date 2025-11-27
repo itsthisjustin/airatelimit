@@ -93,12 +93,12 @@ export class UsageService {
     // Effective limits (null = unlimited, so we use a very high number for SQL)
     const effectiveRequestLimit =
       shouldCheckRequests && limits.requestLimit !== null && limits.requestLimit
-        ? limits.requestLimit
-        : null;
+      ? limits.requestLimit 
+      : null;
     const effectiveTokenLimit =
       shouldCheckTokens && limits.tokenLimit !== null && limits.tokenLimit
-        ? limits.tokenLimit
-        : null;
+      ? limits.tokenLimit 
+      : null;
 
     // Format periodStart as date string for PostgreSQL
     const periodStartStr = periodStart.toISOString().split('T')[0];
@@ -144,7 +144,7 @@ export class UsageService {
     // If UPDATE returned a row, the request was allowed
     if (updateResult.length > 0) {
       const usage = updateResult[0] as UsageCounter;
-
+      
       // Calculate usage percentages for rule engine
       const usagePercent = {
         requests: effectiveRequestLimit
@@ -186,7 +186,7 @@ export class UsageService {
       currentTokens + requestedTokens > effectiveTokenLimit;
 
     const response = limits.customResponse || this.getLimitResponse(project);
-
+    
     // Return appropriate error based on which limit was hit
     if (requestsExceeded) {
       return {
@@ -542,8 +542,8 @@ export class UsageService {
   async getSummaryForProject(
     projectId: string,
     periodStart: Date,
-  ): Promise<{
-    totalRequests: number;
+  ): Promise<{ 
+    totalRequests: number; 
     totalTokens: number;
     totalCost: number;
     totalSaved: number;
@@ -605,7 +605,7 @@ export class UsageService {
     const todayStart = new Date(
       Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
     );
-
+    
     // Week start (Monday)
     const dayOfWeek = now.getUTCDay();
     const daysToMonday = (dayOfWeek + 6) % 7;
@@ -616,7 +616,7 @@ export class UsageService {
         now.getUTCDate() - daysToMonday,
       ),
     );
-
+    
     // Month start
     const monthStart = new Date(
       Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
@@ -697,12 +697,12 @@ export class UsageService {
     // Aggregate by model
     const byModel = counters.reduce(
       (acc, c) => {
-        if (!acc[c.model]) {
-          acc[c.model] = { model: c.model, requestsUsed: 0, tokensUsed: 0 };
-        }
-        acc[c.model].requestsUsed += c.requestsUsed;
-        acc[c.model].tokensUsed += c.tokensUsed;
-        return acc;
+      if (!acc[c.model]) {
+        acc[c.model] = { model: c.model, requestsUsed: 0, tokensUsed: 0 };
+      }
+      acc[c.model].requestsUsed += c.requestsUsed;
+      acc[c.model].tokensUsed += c.tokensUsed;
+      return acc;
       },
       {} as Record<
         string,
@@ -737,7 +737,7 @@ export class UsageService {
       );
 
       const summary = await this.getSummaryForProject(projectId, periodStart);
-
+      
       // Format label as short day name (Mon, Tue, etc.)
       const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
       const label = i === 0 ? 'Today' : dayNames[periodStart.getUTCDay()];

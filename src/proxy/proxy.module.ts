@@ -8,6 +8,7 @@ import { UsageModule } from '../usage/usage.module';
 import { SecurityModule } from '../security/security.module';
 import { PricingModule } from '../pricing/pricing.module';
 import { AnonymizationModule } from '../anonymization/anonymization.module';
+import { FlowModule } from '../flow/flow.module';
 import { SecurityEvent } from '../security/security-event.entity';
 import { AnonymizationLog } from '../anonymization/anonymization-log.entity';
 
@@ -18,6 +19,7 @@ import { AnonymizationLog } from '../anonymization/anonymization-log.entity';
     SecurityModule,
     PricingModule,
     AnonymizationModule,
+    FlowModule,
     TypeOrmModule.forFeature([SecurityEvent, AnonymizationLog]),
     HttpModule,
   ],

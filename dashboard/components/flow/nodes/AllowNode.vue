@@ -2,15 +2,15 @@
   <div class="allow-node">
     <Handle type="target" :position="Position.Top" class="handle-top" />
     
-    <div class="node-content">
-      <div class="node-icon">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <div class="node-content text-center justify-center">
+      <!-- <div class="node-icon">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <polyline points="20 6 9 17 4 12"/>
         </svg>
-      </div>
+      </div> -->
       <div class="node-text">
-        <div class="node-title">Allow Request</div>
-        <div class="node-subtitle">Forward to AI provider</div>
+        <div class="node-title">Allow</div>
+        <div class="node-subtitle">Forward to AI</div>
       </div>
     </div>
   </div>
@@ -26,12 +26,12 @@ defineProps<{
 
 <style scoped>
 .allow-node {
-  background: rgba(17, 24, 39, 0.95);
-  border: 1px solid rgba(16, 185, 129, 0.4);
-  border-radius: 12px;
-  padding: 12px 16px;
-  min-width: 180px;
-  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.1);
+  position: relative;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 16px;
+  padding: 14px 18px;
+  min-width: 140px;
 }
 
 .node-content {
@@ -41,9 +41,9 @@ defineProps<{
 }
 
 .node-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
   background: rgba(16, 185, 129, 0.2);
   display: flex;
   align-items: center;
@@ -52,25 +52,26 @@ defineProps<{
 }
 
 .node-icon .icon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
 .node-title {
   font-size: 14px;
-  font-weight: 500;
-  color: white;
+  font-weight: 600;
+  color: #34d399;
 }
 
 .node-subtitle {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 1px;
 }
 
 .handle-top {
-  background: #34d399 !important;
-  border: 2px solid #111827 !important;
-  width: 12px !important;
-  height: 12px !important;
+  background: #10b981 !important;
+  width: 10px !important;
+  height: 10px !important;
+  border: none !important;
 }
 </style>

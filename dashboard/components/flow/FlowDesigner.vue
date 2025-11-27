@@ -14,22 +14,6 @@
       </button>
     </div>
 
-    <!-- Save/Load -->
-    <div class="absolute top-4 right-4 z-10 flex gap-2">
-      <button
-        @click="saveFlow"
-        class="px-3 py-1.5 text-xs font-medium rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 transition-all"
-      >
-        Save Flow
-      </button>
-      <button
-        @click="clearFlow"
-        class="px-3 py-1.5 text-xs font-medium rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition-all"
-      >
-        Clear
-      </button>
-    </div>
-
     <!-- Vue Flow Canvas -->
     <VueFlow
       v-model:nodes="nodes"
@@ -39,26 +23,26 @@
       :snap-to-grid="true"
       :snap-grid="[16, 16]"
       @connect="onConnect"
-      class="bg-gray-950"
+      class="bg-gray-500/10"
       fit-view-on-init
     >
-      <Background :gap="20" :size="1" pattern-color="rgba(255,255,255,0.03)" />
-      <Controls position="bottom-left" class="!bg-gray-800 !border-gray-700" />
-      <MiniMap 
+      <Background variant="dots" :gap="16" :size="1" pattern-color="rgba(255,255,255,0.15)" />
+      <Controls position="bottom-left" class="!bg-gray-500/10 !border-gray-500/10" />
+      <!-- <MiniMap 
         class="!bg-gray-900 !border-gray-700" 
         :node-color="nodeColor"
         position="bottom-right"
-      />
+      /> -->
     </VueFlow>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, markRaw } from 'vue'
+import { ref, markRaw, watch } from 'vue'
 import { VueFlow, useVueFlow } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
 import { Controls } from '@vue-flow/controls'
-import { MiniMap } from '@vue-flow/minimap'
+// import { MiniMap } from '@vue-flow/minimap'
 import '@vue-flow/core/dist/style.css'
 import '@vue-flow/core/dist/theme-default.css'
 import '@vue-flow/controls/dist/style.css'
@@ -70,6 +54,15 @@ import CheckLimitNode from './nodes/CheckLimitNode.vue'
 import LimitResponseNode from './nodes/LimitResponseNode.vue'
 import AllowNode from './nodes/AllowNode.vue'
 
+// Heroicons
+import { 
+  PlayIcon, 
+  UserGroupIcon, 
+  ClockIcon, 
+  NoSymbolIcon, 
+  CheckCircleIcon 
+} from '@heroicons/vue/24/outline'
+
 const props = defineProps<{
   projectId: string
   initialFlow?: { nodes: any[], edges: any[] }
@@ -77,6 +70,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'save', flow: { nodes: any[], edges: any[] }): void
+  (e: 'clear'): void
 }>()
 
 const { addEdges } = useVueFlow()
@@ -90,46 +84,39 @@ const customNodeTypes = {
   allow: markRaw(AllowNode),
 }
 
-// Node type definitions for toolbar
+// Node type definitions for toolbar with Heroicons
 const nodeTypes = [
   { 
     type: 'start', 
     label: 'Start', 
-    color: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-    icon: 'IconPlay'
+    color: 'bg-blue-300/10 text-blue-300 border-blue-300/20 hover:bg-blue-300/20',
+    icon: markRaw(PlayIcon)
   },
   { 
     type: 'checkTier', 
     label: 'Check Tier', 
-    color: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
-    icon: 'IconUsers'
+    color: 'bg-purple-300/10 text-purple-300 border-purple-300/20 hover:bg-purple-300/20',
+    icon: markRaw(UserGroupIcon)
   },
   { 
     type: 'checkLimit', 
     label: 'Check Limit', 
-    color: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-    icon: 'IconGauge'
+    color: 'bg-amber-300/10 text-amber-300 border-amber-300/20 hover:bg-amber-300/20',
+    icon: markRaw(ClockIcon)
   },
   { 
     type: 'limitResponse', 
     label: 'Limit Response', 
-    color: 'bg-rose-500/20 text-rose-400 border-rose-500/30',
-    icon: 'IconBlock'
+    color: 'bg-rose-300/10 text-rose-300 border-rose-300/20 hover:bg-rose-300/20',
+    icon: markRaw(NoSymbolIcon)
   },
   { 
     type: 'allow', 
     label: 'Allow', 
-    color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-    icon: 'IconCheck'
+    color: 'bg-green-300/10 text-green-300 border-green-300/20 hover:bg-green-300/20',
+    icon: markRaw(CheckCircleIcon)
   },
 ]
-
-// Simple icon components
-const IconPlay = { template: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>' }
-const IconUsers = { template: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' }
-const IconGauge = { template: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>' }
-const IconBlock = { template: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>' }
-const IconCheck = { template: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>' }
 
 // Nodes and edges
 const nodes = ref(props.initialFlow?.nodes || [
@@ -193,25 +180,30 @@ const onConnect = (params: any) => {
 // Minimap node colors
 const nodeColor = (node: any) => {
   const colors: Record<string, string> = {
-    start: '#3b82f6',
+    start: '#60a5fa',
     checkTier: '#a855f7',
-    checkLimit: '#f59e0b',
-    limitResponse: '#f43f5e',
-    allow: '#10b981',
+    checkLimit: '#fbbf24',
+    limitResponse: '#fb7185',
+    allow: '#34d399',
   }
   return colors[node.type] || '#666'
 }
 
-// Save flow
-const saveFlow = () => {
+// Track if we're clearing to skip the watch
+const isClearing = ref(false)
+
+// Auto-emit changes when nodes or edges update
+watch([nodes, edges], () => {
+  if (isClearing.value) return
   emit('save', {
     nodes: nodes.value,
     edges: edges.value
   })
-}
+}, { deep: true })
 
 // Clear flow
 const clearFlow = () => {
+  isClearing.value = true
   nodes.value = [
     {
       id: 'start-1',
@@ -221,7 +213,15 @@ const clearFlow = () => {
     }
   ]
   edges.value = []
+  emit('clear')
+  // Reset flag after next tick
+  setTimeout(() => {
+    isClearing.value = false
+  }, 0)
 }
+
+// Expose clear method for parent to call
+defineExpose({ clearFlow })
 </script>
 
 <style>
@@ -234,22 +234,43 @@ const clearFlow = () => {
 }
 
 .vue-flow__controls {
-  background: rgba(31, 41, 55, 0.9) !important;
-  border-color: rgba(75, 85, 99, 0.5) !important;
+  /* background: rgba(31, 41, 55, 0.95) !important; */
+  border: 1px solid rgba(75, 85, 99, 0.4) !important;
+  border-radius: 8px !important;
+  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important; */
 }
 
 .vue-flow__controls-button {
-  background: transparent !important;
-  border-color: rgba(75, 85, 99, 0.5) !important;
-  color: #9ca3af !important;
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(75, 85, 99, 0.4) !important;
+  color: #fff !important;
+  width: 32px !important;
+  height: 32px !important;
+}
+
+.vue-flow__controls-button:first-child {
+  border-radius: 7px 7px 0 0 !important;
+}
+
+.vue-flow__controls-button:last-child {
+  border-radius: 0 0 7px 7px !important;
+  border-bottom: none !important;
+}
+
+.vue-flow__controls-button svg {
+  fill: #fff !important;
+  width: 16px !important;
+  height: 16px !important;
 }
 
 .vue-flow__controls-button:hover {
-  background: rgba(75, 85, 99, 0.3) !important;
+  background: rgba(75, 85, 99, 0.4) !important;
 }
 
-.vue-flow__minimap {
-  background: rgba(17, 24, 39, 0.9) !important;
-  border-color: rgba(75, 85, 99, 0.5) !important;
-}
+/* .vue-flow__minimap {
+  background: rgba(17, 24, 39, 0.95) !important;
+  border: 1px solid rgba(75, 85, 99, 0.5) !important;
+  border-radius: 8px !important;
+} */
 </style>
