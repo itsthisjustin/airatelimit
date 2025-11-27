@@ -1,4 +1,4 @@
-# Dashboard nixpacks config
+# Dashboard nixpacks config - Static SPA
 [phases.setup]
 nixPkgs = ["nodejs_20", "npm-9_x"]
 
@@ -6,8 +6,8 @@ nixPkgs = ["nodejs_20", "npm-9_x"]
 cmds = ["npm install"]
 
 [phases.build]
-cmds = ["npm run build"]
+cmds = ["npm run generate"]
 
-# Note: start command must be set in Railway UI due to monorepo limitation
-# Set to: node .output/server/index.mjs
+[start]
+cmd = "npx serve .output/public -l $PORT"
 

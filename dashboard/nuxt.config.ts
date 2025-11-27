@@ -53,10 +53,12 @@ export default defineNuxtConfig({
     preset: 'node-server',
   },
 
-  // Make sure to use PORT env var in production
+  // Make sure to use PORT env var and bind to 0.0.0.0 in production
   $production: {
     nitro: {
       preset: 'node-server',
+      // Bind to all interfaces for Railway
+      host: '0.0.0.0',
     },
   },
 })
