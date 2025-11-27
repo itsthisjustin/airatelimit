@@ -14,12 +14,12 @@
         </div>
         <button
           @click="showModal = true"
-          class="px-4 py-2 bg-blue-300 text-black text-sm font-medium rounded-lg hover:bg-blue-400 transition-colors inline-flex items-center space-x-2"
+          class="px-3 py-1.5 bg-blue-300 text-black text-sm font-medium rounded-lg hover:bg-blue-400 transition-colors inline-flex items-center space-x-2"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
-          <span>Create Project</span>
+          <span>New</span>
         </button>
       </div>
 

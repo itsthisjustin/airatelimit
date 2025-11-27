@@ -16,7 +16,7 @@
               @click="toggleDropdown"
               class="flex items-center space-x-2 focus:outline-none"
             >
-              <div class="w-6 h-6 bg-amber-300 rounded-full flex items-center justify-center text-black font-semibold text-[10px]">
+              <div class="w-6 h-6 bg-amber-300/50 rounded-full flex items-center justify-center text-white font-medium text-[10px]">
                 {{ userInitials }}
               </div>
             </button>

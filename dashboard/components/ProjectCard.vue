@@ -78,7 +78,7 @@
       </div> -->
 
       <!-- Usage Progress Bars -->
-      <div class="space-y-3 mb-1">
+      <div class="my-1 mt-5 space-y-3">
         <ProgressBar
           v-if="project.limitType !== 'tokens'"
           label="Requests"

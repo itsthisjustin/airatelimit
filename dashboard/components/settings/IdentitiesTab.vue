@@ -31,7 +31,7 @@
         @click="showAddModal = true"
         class="px-4 py-2 bg-blue-300 text-black text-sm font-medium rounded-lg hover:bg-blue-400 whitespace-nowrap"
       >
-        + Add Identity
+        + Add
       </button>
     </div>
 

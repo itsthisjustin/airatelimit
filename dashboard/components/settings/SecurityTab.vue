@@ -168,9 +168,9 @@
         v-if="editForm.securityEnabled"
         @click="$emit('update')"
         :disabled="updating"
-        class="mt-6 w-full px-6 py-2 bg-blue-300 text-black text-sm font-medium rounded-lg hover:bg-blue-400 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="mt-6 w-full px-4 py-2 bg-blue-300 text-black text-sm font-medium rounded-lg hover:bg-blue-400 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {{ updating ? 'Saving...' : 'Save changes' }}
+        {{ updating ? 'Saving...' : 'Save' }}
       </button>
     </div>
 
@@ -207,16 +207,16 @@
             <div class="flex items-center gap-2">
               <span
                 :class="{
-                  'bg-red-500/20 text-red-300': event.severity === 'high',
-                  'bg-orange-500/20 text-orange-300': event.severity === 'medium',
-                  'bg-yellow-500/20 text-yellow-300': event.severity === 'low'
+                  'bg-red-400/10 text-red-400': event.severity === 'high',
+                  'bg-orange-300/10 text-orange-300': event.severity === 'medium',
+                  'bg-yellow-300/10 text-yellow-300': event.severity === 'low'
                 }"
                 class="px-2 py-0.5 text-xs font-medium rounded"
               >
                 {{ event.severity }}
               </span>
               <span
-                :class="event.blocked ? 'bg-red-500/20 text-red-300' : 'bg-blue-500/20 text-blue-300'"
+                :class="event.blocked ? 'bg-red-400/10 text-red-400' : 'bg-blue-300/10 text-blue-300'"
                 class="px-2 py-0.5 text-xs font-medium rounded"
               >
                 {{ event.blocked ? 'Blocked' : 'Logged' }}
