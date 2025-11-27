@@ -9,9 +9,14 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   // Enable CORS for dashboard
+  const corsOrigin = configService.get<string>('corsOrigin');
   app.enableCors({
-    origin: configService.get<string>('corsOrigin'),
+    origin: corsOrigin?.includes(',') 
+      ? corsOrigin.split(',').map(o => o.trim()) 
+      : corsOrigin || true,
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-project-key', 'x-identity', 'x-tier'],
   });
 
   // Enable validation
