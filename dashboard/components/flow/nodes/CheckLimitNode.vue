@@ -5,7 +5,7 @@
     <div class="node-badge">CHECK LIMIT</div>
     <div class="node-content">
       <div class="node-icon">
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"/>
           <polyline points="12 6 12 12 16 14"/>
         </svg>
@@ -67,79 +67,160 @@ defineProps<{
 
 <style scoped>
 .check-limit-node {
-  @apply relative bg-gray-900/95 border border-amber-500/40 rounded-xl px-4 py-3 min-w-[220px];
-  @apply shadow-lg shadow-amber-500/10;
+  position: relative;
+  background: rgba(17, 24, 39, 0.95);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 12px;
+  padding: 12px 16px;
+  min-width: 220px;
+  box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.1);
 }
 
 .node-badge {
-  @apply absolute -top-2.5 left-1/2 -translate-x-1/2 px-2 py-0.5 text-[10px] font-bold;
-  @apply bg-amber-500 text-black rounded-full tracking-wider whitespace-nowrap;
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  background: #f59e0b;
+  color: black;
+  border-radius: 9999px;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 
 .node-content {
-  @apply flex items-start gap-3 mt-2;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 8px;
 }
 
 .node-icon {
-  @apply w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400 flex-shrink-0;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(245, 158, 11, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fbbf24;
+  flex-shrink: 0;
+}
+
+.node-icon .icon {
+  width: 16px;
+  height: 16px;
 }
 
 .config {
-  @apply flex flex-col gap-2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .config-row {
-  @apply flex items-center gap-1.5 text-xs;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
 }
 
 .config-label {
-  @apply text-gray-500;
+  color: #6b7280;
 }
 
 .config-select, .config-select-sm {
-  @apply bg-gray-800/80 border border-gray-700/50 rounded px-1.5 py-0.5 text-white text-xs;
-  @apply focus:outline-none focus:border-amber-500/50;
+  background: rgba(31, 41, 55, 0.8);
+  border: 1px solid rgba(75, 85, 99, 0.5);
+  border-radius: 4px;
+  padding: 2px 6px;
+  color: white;
+  font-size: 12px;
+}
+
+.config-select:focus, .config-select-sm:focus {
+  outline: none;
+  border-color: rgba(245, 158, 11, 0.5);
 }
 
 .config-select-sm {
-  @apply w-14;
+  width: 56px;
 }
 
 .config-number {
-  @apply bg-gray-800/80 border border-gray-700/50 rounded px-1.5 py-0.5 text-white text-xs w-16;
-  @apply focus:outline-none focus:border-amber-500/50;
+  background: rgba(31, 41, 55, 0.8);
+  border: 1px solid rgba(75, 85, 99, 0.5);
+  border-radius: 4px;
+  padding: 2px 6px;
+  color: white;
+  font-size: 12px;
+  width: 64px;
+}
+
+.config-number:focus {
+  outline: none;
+  border-color: rgba(245, 158, 11, 0.5);
 }
 
 .outputs {
-  @apply flex justify-between mt-3 pt-2 border-t border-gray-700/30;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(75, 85, 99, 0.3);
 }
 
 .output {
-  @apply flex flex-col items-center gap-1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 
 .output-label {
-  @apply text-[10px] font-medium px-2 py-0.5 rounded-full;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 9999px;
 }
 
 .output-label.pass {
-  @apply bg-emerald-500/20 text-emerald-400;
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
 }
 
 .output-label.exceeded {
-  @apply bg-rose-500/20 text-rose-400;
+  background: rgba(244, 63, 94, 0.2);
+  color: #fb7185;
 }
 
 .handle-top {
-  @apply !bg-amber-400 !border-2 !border-gray-900 !w-3 !h-3;
+  background: #fbbf24 !important;
+  border: 2px solid #111827 !important;
+  width: 12px !important;
+  height: 12px !important;
 }
 
 .handle-pass {
-  @apply !bg-emerald-400 !border-2 !border-gray-900 !w-3 !h-3 !relative !left-0 !transform-none;
+  background: #34d399 !important;
+  border: 2px solid #111827 !important;
+  width: 12px !important;
+  height: 12px !important;
+  position: relative !important;
+  left: 0 !important;
+  transform: none !important;
 }
 
 .handle-exceeded {
-  @apply !bg-rose-400 !border-2 !border-gray-900 !w-3 !h-3 !relative !left-0 !transform-none;
+  background: #fb7185 !important;
+  border: 2px solid #111827 !important;
+  width: 12px !important;
+  height: 12px !important;
+  position: relative !important;
+  left: 0 !important;
+  transform: none !important;
 }
 </style>
-

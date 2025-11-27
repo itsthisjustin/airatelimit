@@ -5,7 +5,7 @@
     <div class="node-badge">CHECK TIER</div>
     <div class="node-content">
       <div class="node-icon">
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
           <circle cx="9" cy="7" r="4"/>
           <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
@@ -57,58 +57,116 @@ defineProps<{
 
 <style scoped>
 .check-tier-node {
-  @apply relative bg-gray-900/95 border border-purple-500/40 rounded-xl px-4 py-3 min-w-[180px];
-  @apply shadow-lg shadow-purple-500/10;
+  position: relative;
+  background: rgba(17, 24, 39, 0.95);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  border-radius: 12px;
+  padding: 12px 16px;
+  min-width: 180px;
+  box-shadow: 0 10px 15px -3px rgba(168, 85, 247, 0.1);
 }
 
 .node-badge {
-  @apply absolute -top-2.5 left-1/2 -translate-x-1/2 px-2 py-0.5 text-[10px] font-bold;
-  @apply bg-purple-500 text-white rounded-full tracking-wider whitespace-nowrap;
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  background: #a855f7;
+  color: white;
+  border-radius: 9999px;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 
 .node-content {
-  @apply flex items-start gap-3 mt-2;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 8px;
 }
 
 .node-icon {
-  @apply w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 flex-shrink-0;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(168, 85, 247, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #c084fc;
+  flex-shrink: 0;
+}
+
+.node-icon .icon {
+  width: 16px;
+  height: 16px;
 }
 
 .config {
-  @apply flex flex-col gap-2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .config-label {
-  @apply text-xs text-gray-400;
+  font-size: 12px;
+  color: #9ca3af;
 }
 
 .tiers-list {
-  @apply flex flex-wrap gap-1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 
 .tier-badge {
-  @apply px-2 py-0.5 text-[10px] font-medium rounded-full;
-  @apply bg-purple-500/20 text-purple-300 border border-purple-500/30;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 500;
+  border-radius: 9999px;
+  background: rgba(168, 85, 247, 0.2);
+  color: #d8b4fe;
+  border: 1px solid rgba(168, 85, 247, 0.3);
 }
 
 .outputs {
-  @apply flex justify-around mt-3 pt-2 border-t border-gray-700/30;
+  display: flex;
+  justify-content: space-around;
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(75, 85, 99, 0.3);
 }
 
 .output {
-  @apply flex flex-col items-center gap-1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 
 .output-label {
-  @apply text-[10px] font-medium text-gray-500;
+  font-size: 10px;
+  font-weight: 500;
+  color: #6b7280;
 }
 
 .handle-top {
-  @apply !bg-purple-400 !border-2 !border-gray-900 !w-3 !h-3;
+  background: #c084fc !important;
+  border: 2px solid #111827 !important;
+  width: 12px !important;
+  height: 12px !important;
 }
 
 .handle-tier {
-  @apply !bg-purple-400 !border-2 !border-gray-900 !w-3 !h-3 !relative !left-0 !transform-none;
+  background: #c084fc !important;
+  border: 2px solid #111827 !important;
+  width: 12px !important;
+  height: 12px !important;
+  position: relative !important;
+  left: 0 !important;
+  transform: none !important;
 }
 </style>
-

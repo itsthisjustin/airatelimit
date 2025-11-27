@@ -4,7 +4,7 @@
     
     <div class="node-content">
       <div class="node-icon">
-        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="20 6 9 17 4 12"/>
         </svg>
       </div>
@@ -13,8 +13,6 @@
         <div class="node-subtitle">Forward to AI provider</div>
       </div>
     </div>
-
-    <!-- Terminal node -->
   </div>
 </template>
 
@@ -28,28 +26,51 @@ defineProps<{
 
 <style scoped>
 .allow-node {
-  @apply bg-gray-900/95 border border-emerald-500/40 rounded-xl px-4 py-3 min-w-[180px];
-  @apply shadow-lg shadow-emerald-500/10;
+  background: rgba(17, 24, 39, 0.95);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  border-radius: 12px;
+  padding: 12px 16px;
+  min-width: 180px;
+  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.1);
 }
 
 .node-content {
-  @apply flex items-center gap-3;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .node-icon {
-  @apply w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: rgba(16, 185, 129, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #34d399;
+}
+
+.node-icon .icon {
+  width: 20px;
+  height: 20px;
 }
 
 .node-title {
-  @apply text-sm font-medium text-white;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
 }
 
 .node-subtitle {
-  @apply text-xs text-gray-500;
+  font-size: 12px;
+  color: #6b7280;
 }
 
 .handle-top {
-  @apply !bg-emerald-400 !border-2 !border-gray-900 !w-3 !h-3;
+  background: #34d399 !important;
+  border: 2px solid #111827 !important;
+  width: 12px !important;
+  height: 12px !important;
 }
 </style>
-

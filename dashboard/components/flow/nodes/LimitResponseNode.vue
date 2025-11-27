@@ -5,7 +5,7 @@
     <div class="node-badge">LIMIT RESPONSE</div>
     <div class="node-content">
       <div class="node-icon">
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"/>
           <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
         </svg>
@@ -24,8 +24,6 @@
         </label>
       </div>
     </div>
-
-    <!-- Terminal node -->
   </div>
 </template>
 
@@ -42,42 +40,97 @@ defineProps<{
 
 <style scoped>
 .limit-response-node {
-  @apply relative bg-gray-900/95 border border-rose-500/40 rounded-xl px-4 py-3 min-w-[220px];
-  @apply shadow-lg shadow-rose-500/10;
+  position: relative;
+  background: rgba(17, 24, 39, 0.95);
+  border: 1px solid rgba(244, 63, 94, 0.4);
+  border-radius: 12px;
+  padding: 12px 16px;
+  min-width: 220px;
+  box-shadow: 0 10px 15px -3px rgba(244, 63, 94, 0.1);
 }
 
 .node-badge {
-  @apply absolute -top-2.5 left-1/2 -translate-x-1/2 px-2 py-0.5 text-[10px] font-bold;
-  @apply bg-rose-500 text-white rounded-full tracking-wider whitespace-nowrap;
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  background: #f43f5e;
+  color: white;
+  border-radius: 9999px;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 
 .node-content {
-  @apply flex items-start gap-3 mt-2;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 8px;
 }
 
 .node-icon {
-  @apply w-8 h-8 rounded-lg bg-rose-500/20 flex items-center justify-center text-rose-400 flex-shrink-0;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(244, 63, 94, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fb7185;
+  flex-shrink: 0;
+}
+
+.node-icon .icon {
+  width: 16px;
+  height: 16px;
 }
 
 .config {
-  @apply flex flex-col gap-2 flex-1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
 }
 
 .config-textarea {
-  @apply bg-gray-800/80 border border-gray-700/50 rounded-md px-2 py-1.5 text-white text-xs w-full resize-none;
-  @apply focus:outline-none focus:border-rose-500/50;
+  background: rgba(31, 41, 55, 0.8);
+  border: 1px solid rgba(75, 85, 99, 0.5);
+  border-radius: 6px;
+  padding: 6px 8px;
+  color: white;
+  font-size: 12px;
+  width: 100%;
+  resize: none;
+}
+
+.config-textarea:focus {
+  outline: none;
+  border-color: rgba(244, 63, 94, 0.5);
 }
 
 .config-checkbox {
-  @apply flex items-center gap-2 text-xs text-gray-400 cursor-pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #9ca3af;
+  cursor: pointer;
 }
 
 .config-checkbox input {
-  @apply rounded border-gray-600 bg-gray-800 text-rose-500 focus:ring-rose-500/50;
+  border-radius: 4px;
+  border: 1px solid #4b5563;
+  background: #1f2937;
+  accent-color: #f43f5e;
 }
 
 .handle-top {
-  @apply !bg-rose-400 !border-2 !border-gray-900 !w-3 !h-3;
+  background: #fb7185 !important;
+  border: 2px solid #111827 !important;
+  width: 12px !important;
+  height: 12px !important;
 }
 </style>
-
