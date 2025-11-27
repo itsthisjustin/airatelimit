@@ -3,6 +3,10 @@ FROM node:20-slim
 
 WORKDIR /app
 
+# Build argument for API URL (Railway passes env vars as build args)
+ARG NUXT_PUBLIC_API_BASE_URL=https://api.airatelimit.com/api
+ENV NUXT_PUBLIC_API_BASE_URL=$NUXT_PUBLIC_API_BASE_URL
+
 # Copy dashboard package files
 COPY dashboard/package*.json ./
 
@@ -12,7 +16,7 @@ RUN npm install
 # Copy dashboard source code
 COPY dashboard/ .
 
-# Build the static site
+# Build the static site with the API URL baked in
 RUN npm run generate
 
 # Railway provides PORT env var
