@@ -148,6 +148,9 @@ export class FlowExecutorService {
       case 'checkLimit':
         return this.evaluateCheckLimit(node, context, edgesBySource, nodesById);
 
+      case 'checkModel':
+        return this.evaluateCheckModel(node, context, edgesBySource, nodesById);
+
       case 'limitResponse':
         return this.evaluateLimitResponse(node, context, upgradeUrl);
 
@@ -205,7 +208,7 @@ export class FlowExecutorService {
     const { limitType, scope, limit, period } = node.data || {};
     
     // Get current usage - we need to fetch it with the right period
-    const periodStart = this.getPeriodStart(period || 'day');
+    const periodStart = this.getPeriodStart(period || 'daily');
     const usage = await this.usageService.getUsage({
       projectId: context.projectId,
       identity: scope === 'session' ? context.session || context.identity : context.identity,
@@ -213,10 +216,10 @@ export class FlowExecutorService {
       periodStart,
     });
 
-    // Check if limit is exceeded
+    // Check if limit is exceeded (handle null usage - means no usage yet)
     const currentValue = limitType === 'tokens' 
-      ? usage.tokensUsed 
-      : usage.requestsUsed;
+      ? (usage?.tokensUsed || 0) 
+      : (usage?.requestsUsed || 0);
     
     const isExceeded = currentValue >= (limit || Infinity);
 
@@ -237,6 +240,61 @@ export class FlowExecutorService {
     }
 
     // If not exceeded and no pass edge, allow
+    return { terminal: true };
+  }
+
+  /**
+   * Evaluate checkModel node - checks model-specific usage limits
+   */
+  private async evaluateCheckModel(
+    node: FlowNode,
+    context: FlowContext,
+    edgesBySource: Map<string, FlowEdge[]>,
+    nodesById: Map<string, FlowNode>,
+  ): Promise<{ terminal: boolean; nextNode?: FlowNode }> {
+    const { model, limit } = node.data || {};
+    
+    // If no specific model set, or model doesn't match, pass through
+    if (!model || (context.model && !context.model.includes(model))) {
+      const edges = edgesBySource.get(node.id) || [];
+      for (const edge of edges) {
+        if (edge.sourceHandle === 'pass') {
+          const nextNode = nodesById.get(edge.target);
+          return { terminal: false, nextNode };
+        }
+      }
+      return { terminal: true };
+    }
+
+    // Get model-specific usage (daily)
+    const periodStart = this.getPeriodStart('daily');
+    const usage = await this.usageService.getUsage({
+      projectId: context.projectId,
+      identity: context.identity,
+      model: model,
+      periodStart,
+    });
+
+    // If no usage record exists, user hasn't hit this model yet - within limit
+    const requestsUsed = usage?.requestsUsed || 0;
+    const isExceeded = requestsUsed >= (limit || Infinity);
+
+    // Find the appropriate edge
+    const edges = edgesBySource.get(node.id) || [];
+    const handleToFollow = isExceeded ? 'exceeded' : 'pass';
+
+    for (const edge of edges) {
+      if (edge.sourceHandle === handleToFollow) {
+        const nextNode = nodesById.get(edge.target);
+        return { terminal: false, nextNode };
+      }
+    }
+
+    // Fallback
+    if (isExceeded) {
+      return { terminal: true };
+    }
+
     return { terminal: true };
   }
 
@@ -315,15 +373,41 @@ export class FlowExecutorService {
 
   /**
    * Check if a project has a valid flow config
+   * Validates: start node exists, has connections, and reaches a terminal node
    */
   hasValidFlow(flowConfig: any): boolean {
     if (!flowConfig) return false;
     if (!flowConfig.nodes || !Array.isArray(flowConfig.nodes)) return false;
+    if (!flowConfig.edges || !Array.isArray(flowConfig.edges)) return false;
     if (flowConfig.nodes.length === 0) return false;
-    
-    // Must have at least a start node and one other node
-    const hasStart = flowConfig.nodes.some((n: any) => n.type === 'start');
-    return hasStart && flowConfig.nodes.length > 1;
+
+    const nodes = flowConfig.nodes;
+    const edges = flowConfig.edges;
+
+    // Must have a start node
+    const startNode = nodes.find((n: any) => n.type === 'start');
+    if (!startNode) return false;
+
+    // Start node must have at least one outgoing edge
+    const startEdges = edges.filter((e: any) => e.source === startNode.id);
+    if (startEdges.length === 0) return false;
+
+    // Must have at least one terminal node (allow or limitResponse)
+    const hasTerminal = nodes.some(
+      (n: any) => n.type === 'allow' || n.type === 'limitResponse',
+    );
+    if (!hasTerminal) return false;
+
+    // Check if at least one terminal node is reachable from start
+    // Simple check: terminal nodes must have at least one incoming edge
+    const terminalNodes = nodes.filter(
+      (n: any) => n.type === 'allow' || n.type === 'limitResponse',
+    );
+    const hasReachableTerminal = terminalNodes.some((terminal: any) =>
+      edges.some((e: any) => e.target === terminal.id),
+    );
+
+    return hasReachableTerminal;
   }
 
   /**
@@ -332,12 +416,20 @@ export class FlowExecutorService {
   private getPeriodStart(period: string): Date {
     const now = new Date();
     switch (period) {
-      case 'minute':
-        return new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes());
-      case 'hour':
-        return new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours());
+      case 'daily':
       case 'day':
+        return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      case 'weekly':
+        // Start of current week (Sunday)
+        const dayOfWeek = now.getDay();
+        const weekStart = new Date(now);
+        weekStart.setDate(now.getDate() - dayOfWeek);
+        weekStart.setHours(0, 0, 0, 0);
+        return weekStart;
+      case 'monthly':
+        return new Date(now.getFullYear(), now.getMonth(), 1);
       default:
+        // Default to daily
         return new Date(now.getFullYear(), now.getMonth(), now.getDate());
     }
   }

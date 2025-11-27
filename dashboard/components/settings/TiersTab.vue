@@ -128,17 +128,37 @@ const emit = defineEmits<{
 const newTierName = ref('')
 
 const knownModels = [
+  // OpenAI - Latest
+  { name: 'gpt-5', provider: 'OpenAI', recommended: true },
   { name: 'gpt-4o', provider: 'OpenAI', recommended: true },
   { name: 'gpt-4o-mini', provider: 'OpenAI', recommended: true },
-  { name: 'gpt-4-turbo', provider: 'OpenAI', recommended: false },
-  { name: 'o1-preview', provider: 'OpenAI', recommended: true },
+  { name: 'o1', provider: 'OpenAI', recommended: true },
   { name: 'o1-mini', provider: 'OpenAI', recommended: true },
-  { name: 'claude-3-5-sonnet-20241022', provider: 'Anthropic', recommended: true },
+  { name: 'o3-mini', provider: 'OpenAI', recommended: true },
+  { name: 'gpt-4-turbo', provider: 'OpenAI', recommended: false },
+  { name: 'gpt-3.5-turbo', provider: 'OpenAI', recommended: false },
+  
+  // Anthropic - Latest
+  { name: 'claude-4.5-sonnet', provider: 'Anthropic', recommended: true },
+  { name: 'claude-4.5-opus', provider: 'Anthropic', recommended: true },
+  { name: 'claude-sonnet-4', provider: 'Anthropic', recommended: true },
   { name: 'claude-3-5-sonnet-latest', provider: 'Anthropic', recommended: true },
+  { name: 'claude-3-5-haiku-latest', provider: 'Anthropic', recommended: true },
+  { name: 'claude-3-opus-latest', provider: 'Anthropic', recommended: false },
+  
+  // Google - Latest
+  { name: 'gemini-3-ultra', provider: 'Google', recommended: true },
+  { name: 'gemini-3-pro', provider: 'Google', recommended: true },
+  { name: 'gemini-2.5-pro', provider: 'Google', recommended: true },
   { name: 'gemini-2.5-flash', provider: 'Google', recommended: true },
-  { name: 'gemini-2.0-flash-exp', provider: 'Google', recommended: true },
-  { name: 'gemini-1.5-pro', provider: 'Google', recommended: true },
-  { name: 'grok-beta', provider: 'xAI', recommended: true },
+  { name: 'gemini-2.0-flash', provider: 'Google', recommended: true },
+  { name: 'gemini-1.5-pro', provider: 'Google', recommended: false },
+  { name: 'gemini-1.5-flash', provider: 'Google', recommended: false },
+  
+  // xAI - Latest
+  { name: 'grok-4', provider: 'xAI', recommended: true },
+  { name: 'grok-3', provider: 'xAI', recommended: true },
+  { name: 'grok-2', provider: 'xAI', recommended: false },
 ]
 
 const addTier = () => {

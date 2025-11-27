@@ -1,15 +1,16 @@
 <template>
   <div class="flow-designer h-full w-full">
-    <!-- Toolbar -->
-    <div class="absolute top-4 left-4 z-10 flex gap-2">
+    <!-- Vertical Toolbar -->
+    <div class="absolute top-4 left-4 z-10 flex flex-col gap-1.5 p-2 bg-black/40 backdrop-blur-sm rounded-xl border border-white/10">
+      <div class="text-[10px] text-white/40 font-medium uppercase tracking-wider px-2 pb-1 border-b border-white/10 mb-1">Nodes</div>
       <button
         v-for="nodeType in nodeTypes"
         :key="nodeType.type"
         @click="addNode(nodeType.type)"
         :class="nodeType.color"
-        class="px-3 py-1.5 text-xs font-medium rounded-lg border transition-all hover:scale-105 flex items-center gap-1.5"
+        class="px-2 py-1.5 text-xs font-medium rounded-lg border transition-all hover:scale-[1.02] flex items-center gap-2 w-full"
       >
-        <component :is="nodeType.icon" class="w-3.5 h-3.5" />
+        <component :is="nodeType.icon" class="w-4 h-4" />
         {{ nodeType.label }}
       </button>
     </div>
@@ -51,6 +52,7 @@ import '@vue-flow/minimap/dist/style.css'
 import StartNode from './nodes/StartNode.vue'
 import CheckTierNode from './nodes/CheckTierNode.vue'
 import CheckLimitNode from './nodes/CheckLimitNode.vue'
+import CheckModelNode from './nodes/CheckModelNode.vue'
 import LimitResponseNode from './nodes/LimitResponseNode.vue'
 import AllowNode from './nodes/AllowNode.vue'
 
@@ -59,6 +61,7 @@ import {
   PlayIcon, 
   UserGroupIcon, 
   ClockIcon, 
+  CpuChipIcon,
   NoSymbolIcon, 
   CheckCircleIcon 
 } from '@heroicons/vue/24/outline'
@@ -80,6 +83,7 @@ const customNodeTypes = {
   start: markRaw(StartNode),
   checkTier: markRaw(CheckTierNode),
   checkLimit: markRaw(CheckLimitNode),
+  checkModel: markRaw(CheckModelNode),
   limitResponse: markRaw(LimitResponseNode),
   allow: markRaw(AllowNode),
 }
@@ -103,6 +107,12 @@ const nodeTypes = [
     label: 'Check Limit', 
     color: 'bg-amber-300/10 text-amber-300 border-amber-300/20 hover:bg-amber-300/20',
     icon: markRaw(ClockIcon)
+  },
+  { 
+    type: 'checkModel', 
+    label: 'Check Model', 
+    color: 'bg-cyan-300/10 text-cyan-300 border-cyan-300/20 hover:bg-cyan-300/20',
+    icon: markRaw(CpuChipIcon)
   },
   { 
     type: 'limitResponse', 
@@ -153,7 +163,12 @@ const getDefaultData = (type: string) => {
         limitType: 'requests', 
         scope: 'identity',
         limit: 100,
-        period: 'day'
+        period: 'daily'
+      }
+    case 'checkModel':
+      return { 
+        model: '',
+        limit: 100
       }
     case 'limitResponse':
       return { 
@@ -183,6 +198,7 @@ const nodeColor = (node: any) => {
     start: '#60a5fa',
     checkTier: '#a855f7',
     checkLimit: '#fbbf24',
+    checkModel: '#22d3ee',
     limitResponse: '#fb7185',
     allow: '#34d399',
   }

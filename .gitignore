@@ -36,7 +36,6 @@ Thumbs.db
 *.tmp
 .cache/
 *.pid
-add-more-reserved-names.sql
-CUSTOMER_DEMO.md
-test.http
-DEPLOYMENT.md
+nixpacks.*.toml
+nixpacks.toml
+nixpacks.dashboard.toml

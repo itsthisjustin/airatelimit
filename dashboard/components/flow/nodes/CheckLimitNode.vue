@@ -40,9 +40,9 @@
           <span class="config-label">/</span>
           <div class="select-wrapper select-sm">
             <select v-model="data.period" class="config-select">
-              <option value="minute">min</option>
-              <option value="hour">hour</option>
-              <option value="day">day</option>
+              <option value="daily">day</option>
+              <option value="weekly">week</option>
+              <option value="monthly">month</option>
             </select>
             <div class="select-chevron">
               <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

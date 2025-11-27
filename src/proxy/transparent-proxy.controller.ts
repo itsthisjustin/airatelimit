@@ -438,7 +438,41 @@ export class TransparentProxyController {
 
       const periodStart = this.getPeriodStart(project.limitPeriod || 'daily');
 
-      // For images, count each image as a request
+      // FLOW EXECUTION: If project has a valid flow config, use flow executor
+      if (this.flowExecutorService.hasValidFlow(project.flowConfig)) {
+        const flowResult = await this.flowExecutorService.execute(
+          project.flowConfig,
+          {
+            projectId: project.id,
+            identity,
+            tier: tier || 'free',
+            session: sessionId,
+            model,
+          },
+          project.upgradeUrl,
+        );
+
+        if (flowResult.action === 'block' && flowResult.response) {
+          const estimatedSavings = this.pricingService.estimateImageCost(
+            model,
+            body.size,
+            body.quality,
+          ) * numImages;
+          await this.usageService.trackBlockedRequest({
+            project,
+            identity,
+            model,
+            session: sessionId,
+            periodStart,
+            estimatedSavings,
+          });
+
+          res.status(flowResult.response.status).json(flowResult.response.body);
+          return;
+        }
+      }
+
+      // For images, count each image as a request (fallback if no flow)
       const usageCheck = await this.usageService.checkAndUpdateUsage({
         project,
         identity,
@@ -630,6 +664,40 @@ export class TransparentProxyController {
       // Estimate tokens for embeddings
       const inputTokens = this.estimateTokens(body.input);
 
+      // FLOW EXECUTION: If project has a valid flow config, use flow executor
+      if (this.flowExecutorService.hasValidFlow(project.flowConfig)) {
+        const flowResult = await this.flowExecutorService.execute(
+          project.flowConfig,
+          {
+            projectId: project.id,
+            identity,
+            tier: tier || 'free',
+            session: sessionId,
+            model,
+          },
+          project.upgradeUrl,
+        );
+
+        if (flowResult.action === 'block' && flowResult.response) {
+          const estimatedSavings = this.pricingService.calculateEmbeddingCost(
+            model,
+            inputTokens,
+          );
+          await this.usageService.trackBlockedRequest({
+            project,
+            identity,
+            model,
+            session: sessionId,
+            periodStart,
+            estimatedSavings,
+          });
+
+          res.status(flowResult.response.status).json(flowResult.response.body);
+          return;
+        }
+      }
+
+      // Fallback to regular usage check if no flow
       const usageCheck = await this.usageService.checkAndUpdateUsage({
         project,
         identity,
@@ -787,7 +855,37 @@ export class TransparentProxyController {
       const project = await this.projectsService.findByProjectKey(projectKey);
       const periodStart = this.getPeriodStart(project.limitPeriod || 'daily');
 
-      // Audio transcriptions are request-based (per file)
+      // FLOW EXECUTION: If project has a valid flow config, use flow executor
+      if (this.flowExecutorService.hasValidFlow(project.flowConfig)) {
+        const flowResult = await this.flowExecutorService.execute(
+          project.flowConfig,
+          {
+            projectId: project.id,
+            identity,
+            tier: tier || 'free',
+            session: sessionId,
+            model,
+          },
+          project.upgradeUrl,
+        );
+
+        if (flowResult.action === 'block' && flowResult.response) {
+          const estimatedSavings = this.pricingService.estimateAudioCost(model);
+          await this.usageService.trackBlockedRequest({
+            project,
+            identity,
+            model,
+            session: sessionId,
+            periodStart,
+            estimatedSavings,
+          });
+
+          res.status(flowResult.response.status).json(flowResult.response.body);
+          return;
+        }
+      }
+
+      // Audio transcriptions are request-based (per file) - fallback if no flow
       const usageCheck = await this.usageService.checkAndUpdateUsage({
         project,
         identity,
