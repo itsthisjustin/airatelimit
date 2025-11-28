@@ -1,10 +1,41 @@
+import * as crypto from 'crypto';
+
+// ====================================
+// SECURITY: Validate required secrets in production
+// ====================================
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  const nodeEnv = process.env.NODE_ENV || 'development';
+  
+  if (nodeEnv === 'production') {
+    if (!secret) {
+      throw new Error('CRITICAL: JWT_SECRET must be set in production');
+    }
+    if (secret.length < 32) {
+      throw new Error('CRITICAL: JWT_SECRET must be at least 32 characters');
+    }
+    if (secret.includes('change') || secret.includes('your-')) {
+      throw new Error('CRITICAL: JWT_SECRET contains placeholder text - please set a real secret');
+    }
+  }
+  
+  // In development, generate a random secret if not provided
+  // This ensures each dev instance has a unique secret
+  if (!secret) {
+    console.warn('⚠️  JWT_SECRET not set - generating random secret for development');
+    return crypto.randomBytes(32).toString('hex');
+  }
+  
+  return secret;
+}
+
 export default () => ({
   port: parseInt(process.env.PORT, 10) || 3000,
   database: {
     url: process.env.DATABASE_URL,
   },
   globalAdminKey: process.env.GLOBAL_ADMIN_KEY,
-  jwtSecret: process.env.JWT_SECRET || 'your-secret-key-change-in-production',
+  jwtSecret: getJwtSecret(),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
   corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:3001',
   openai: {

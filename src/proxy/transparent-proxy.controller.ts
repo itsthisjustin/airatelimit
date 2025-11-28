@@ -7,6 +7,7 @@ import {
   UnauthorizedException,
   HttpException,
   HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -20,6 +21,16 @@ import { FlowExecutorService } from '../flow/flow-executor.service';
 import { SecurityEvent } from '../security/security-event.entity';
 import { AnonymizationLog } from '../anonymization/anonymization-log.entity';
 import { PricingService } from '../pricing/pricing.service';
+import { validateProxyHeaders } from './dto/proxy-headers.dto';
+
+// ====================================
+// SECURITY CONSTANTS
+// ====================================
+const MAX_MESSAGES = 200;
+const MAX_MESSAGE_LENGTH = 500000; // 500k chars per message
+const MAX_MODEL_LENGTH = 128;
+const MAX_PROMPT_LENGTH = 100000; // 100k chars for image prompts
+const STREAMING_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes max streaming
 
 /**
  * Transparent Proxy Controller
@@ -64,20 +75,29 @@ export class TransparentProxyController {
     @Body() body: any,
     @Res() res: Response,
   ) {
-    // Validate required headers
-    if (!projectKey) {
-      throw new UnauthorizedException('Missing x-project-key header');
+    // ====================================
+    // SECURITY: Validate headers
+    // ====================================
+    const headerValidation = validateProxyHeaders({
+      projectKey,
+      identity,
+      tier,
+      session,
+    });
+    if (!headerValidation.valid) {
+      throw new BadRequestException(headerValidation.error);
     }
+
     if (!authorization) {
       throw new UnauthorizedException(
         'Missing Authorization header with your API key',
       );
     }
-    if (!identity) {
-      throw new UnauthorizedException(
-        'Missing x-identity header for rate limiting',
-      );
-    }
+
+    // ====================================
+    // SECURITY: Validate request body
+    // ====================================
+    this.validateChatCompletionsBody(body);
 
     const startTime = Date.now();
     const model = body.model || 'unknown';
@@ -390,19 +410,29 @@ export class TransparentProxyController {
     @Body() body: any,
     @Res() res: Response,
   ) {
-    if (!projectKey) {
-      throw new UnauthorizedException('Missing x-project-key header');
+    // ====================================
+    // SECURITY: Validate headers
+    // ====================================
+    const headerValidation = validateProxyHeaders({
+      projectKey,
+      identity,
+      tier,
+      session,
+    });
+    if (!headerValidation.valid) {
+      throw new BadRequestException(headerValidation.error);
     }
+
     if (!authorization) {
       throw new UnauthorizedException(
         'Missing Authorization header with your API key',
       );
     }
-    if (!identity) {
-      throw new UnauthorizedException(
-        'Missing x-identity header for rate limiting',
-      );
-    }
+
+    // ====================================
+    // SECURITY: Validate request body
+    // ====================================
+    this.validateImageGenerationBody(body);
 
     const startTime = Date.now();
     const model = body.model || 'dall-e-3';
@@ -606,19 +636,29 @@ export class TransparentProxyController {
     @Body() body: any,
     @Res() res: Response,
   ) {
-    if (!projectKey) {
-      throw new UnauthorizedException('Missing x-project-key header');
+    // ====================================
+    // SECURITY: Validate headers
+    // ====================================
+    const headerValidation = validateProxyHeaders({
+      projectKey,
+      identity,
+      tier,
+      session,
+    });
+    if (!headerValidation.valid) {
+      throw new BadRequestException(headerValidation.error);
     }
+
     if (!authorization) {
       throw new UnauthorizedException(
         'Missing Authorization header with your API key',
       );
     }
-    if (!identity) {
-      throw new UnauthorizedException(
-        'Missing x-identity header for rate limiting',
-      );
-    }
+
+    // ====================================
+    // SECURITY: Validate request body
+    // ====================================
+    this.validateEmbeddingsBody(body);
 
     const startTime = Date.now();
     const model = body.model || 'text-embedding-3-small';
@@ -833,17 +873,22 @@ export class TransparentProxyController {
     @Body() body: any,
     @Res() res: Response,
   ) {
-    if (!projectKey) {
-      throw new UnauthorizedException('Missing x-project-key header');
+    // ====================================
+    // SECURITY: Validate headers
+    // ====================================
+    const headerValidation = validateProxyHeaders({
+      projectKey,
+      identity,
+      tier,
+      session,
+    });
+    if (!headerValidation.valid) {
+      throw new BadRequestException(headerValidation.error);
     }
+
     if (!authorization) {
       throw new UnauthorizedException(
         'Missing Authorization header with your API key',
-      );
-    }
-    if (!identity) {
-      throw new UnauthorizedException(
-        'Missing x-identity header for rate limiting',
       );
     }
 
@@ -1000,6 +1045,7 @@ export class TransparentProxyController {
 
   /**
    * Handle streaming responses
+   * Includes timeout protection to prevent resource exhaustion
    */
   private async handleStreamingRequest(
     res: Response,
@@ -1020,6 +1066,25 @@ export class TransparentProxyController {
 
     let inputTokens = 0;
     let outputTokens = 0;
+    let streamEnded = false;
+
+    // ====================================
+    // SECURITY: Streaming timeout (5 minutes)
+    // Prevents resource exhaustion from slow/hanging connections
+    // ====================================
+    const timeout = setTimeout(() => {
+      if (!streamEnded) {
+        console.warn('Streaming timeout reached:', {
+          projectId: project.id,
+          identity,
+          session,
+          model,
+        });
+        res.write(`data: ${JSON.stringify({ error: 'Stream timeout exceeded' })}\n\n`);
+        res.end();
+        streamEnded = true;
+      }
+    }, STREAMING_TIMEOUT_MS);
 
     try {
       for await (const chunk of this.transparentProxyService.forwardStreamingRequest(
@@ -1027,6 +1092,8 @@ export class TransparentProxyController {
         providerBaseUrl,
         body,
       )) {
+        if (streamEnded) break;
+
         // Track tokens from usage field if available
         if (chunk.usage) {
           inputTokens = chunk.usage.prompt_tokens || inputTokens;
@@ -1037,9 +1104,12 @@ export class TransparentProxyController {
         res.write(`data: ${JSON.stringify(chunk)}\n\n`);
       }
 
-      // Send done signal
-      res.write('data: [DONE]\n\n');
-      res.end();
+      if (!streamEnded) {
+        // Send done signal
+        res.write('data: [DONE]\n\n');
+        res.end();
+        streamEnded = true;
+      }
 
       // Finalize usage tracking with cost
       const totalTokens = inputTokens + outputTokens;
@@ -1067,7 +1137,11 @@ export class TransparentProxyController {
         session,
         error: error.message,
       });
-      res.end();
+      if (!streamEnded) {
+        res.end();
+      }
+    } finally {
+      clearTimeout(timeout);
     }
   }
 
@@ -1118,5 +1192,144 @@ export class TransparentProxyController {
     const text = Array.isArray(input) ? input.join(' ') : input;
     // Rough estimate: ~4 characters per token
     return Math.ceil(text.length / 4);
+  }
+
+  // ====================================
+  // SECURITY: Input validation methods
+  // ====================================
+
+  /**
+   * Validate chat completions request body
+   * Prevents oversized payloads and malformed requests
+   */
+  private validateChatCompletionsBody(body: any): void {
+    if (!body || typeof body !== 'object') {
+      throw new BadRequestException('Invalid request body');
+    }
+
+    // Validate model
+    if (body.model && typeof body.model === 'string' && body.model.length > MAX_MODEL_LENGTH) {
+      throw new BadRequestException(`Model name too long (max ${MAX_MODEL_LENGTH} chars)`);
+    }
+
+    // Validate messages
+    if (!body.messages || !Array.isArray(body.messages)) {
+      throw new BadRequestException('messages field is required and must be an array');
+    }
+
+    if (body.messages.length > MAX_MESSAGES) {
+      throw new BadRequestException(`Too many messages (max ${MAX_MESSAGES})`);
+    }
+
+    for (let i = 0; i < body.messages.length; i++) {
+      const msg = body.messages[i];
+      if (!msg || typeof msg !== 'object') {
+        throw new BadRequestException(`Invalid message at index ${i}`);
+      }
+
+      if (typeof msg.content === 'string' && msg.content.length > MAX_MESSAGE_LENGTH) {
+        throw new BadRequestException(
+          `Message at index ${i} too long (max ${MAX_MESSAGE_LENGTH} chars)`,
+        );
+      }
+
+      // Handle array content (for vision models)
+      if (Array.isArray(msg.content)) {
+        for (const part of msg.content) {
+          if (part.type === 'text' && typeof part.text === 'string') {
+            if (part.text.length > MAX_MESSAGE_LENGTH) {
+              throw new BadRequestException(
+                `Message content at index ${i} too long (max ${MAX_MESSAGE_LENGTH} chars)`,
+              );
+            }
+          }
+        }
+      }
+    }
+
+    // Validate max_tokens
+    if (body.max_tokens !== undefined) {
+      if (typeof body.max_tokens !== 'number' || body.max_tokens < 1 || body.max_tokens > 128000) {
+        throw new BadRequestException('max_tokens must be between 1 and 128000');
+      }
+    }
+
+    // Validate n (number of completions)
+    if (body.n !== undefined) {
+      if (typeof body.n !== 'number' || body.n < 1 || body.n > 10) {
+        throw new BadRequestException('n must be between 1 and 10');
+      }
+    }
+  }
+
+  /**
+   * Validate image generation request body
+   */
+  private validateImageGenerationBody(body: any): void {
+    if (!body || typeof body !== 'object') {
+      throw new BadRequestException('Invalid request body');
+    }
+
+    // Validate prompt (required)
+    if (!body.prompt || typeof body.prompt !== 'string') {
+      throw new BadRequestException('prompt field is required and must be a string');
+    }
+
+    if (body.prompt.length > MAX_PROMPT_LENGTH) {
+      throw new BadRequestException(`Prompt too long (max ${MAX_PROMPT_LENGTH} chars)`);
+    }
+
+    // Validate n (number of images)
+    if (body.n !== undefined) {
+      if (typeof body.n !== 'number' || body.n < 1 || body.n > 10) {
+        throw new BadRequestException('n must be between 1 and 10');
+      }
+    }
+
+    // Validate model
+    if (body.model && typeof body.model === 'string' && body.model.length > MAX_MODEL_LENGTH) {
+      throw new BadRequestException(`Model name too long (max ${MAX_MODEL_LENGTH} chars)`);
+    }
+  }
+
+  /**
+   * Validate embeddings request body
+   */
+  private validateEmbeddingsBody(body: any): void {
+    if (!body || typeof body !== 'object') {
+      throw new BadRequestException('Invalid request body');
+    }
+
+    // Validate model
+    if (!body.model || typeof body.model !== 'string') {
+      throw new BadRequestException('model field is required');
+    }
+    if (body.model.length > MAX_MODEL_LENGTH) {
+      throw new BadRequestException(`Model name too long (max ${MAX_MODEL_LENGTH} chars)`);
+    }
+
+    // Validate input (required) - can be string or array of strings
+    if (!body.input) {
+      throw new BadRequestException('input field is required');
+    }
+
+    if (typeof body.input === 'string') {
+      if (body.input.length > MAX_MESSAGE_LENGTH) {
+        throw new BadRequestException(`Input too long (max ${MAX_MESSAGE_LENGTH} chars)`);
+      }
+    } else if (Array.isArray(body.input)) {
+      if (body.input.length > 2048) {
+        throw new BadRequestException('Too many input items (max 2048)');
+      }
+      for (let i = 0; i < body.input.length; i++) {
+        if (typeof body.input[i] === 'string' && body.input[i].length > MAX_MESSAGE_LENGTH) {
+          throw new BadRequestException(
+            `Input at index ${i} too long (max ${MAX_MESSAGE_LENGTH} chars)`,
+          );
+        }
+      }
+    } else {
+      throw new BadRequestException('input must be a string or array of strings');
+    }
   }
 }

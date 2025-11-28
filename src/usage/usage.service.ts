@@ -1,4 +1,4 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, Inject, forwardRef, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UsageCounter } from './usage.entity';
@@ -9,6 +9,13 @@ const DEFAULT_LIMIT_RESPONSE = {
   error: 'limit_exceeded',
   message: 'Free tier limit reached. Please upgrade to continue.',
 };
+
+// ====================================
+// SECURITY: Database cardinality limits
+// Prevents row explosion attacks
+// ====================================
+const MAX_IDENTITIES_PER_PROJECT_PER_PERIOD = 50000; // Max unique identities
+const MAX_SESSIONS_PER_IDENTITY_PER_PERIOD = 1000;   // Max sessions per identity
 
 interface CheckAndUpdateParams {
   project: Project;
@@ -102,6 +109,12 @@ export class UsageService {
 
     // Format periodStart as date string for PostgreSQL
     const periodStartStr = periodStart.toISOString().split('T')[0];
+
+    // ====================================
+    // SECURITY: Check cardinality limits
+    // Prevents database row explosion attacks
+    // ====================================
+    await this.checkCardinalityLimits(project.id, identity, session, periodStartStr);
 
     // Step 1: Ensure the row exists (atomic upsert)
     await this.usageRepository.query(
@@ -869,5 +882,80 @@ export class UsageService {
       }
     }
     return result;
+  }
+
+  // ====================================
+  // SECURITY: Cardinality limit checking
+  // ====================================
+
+  /**
+   * Check if creating a new usage row would exceed cardinality limits
+   * Prevents database row explosion attacks
+   */
+  private async checkCardinalityLimits(
+    projectId: string,
+    identity: string,
+    session: string,
+    periodStartStr: string,
+  ): Promise<void> {
+    // Check if this identity already has a row for this period
+    // If so, we're just updating, not creating - skip cardinality check
+    const existingRow = await this.usageRepository.query(
+      `SELECT 1 FROM usage_counters 
+       WHERE "projectId" = $1 AND identity = $2 AND "periodStart" = $3 
+       LIMIT 1`,
+      [projectId, identity, periodStartStr],
+    );
+
+    if (existingRow.length > 0) {
+      // This identity exists, check session limit if session is provided
+      if (session) {
+        const existingSession = await this.usageRepository.query(
+          `SELECT 1 FROM usage_counters 
+           WHERE "projectId" = $1 AND identity = $2 AND "session" = $3 AND "periodStart" = $4 
+           LIMIT 1`,
+          [projectId, identity, session, periodStartStr],
+        );
+
+        if (existingSession.length === 0) {
+          // New session - check session cardinality
+          const sessionCount = await this.usageRepository.query(
+            `SELECT COUNT(DISTINCT "session") as count FROM usage_counters 
+             WHERE "projectId" = $1 AND identity = $2 AND "periodStart" = $3`,
+            [projectId, identity, periodStartStr],
+          );
+
+          const currentSessions = parseInt(sessionCount[0]?.count || '0', 10);
+          if (currentSessions >= MAX_SESSIONS_PER_IDENTITY_PER_PERIOD) {
+            throw new HttpException(
+              {
+                error: 'cardinality_limit_exceeded',
+                message: `Too many sessions for this identity (max ${MAX_SESSIONS_PER_IDENTITY_PER_PERIOD} per period)`,
+              },
+              HttpStatus.TOO_MANY_REQUESTS,
+            );
+          }
+        }
+      }
+      return; // Identity exists, allow
+    }
+
+    // New identity - check project cardinality
+    const identityCount = await this.usageRepository.query(
+      `SELECT COUNT(DISTINCT identity) as count FROM usage_counters 
+       WHERE "projectId" = $1 AND "periodStart" = $2`,
+      [projectId, periodStartStr],
+    );
+
+    const currentIdentities = parseInt(identityCount[0]?.count || '0', 10);
+    if (currentIdentities >= MAX_IDENTITIES_PER_PROJECT_PER_PERIOD) {
+      throw new HttpException(
+        {
+          error: 'cardinality_limit_exceeded',
+          message: `Too many unique identities for this project (max ${MAX_IDENTITIES_PER_PROJECT_PER_PERIOD} per period)`,
+        },
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
+    }
   }
 }

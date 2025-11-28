@@ -1,6 +1,12 @@
 # Dashboard Dockerfile - Nuxt Static SPA
 FROM node:20-slim
 
+# ====================================
+# SECURITY: Don't run as root
+# ====================================
+RUN groupadd --gid 1001 nodejs \
+    && useradd --uid 1001 --gid nodejs --shell /bin/bash --create-home nodejs
+
 WORKDIR /app
 
 # Build argument for API URL - Railway passes env vars as build args automatically
@@ -11,17 +17,28 @@ ENV NUXT_PUBLIC_API_BASE_URL=$NUXT_PUBLIC_API_BASE_URL
 COPY dashboard/package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm ci && npm cache clean --force
 
 # Copy dashboard source code
-COPY dashboard/ .
+COPY --chown=nodejs:nodejs dashboard/ .
 
 # Build the static site with the API URL baked in
 RUN npm run generate
+
+# Clean up after build
+RUN rm -rf node_modules/.cache
+
+# Install serve globally for the nodejs user
+RUN npm install -g serve && npm cache clean --force
+
+# ====================================
+# SECURITY: Switch to non-root user
+# ====================================
+USER nodejs
 
 # Railway provides PORT env var
 ENV PORT=3000
 
 # Serve the static files
-CMD npx serve .output/public -l $PORT
+CMD ["serve", ".output/public", "-l", "3000"]
 

@@ -16,7 +16,7 @@
         >
           <!-- Header -->
           <div class="flex items-center justify-between p-6 py-4 border-b border-gray-500/20">
-            <h2 class="text-xl font-bold text-white">Configurations</h2>
+            <h2 class="text-white text-lg font-medium">Configurations</h2>
             <button
               @click="$emit('close')"
               class="text-gray-400 hover:text-white transition-colors"
