@@ -2,6 +2,10 @@
 node_modules/
 dashboard/node_modules/
 
+# Override global gitignore - package-lock.json is required for npm ci
+!package-lock.json
+!dashboard/package-lock.json
+
 # Deprecated SDK (use transparent proxy instead)
 sdk/
 
