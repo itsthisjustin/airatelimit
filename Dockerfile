@@ -23,8 +23,9 @@ COPY --chown=nodejs:nodejs . .
 RUN npm run build
 
 # Remove dev dependencies and source after build
+# Note: Cannot use --ignore-scripts because bcrypt needs to compile native bindings
 RUN rm -rf src/ node_modules/ \
-    && npm ci --only=production --ignore-scripts \
+    && npm ci --only=production \
     && npm cache clean --force
 
 # ====================================
