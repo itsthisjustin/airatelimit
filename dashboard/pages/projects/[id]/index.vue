@@ -213,7 +213,7 @@
 
         <!-- Smart Routing Tab -->
         <div v-if="activeTab === 'routing'" class="pt-2">
-          <RoutingConfig
+          <SettingsRoutingConfig
             :project-id="projectId"
             :routing-enabled="project?.routingEnabled"
             :routing-config="project?.routingConfig"
