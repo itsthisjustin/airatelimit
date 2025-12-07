@@ -97,11 +97,36 @@ export class UserProjectsController {
   }
 
   private maskApiKey(project: any) {
-    if (project.openaiApiKey) {
-      const key = project.openaiApiKey;
-      const masked = key.substring(0, 7) + '****' + key.slice(-4);
-      return { ...project, openaiApiKey: masked };
+    let result = { ...project };
+
+    // Mask legacy openaiApiKey
+    if (result.openaiApiKey) {
+      const key = result.openaiApiKey;
+      result.openaiApiKey = key.length > 11 
+        ? key.substring(0, 7) + '****' + key.slice(-4)
+        : '****';
     }
-    return project;
+
+    // Mask providerKeys - only show that a key exists, not the actual key
+    if (result.providerKeys) {
+      const maskedProviderKeys: Record<string, { apiKey: string; baseUrl?: string; configured: boolean }> = {};
+      for (const [provider, config] of Object.entries(result.providerKeys)) {
+        const providerConfig = config as { apiKey: string; baseUrl?: string };
+        if (providerConfig?.apiKey) {
+          const key = providerConfig.apiKey;
+          maskedProviderKeys[provider] = {
+            // Show first 4 and last 4 chars only
+            apiKey: key.length > 12 
+              ? key.substring(0, 4) + '••••••••' + key.slice(-4)
+              : '••••••••',
+            ...(providerConfig.baseUrl && { baseUrl: providerConfig.baseUrl }),
+            configured: true,
+          };
+        }
+      }
+      result.providerKeys = maskedProviderKeys;
+    }
+
+    return result;
   }
 }

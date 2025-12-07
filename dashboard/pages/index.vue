@@ -115,15 +115,15 @@
                   <!-- Code Content -->
                   <div class="p-4 px-4 text-left">
                     <!-- JavaScript Tab -->
-                    <pre v-if="activeTab === 'javascript'" class="text-sm text-gray-300 font-mono leading-relaxed"><code><span class="text-purple-300">import</span> OpenAI <span class="text-purple-300">from</span> <span class="text-green-300">'openai'</span>
+                    <pre v-if="activeTab === 'javascript'" class="text-sm text-gray-300 font-mono leading-relaxed"><code>
+<span class="text-purple-300">import</span> OpenAI <span class="text-purple-300">from</span> <span class="text-green-300">'openai'</span>
 
 <span class="text-purple-300">const</span> openai = <span class="text-purple-300">new</span> <span class="text-blue-300">OpenAI</span>({
-  apiKey: <span class="text-green-300">'sk-your-key'</span>,
+  apiKey: <span class="text-green-300">'sk-your-key'</span>, <span class="text-gray-500">// Optional</span>
   baseURL: <span class="text-red-400">'https://api.airatelimit.com/v1'</span>,
   defaultHeaders: {
     <span class="text-red-400">'x-project-key'</span>: <span class="text-red-400">'pk_xxx'</span>,
     <span class="text-red-400">'x-identity'</span>: <span class="text-red-400">'user-123'</span>,
-    <span class="text-red-400">'x-tier'</span>: <span class="text-red-400">'free'</span>,
   },
 })
 
@@ -133,11 +133,11 @@
 })</code></pre>
 
                     <!-- API Tab -->
-                    <pre v-if="activeTab === 'api'" class="text-sm text-gray-300 font-mono leading-relaxed"><code><span class="text-gray-500">$</span> curl -X POST <span class="text-blue-300">https://api.airatelimit.com/v1/chat/completions</span> \
-  -H <span class="text-green-300">"Authorization: Bearer sk-your-key"</span> \
+                    <pre v-if="activeTab === 'api'" class="text-sm text-gray-300 font-mono leading-relaxed"><code>
+<span class="text-gray-500">$</span> curl -X POST <span class="text-blue-300">https://api.airatelimit.com/v1/chat/completions</span> \
+  -H <span class="text-green-300">"Authorization: Bearer sk-your-key"</span> <span class="text-gray-500"># Optional</span>\
   -H <span class="text-blue-300">"x-project-key: pk_xxx"</span> \
   -H <span class="text-blue-300">"x-identity: user-123"</span> \
-  -H <span class="text-blue-300">"x-tier: free"</span> \
   -H <span class="text-green-300">"Content-Type: application/json"</span> \
   -d <span class="text-green-300">'{
     "model": "gpt-4o",
@@ -245,12 +245,11 @@ const codeExamples: Record<TabId, string> = {
   javascript: `import OpenAI from 'openai'
 
 const openai = new OpenAI({
-  apiKey: 'sk-your-key',
+  apiKey: 'sk-your-key', // Optional
   baseURL: 'https://api.airatelimit.com/v1',
   defaultHeaders: {
     'x-project-key': 'pk_xxx',
     'x-identity': 'user-123',
-    'x-tier': 'free',
   },
 })
 
@@ -259,10 +258,9 @@ const response = await openai.chat.completions.create({
   messages: [{ role: 'user', content: 'Hello!' }]
 })`,
   api: `curl -X POST https://api.airatelimit.com/v1/chat/completions \\
-  -H "Authorization: Bearer sk-your-key" \\
+  -H "Authorization: Bearer sk-your-key" \\ # Optional
   -H "x-project-key: pk_xxx" \\
   -H "x-identity: user-123" \\
-  -H "x-tier: free" \\
   -H "Content-Type: application/json" \\
   -d '{
     "model": "gpt-4o",

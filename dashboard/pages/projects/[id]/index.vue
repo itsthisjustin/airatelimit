@@ -124,7 +124,7 @@
                           <line x1="6.5" y1="10" x2="6.5" y2="14" stroke-width="2"/>
                           <line x1="17.5" y1="10" x2="17.5" y2="14" stroke-width="2"/>
                         </svg>
-                        <span>Flow Designer</span>
+                        <span>Flow Designer - Beta</span>
                       </button>
                       <button
                         @click="openDelete"
@@ -266,8 +266,51 @@
                 <p class="text-gray-400 text-sm">Try this curl command to test your setup:</p>
               </div>
 
-              <!-- Curl Command -->
-              <div class="relative max-w-lg mx-auto">
+              <!-- Mode Toggle -->
+              <div class="flex justify-center">
+                <div class="inline-flex gap-1 bg-gray-500/10 p-1 rounded-lg">
+                  <button
+                    @click="curlMode = 'stored'"
+                    :class="[
+                      'px-3 py-1.5 text-xs font-medium rounded transition-colors',
+                      curlMode === 'stored' ? 'bg-blue-300/10 text-blue-300' : 'text-gray-400 hover:text-white'
+                    ]"
+                  >
+                    Stored Keys
+                  </button>
+                  <button
+                    @click="curlMode = 'passthrough'"
+                    :class="[
+                      'px-3 py-1.5 text-xs font-medium rounded transition-colors',
+                      curlMode === 'passthrough' ? 'bg-blue-300/10 text-blue-300' : 'text-gray-400 hover:text-white'
+                    ]"
+                  >
+                    Pass-through
+                  </button>
+                </div>
+              </div>
+
+              <!-- Curl Command - Stored Keys Mode -->
+              <div v-if="curlMode === 'stored'" class="relative max-w-lg mx-auto">
+                <pre class="bg-black border border-gray-500/20 rounded-lg p-4 overflow-x-auto text-xs"><code class="text-gray-300"><span class="text-gray-500"># No API key needed in request!</span>
+curl https://api.airatelimit.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "x-project-key: <span class="text-blue-300">{{ project.projectKey }}</span>" \
+  -H "x-identity: test-user" \
+  -d '{
+    "model": "gpt-4o-mini",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'</code></pre>
+                <button
+                  @click="copyCurlCommand"
+                  class="absolute top-2 right-2 px-2 py-1 bg-gray-500/15 hover:bg-gray-500/20 text-xs text-white rounded transition-colors"
+                >
+                  {{ curlCopied ? '✓ Copied' : 'Copy' }}
+                </button>
+              </div>
+
+              <!-- Curl Command - Pass-through Mode -->
+              <div v-else class="relative max-w-lg mx-auto">
                 <pre class="bg-black border border-gray-500/20 rounded-lg p-4 overflow-x-auto text-xs"><code class="text-gray-300">curl https://api.airatelimit.com/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer sk-your-openai-key" \
@@ -285,7 +328,10 @@
                 </button>
               </div>
 
-              <p class="text-center text-gray-500 text-xs">
+              <p v-if="curlMode === 'stored'" class="text-center text-gray-500 text-xs">
+                First, add your API key in <span class="text-blue-300">Settings → Provider Keys</span>
+              </p>
+              <p v-else class="text-center text-gray-500 text-xs">
                 Replace <code class="bg-gray-500/20 px-1 py-0.5 rounded text-white">sk-your-openai-key</code> with your actual API key
               </p>
             </div>
@@ -506,6 +552,8 @@ const editForm = ref({
   sessionLimitsEnabled: false,
   sessionRequestLimit: null as number | null,
   sessionTokenLimit: null as number | null,
+  // Provider keys for stored key mode
+  providerKeys: null as Record<string, { apiKey: string; baseUrl?: string }> | null,
 })
 
 const updating = ref(false)
@@ -579,6 +627,9 @@ const loadProject = async () => {
     editForm.value.sessionRequestLimit = project.value.sessionRequestLimit || null
     editForm.value.sessionTokenLimit = project.value.sessionTokenLimit || null
     
+    // Load provider keys
+    editForm.value.providerKeys = project.value.providerKeys || null
+    
     // Load upgrade URL
     editForm.value.upgradeUrl = project.value.upgradeUrl || ''
     
@@ -608,8 +659,19 @@ const copyProjectKey = () => {
 }
 
 const curlCopied = ref(false)
+const curlMode = ref<'stored' | 'passthrough'>('stored')
+
 const copyCurlCommand = () => {
-  const command = `curl https://api.airatelimit.com/v1/chat/completions \\
+  const command = curlMode.value === 'stored'
+    ? `curl https://api.airatelimit.com/v1/chat/completions \\
+  -H "Content-Type: application/json" \\
+  -H "x-project-key: ${project.value.projectKey}" \\
+  -H "x-identity: test-user" \\
+  -d '{
+    "model": "gpt-4o-mini",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'`
+    : `curl https://api.airatelimit.com/v1/chat/completions \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer sk-your-openai-key" \\
   -H "x-project-key: ${project.value.projectKey}" \\

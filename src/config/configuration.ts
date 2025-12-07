@@ -29,7 +29,27 @@ function getJwtSecret(): string {
   return secret;
 }
 
-export default () => ({
+function validateEncryptionKey(): void {
+  const key = process.env.ENCRYPTION_KEY;
+  const nodeEnv = process.env.NODE_ENV || 'development';
+  
+  if (nodeEnv === 'production') {
+    if (!key) {
+      throw new Error('CRITICAL: ENCRYPTION_KEY must be set in production to encrypt stored API keys');
+    }
+    if (key.length < 32) {
+      throw new Error('CRITICAL: ENCRYPTION_KEY must be at least 32 characters');
+    }
+  } else if (!key) {
+    console.warn('⚠️  ENCRYPTION_KEY not set - provider API keys will be stored in plaintext (dev only)');
+  }
+}
+
+export default () => {
+  // Validate required secrets
+  validateEncryptionKey();
+  
+  return {
   port: parseInt(process.env.PORT, 10) || 3000,
   database: {
     url: process.env.DATABASE_URL,
@@ -46,4 +66,6 @@ export default () => ({
   nodeEnv: process.env.NODE_ENV || 'development',
   resendApiKey: process.env.RESEND_API_KEY,
   emailFrom: process.env.EMAIL_FROM || 'onboarding@resend.dev',
-});
+  encryptionKey: process.env.ENCRYPTION_KEY,
+};
+};

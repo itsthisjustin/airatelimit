@@ -52,11 +52,92 @@
                 </div>
               </div>
 
-              <!-- Integration Code -->
-              <div>
-                <label class="block text-sm font-medium text-gray-400 mb-2">Add to your app</label>
-                <div class="relative">
-                  <pre class="bg-black border border-gray-500/20 rounded-lg p-4 overflow-x-auto text-sm"><code class="text-gray-300"><span class="text-blue-300">import</span> OpenAI <span class="text-blue-300">from</span> <span class="text-green-300">'openai'</span>;
+              <!-- Mode Toggle -->
+              <div class="flex gap-2 bg-gray-500/10 p-1 rounded-lg">
+                <button
+                  @click="integrationMode = 'stored'"
+                  :class="[
+                    'flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                    integrationMode === 'stored' 
+                      ? 'bg-blue-500/20 text-blue-300' 
+                      : 'text-gray-400 hover:text-white'
+                  ]"
+                >
+                  🔐 Stored Keys
+                  <span class="text-xs opacity-60 ml-1">(recommended)</span>
+                </button>
+                <button
+                  @click="integrationMode = 'passthrough'"
+                  :class="[
+                    'flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                    integrationMode === 'passthrough' 
+                      ? 'bg-blue-500/20 text-blue-300' 
+                      : 'text-gray-400 hover:text-white'
+                  ]"
+                >
+                  ⚡ Pass-through
+                </button>
+              </div>
+
+              <!-- Stored Keys Mode -->
+              <div v-if="integrationMode === 'stored'" class="space-y-4">
+                <div class="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
+                  <div class="flex items-start gap-3">
+                    <span class="text-lg">📱</span>
+                    <div>
+                      <p class="text-sm text-green-200 font-medium">Perfect for mobile apps</p>
+                      <p class="text-xs text-gray-400 mt-1">
+                        Store your API keys in the dashboard. Your app only needs the project key — no AI provider keys exposed.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-400 mb-2">Step 1: Add your provider keys in Settings → Provider Keys</label>
+                  <label class="block text-sm font-medium text-gray-400 mb-2 mt-4">Step 2: Add to your app</label>
+                  <div class="relative">
+                    <pre class="bg-black border border-gray-500/20 rounded-lg p-4 overflow-x-auto text-sm"><code class="text-gray-300"><span class="text-gray-500">// No API key needed in your app!</span>
+<span class="text-blue-300">const</span> response = <span class="text-blue-300">await</span> <span class="text-yellow-300">fetch</span>(<span class="text-green-300">'https://api.airatelimit.com/v1/chat/completions'</span>, {
+  <span class="text-white">method</span>: <span class="text-green-300">'POST'</span>,
+  <span class="text-white">headers</span>: {
+    <span class="text-green-300">'Content-Type'</span>: <span class="text-green-300">'application/json'</span>,
+    <span class="text-green-300">'x-project-key'</span>: <span class="text-green-300">'{{ createdProject.projectKey }}'</span>,
+    <span class="text-green-300">'x-identity'</span>: userId,
+  },
+  <span class="text-white">body</span>: <span class="text-yellow-300">JSON</span>.<span class="text-yellow-300">stringify</span>({
+    <span class="text-white">model</span>: <span class="text-green-300">'gpt-4o'</span>,
+    <span class="text-white">messages</span>: [{ <span class="text-white">role</span>: <span class="text-green-300">'user'</span>, <span class="text-white">content</span>: <span class="text-green-300">'Hello!'</span> }],
+  }),
+});</code></pre>
+                    <button
+                      @click="copyStoredModeCode"
+                      class="absolute top-2 right-2 px-2 py-1 bg-gray-500/15 hover:bg-gray-500/20 text-xs text-white rounded transition-colors"
+                    >
+                      {{ copiedStored ? '✓ Copied' : 'Copy' }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pass-through Mode -->
+              <div v-else class="space-y-4">
+                <div class="bg-blue-300/5 border border-blue-300/20 rounded-lg p-4">
+                  <div class="flex items-start gap-3">
+                    <span class="text-lg">🖥️</span>
+                    <div>
+                      <p class="text-sm text-blue-200 font-medium">Best for server-side apps</p>
+                      <p class="text-xs text-gray-400 mt-1">
+                        Pass your API key with each request. Supports multiple providers — just change the model name.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-400 mb-2">Add to your app</label>
+                  <div class="relative">
+                    <pre class="bg-black border border-gray-500/20 rounded-lg p-4 overflow-x-auto text-sm"><code class="text-gray-300"><span class="text-blue-300">import</span> OpenAI <span class="text-blue-300">from</span> <span class="text-green-300">'openai'</span>;
 
 <span class="text-blue-300">const</span> openai = <span class="text-blue-300">new</span> <span class="text-yellow-300">OpenAI</span>({
   <span class="text-white">apiKey</span>: <span class="text-green-300">'sk-your-openai-key'</span>,
@@ -66,20 +147,17 @@
     <span class="text-green-300">'x-identity'</span>: userId,
   },
 });</code></pre>
-                  <button
-                    @click="copyIntegrationCode"
-                    class="absolute top-2 right-2 px-2 py-1 bg-gray-500/15 hover:bg-gray-500/20 text-xs text-white rounded transition-colors"
-                  >
-                    {{ copied ? '✓ Copied' : 'Copy' }}
-                  </button>
+                    <button
+                      @click="copyIntegrationCode"
+                      class="absolute top-2 right-2 px-2 py-1 bg-gray-500/15 hover:bg-gray-500/20 text-xs text-white rounded transition-colors"
+                    >
+                      {{ copied ? '✓ Copied' : 'Copy' }}
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              <!-- Quick Tips -->
-              <div class="bg-blue-300/5 border border-blue-300/20 rounded-lg p-4">
-                <p class="text-sm text-blue-200">
-                  <strong>That's it!</strong> Your requests now go through the proxy. 
-                  Configure limits in settings when you're ready.
+                <p class="text-xs text-gray-500">
+                  💡 Works with OpenAI, Anthropic, Google Gemini, xAI — auto-detected from model name
                 </p>
               </div>
 
@@ -177,6 +255,8 @@ const loading = ref(false)
 const error = ref('')
 const createdProject = ref<{ id: string; projectKey: string } | null>(null)
 const copied = ref(false)
+const copiedStored = ref(false)
+const integrationMode = ref<'stored' | 'passthrough'>('stored')
 
 watch(() => props.isOpen, (isOpen) => {
   if (isOpen) {
@@ -235,6 +315,25 @@ const openai = new OpenAI({
   await copy(code)
   copied.value = true
   setTimeout(() => { copied.value = false }, 2000)
+}
+
+const copyStoredModeCode = async () => {
+  const code = `// No API key needed in your app!
+const response = await fetch('https://api.airatelimit.com/v1/chat/completions', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'x-project-key': '${createdProject.value?.projectKey}',
+    'x-identity': userId,
+  },
+  body: JSON.stringify({
+    model: 'gpt-4o',
+    messages: [{ role: 'user', content: 'Hello!' }],
+  }),
+});`
+  await copy(code)
+  copiedStored.value = true
+  setTimeout(() => { copiedStored.value = false }, 2000)
 }
 
 const goToProject = () => {

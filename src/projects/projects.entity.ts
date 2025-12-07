@@ -59,13 +59,14 @@ export class Project {
   @Column({ nullable: true })
   baseUrl: string;
 
-  // TODO: Encrypt at rest in production
   // Stores API key for selected provider (legacy - single provider)
+  // Note: Consider encrypting this field as well if still used
   @Column({ nullable: true })
   openaiApiKey: string;
 
-  // Multi-provider configuration
-  // Example: { "openai": { "apiKey": "sk-...", "baseUrl": "..." }, "anthropic": { "apiKey": "sk-ant-..." } }
+  // Multi-provider configuration (ENCRYPTED at rest)
+  // API keys are encrypted using AES-256-GCM before storage
+  // Example stored: { "openai": { "apiKey": "enc:iv:tag:ciphertext", "baseUrl": "..." } }
   @Column({ type: 'jsonb', nullable: true })
   providerKeys: Record<string, { apiKey: string; baseUrl?: string }>;
 

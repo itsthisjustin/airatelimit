@@ -31,7 +31,8 @@ export class ProjectsService {
       throw new NotFoundException('Project not found');
     }
 
-    return project;
+    // Decrypt provider keys for use
+    return this.decryptProject(project);
   }
 
   async findAll(): Promise<Project[]> {
@@ -79,14 +80,17 @@ export class ProjectsService {
   }
 
   async findByOwner(userId: string): Promise<Project[]> {
-    return this.projectsRepository.find({
+    const projects = await this.projectsRepository.find({
       where: { ownerId: userId },
       order: { createdAt: 'DESC' },
     });
+    // Decrypt provider keys for each project
+    return projects.map(p => this.decryptProject(p));
   }
 
   async findById(id: string): Promise<Project | null> {
-    return this.projectsRepository.findOne({ where: { id } });
+    const project = await this.projectsRepository.findOne({ where: { id } });
+    return this.decryptProject(project);
   }
 
   async update(id: string, dto: UpdateProjectDto): Promise<Project> {
@@ -99,19 +103,23 @@ export class ProjectsService {
 
     // Handle multi-provider configuration
     if (dto.providerKeys) {
-      // Merge with existing providerKeys if any
-      updateData.providerKeys = {
-        ...(project.providerKeys || {}),
+      // Merge with existing providerKeys (decrypt existing first)
+      const existingDecrypted = this.decryptProviderKeys(project.providerKeys);
+      const mergedKeys = {
+        ...(existingDecrypted || {}),
         ...dto.providerKeys,
       };
+
+      // Encrypt before saving
+      updateData.providerKeys = this.encryptProviderKeys(mergedKeys);
 
       // Generate project key if this is the first provider configured
       if (
         !project.projectKey &&
-        Object.keys(updateData.providerKeys).length > 0
+        Object.keys(mergedKeys).length > 0
       ) {
         // Ensure at least one provider has an API key
-        const hasValidKey = Object.values(updateData.providerKeys).some(
+        const hasValidKey = Object.values(mergedKeys).some(
           (config: any) => config?.apiKey,
         );
         if (hasValidKey) {
@@ -220,5 +228,70 @@ export class ProjectsService {
       other: '', // For "other", baseUrl must be provided by user
     };
     return baseUrls[provider] || baseUrls.openai;
+  }
+
+  // ====================================
+  // ENCRYPTION: Provider Keys
+  // ====================================
+
+  /**
+   * Encrypt provider keys before saving to database
+   */
+  private encryptProviderKeys(
+    providerKeys: Record<string, { apiKey: string; baseUrl?: string }>,
+  ): Record<string, { apiKey: string; baseUrl?: string }> {
+    const encrypted: Record<string, { apiKey: string; baseUrl?: string }> = {};
+    
+    for (const [provider, config] of Object.entries(providerKeys)) {
+      if (config?.apiKey) {
+        encrypted[provider] = {
+          apiKey: this.cryptoService.encrypt(config.apiKey),
+          ...(config.baseUrl && { baseUrl: config.baseUrl }),
+        };
+      }
+    }
+    
+    return encrypted;
+  }
+
+  /**
+   * Decrypt provider keys after loading from database
+   */
+  private decryptProviderKeys(
+    providerKeys: Record<string, { apiKey: string; baseUrl?: string }> | null,
+  ): Record<string, { apiKey: string; baseUrl?: string }> | null {
+    if (!providerKeys) return null;
+    
+    const decrypted: Record<string, { apiKey: string; baseUrl?: string }> = {};
+    
+    for (const [provider, config] of Object.entries(providerKeys)) {
+      if (config?.apiKey) {
+        try {
+          decrypted[provider] = {
+            apiKey: this.cryptoService.decrypt(config.apiKey),
+            ...(config.baseUrl && { baseUrl: config.baseUrl }),
+          };
+        } catch (error) {
+          // If decryption fails (e.g., key not encrypted yet), use as-is
+          console.warn(`Failed to decrypt ${provider} key, using as-is:`, error.message);
+          decrypted[provider] = config;
+        }
+      }
+    }
+    
+    return decrypted;
+  }
+
+  /**
+   * Decrypt a single project's provider keys
+   */
+  private decryptProject(project: Project | null): Project | null {
+    if (!project) return null;
+    
+    if (project.providerKeys) {
+      project.providerKeys = this.decryptProviderKeys(project.providerKeys);
+    }
+    
+    return project;
   }
 }

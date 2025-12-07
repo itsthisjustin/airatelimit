@@ -41,6 +41,14 @@
                     Basic Limits
                   </button>
                   <button
+                    @click="configTab = 'providers'"
+                    :class="configTab === 'providers' ? 'border-blue-300 text-blue-300' : 'border-transparent text-gray-400 hover:text-gray-400 hover:border-gray-300'"
+                    class="whitespace-nowrap py-3 px-6 border-b-2 font-medium text-sm"
+                  >
+                    Provider Keys
+                    <span v-if="hasProviderKeys" class="ml-1.5 w-1.5 h-1.5 bg-green-400 rounded-full inline-block"></span>
+                  </button>
+                  <button
                     @click="configTab = 'tiers'"
                     :class="configTab === 'tiers' ? 'border-blue-300 text-blue-300' : 'border-transparent text-gray-400 hover:text-gray-400 hover:border-gray-300'"
                     class="whitespace-nowrap py-3 px-6 border-b-2 font-medium text-sm"
@@ -129,6 +137,14 @@
                 :project="project"
                 @update="handleUpdate"
               />
+
+              <ProviderKeysTab
+                v-show="configTab === 'providers'"
+                :project-id="project?.id"
+                :project-key="project?.projectKey"
+                :provider-keys="editForm.providerKeys"
+                @update="handleProviderKeysUpdate"
+              />
             </div>
           </div>
         </div>
@@ -144,6 +160,7 @@ import IdentitiesTab from './settings/IdentitiesTab.vue'
 import SecurityTab from './settings/SecurityTab.vue'
 import PrivacyTab from './settings/PrivacyTab.vue'
 import ApiAccessTab from './settings/ApiAccessTab.vue'
+import ProviderKeysTab from './settings/ProviderKeysTab.vue'
 
 const props = defineProps<{
   isOpen: boolean
@@ -217,6 +234,15 @@ const handleSecurityTabClick = () => {
 
 const deleteTier = (tierName: string) => {
   delete props.editForm.tiers[tierName]
+}
+
+const hasProviderKeys = computed(() => {
+  return props.project?.providerKeys && Object.keys(props.project.providerKeys).length > 0
+})
+
+const handleProviderKeysUpdate = (providerKeys: Record<string, { apiKey: string; baseUrl?: string }>) => {
+  props.editForm.providerKeys = providerKeys
+  emit('update')
 }
 
 // Reset tab when modal closes

@@ -88,12 +88,6 @@ export class TransparentProxyController {
       throw new BadRequestException(headerValidation.error);
     }
 
-    if (!authorization) {
-      throw new UnauthorizedException(
-        'Missing Authorization header with your API key',
-      );
-    }
-
     // ====================================
     // SECURITY: Validate request body
     // ====================================
@@ -108,6 +102,29 @@ export class TransparentProxyController {
     try {
       // Get project configuration
       const project = await this.projectsService.findByProjectKey(projectKey);
+
+      // ====================================
+      // RESOLVE API KEY: Stored keys or pass-through
+      // ====================================
+      // Detect provider from model to look up stored key
+      const provider = this.transparentProxyService.detectProvider(model);
+      let resolvedAuthorization = authorization;
+
+      if (!authorization) {
+        // Check if project has stored provider keys
+        const storedConfig = project.providerKeys?.[provider];
+        if (storedConfig?.apiKey) {
+          resolvedAuthorization = `Bearer ${storedConfig.apiKey}`;
+          console.log('Using stored API key for provider:', {
+            projectId: project.id,
+            provider,
+          });
+        } else {
+          throw new UnauthorizedException(
+            `Missing Authorization header. Either pass your ${provider} API key in the Authorization header, or configure it in the dashboard under Provider Keys.`,
+          );
+        }
+      }
 
       // ====================================
       // SMART MODEL ROUTING
@@ -317,8 +334,7 @@ export class TransparentProxyController {
         }
       }
 
-      // Determine provider from model name
-      const provider = this.transparentProxyService.detectProvider(model);
+      // Get provider URL (provider already detected above for stored key resolution)
       const providerBaseUrl =
         this.transparentProxyService.getProviderUrl(provider);
 
@@ -338,7 +354,7 @@ export class TransparentProxyController {
         // Handle streaming response
         await this.handleStreamingRequest(
           res,
-          authorization,
+          resolvedAuthorization,
           providerBaseUrl,
           processedBody,
           project,
@@ -351,7 +367,7 @@ export class TransparentProxyController {
         // Handle regular response
         const providerResponse =
           await this.transparentProxyService.forwardRequest(
-          authorization,
+          resolvedAuthorization,
           providerBaseUrl,
             processedBody,
         );
@@ -447,12 +463,6 @@ export class TransparentProxyController {
       throw new BadRequestException(headerValidation.error);
     }
 
-    if (!authorization) {
-      throw new UnauthorizedException(
-        'Missing Authorization header with your API key',
-      );
-    }
-
     // ====================================
     // SECURITY: Validate request body
     // ====================================
@@ -465,6 +475,23 @@ export class TransparentProxyController {
 
     try {
       const project = await this.projectsService.findByProjectKey(projectKey);
+
+      // ====================================
+      // RESOLVE API KEY: Stored keys or pass-through
+      // ====================================
+      const provider = this.transparentProxyService.detectProvider(model);
+      let resolvedAuthorization = authorization;
+
+      if (!authorization) {
+        const storedConfig = project.providerKeys?.[provider];
+        if (storedConfig?.apiKey) {
+          resolvedAuthorization = `Bearer ${storedConfig.apiKey}`;
+        } else {
+          throw new UnauthorizedException(
+            `Missing Authorization header. Either pass your ${provider} API key in the Authorization header, or configure it in the dashboard under Provider Keys.`,
+          );
+        }
+      }
 
       // PRIVACY: Anonymize prompt if enabled
       let processedBody = body;
@@ -592,7 +619,7 @@ export class TransparentProxyController {
       // Forward to OpenAI
       const providerResponse =
         await this.transparentProxyService.forwardRequest(
-          authorization,
+          resolvedAuthorization,
           'https://api.openai.com/v1/images/generations',
           processedBody,
         );
@@ -673,12 +700,6 @@ export class TransparentProxyController {
       throw new BadRequestException(headerValidation.error);
     }
 
-    if (!authorization) {
-      throw new UnauthorizedException(
-        'Missing Authorization header with your API key',
-      );
-    }
-
     // ====================================
     // SECURITY: Validate request body
     // ====================================
@@ -690,6 +711,23 @@ export class TransparentProxyController {
 
     try {
       const project = await this.projectsService.findByProjectKey(projectKey);
+
+      // ====================================
+      // RESOLVE API KEY: Stored keys or pass-through
+      // ====================================
+      const provider = this.transparentProxyService.detectProvider(model);
+      let resolvedAuthorization = authorization;
+
+      if (!authorization) {
+        const storedConfig = project.providerKeys?.[provider];
+        if (storedConfig?.apiKey) {
+          resolvedAuthorization = `Bearer ${storedConfig.apiKey}`;
+        } else {
+          throw new UnauthorizedException(
+            `Missing Authorization header. Either pass your ${provider} API key in the Authorization header, or configure it in the dashboard under Provider Keys.`,
+          );
+        }
+      }
 
       // PRIVACY: Anonymize input if enabled
       let processedBody = body;
@@ -826,7 +864,7 @@ export class TransparentProxyController {
       // Forward to OpenAI
       const providerResponse =
         await this.transparentProxyService.forwardRequest(
-          authorization,
+          resolvedAuthorization,
           'https://api.openai.com/v1/embeddings',
           processedBody,
         );
@@ -910,18 +948,30 @@ export class TransparentProxyController {
       throw new BadRequestException(headerValidation.error);
     }
 
-    if (!authorization) {
-      throw new UnauthorizedException(
-        'Missing Authorization header with your API key',
-      );
-    }
-
     const startTime = Date.now();
     const model = body.model || 'whisper-1';
     const sessionId = session || '';
 
     try {
       const project = await this.projectsService.findByProjectKey(projectKey);
+
+      // ====================================
+      // RESOLVE API KEY: Stored keys or pass-through
+      // ====================================
+      const provider = this.transparentProxyService.detectProvider(model);
+      let resolvedAuthorization = authorization;
+
+      if (!authorization) {
+        const storedConfig = project.providerKeys?.[provider];
+        if (storedConfig?.apiKey) {
+          resolvedAuthorization = `Bearer ${storedConfig.apiKey}`;
+        } else {
+          throw new UnauthorizedException(
+            `Missing Authorization header. Either pass your ${provider} API key in the Authorization header, or configure it in the dashboard under Provider Keys.`,
+          );
+        }
+      }
+
       const periodStart = this.getPeriodStart(project.limitPeriod || 'daily');
 
       // FLOW EXECUTION: If project has a valid flow config, use flow executor
@@ -1016,7 +1066,7 @@ export class TransparentProxyController {
       // Forward to OpenAI (note: this endpoint typically uses multipart/form-data)
       const providerResponse =
         await this.transparentProxyService.forwardRequest(
-          authorization,
+          resolvedAuthorization,
           'https://api.openai.com/v1/audio/transcriptions',
           body,
         );

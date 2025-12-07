@@ -1,7 +1,6 @@
 # AI Ratelimit
 
-Add usage limits to your AI app in 5 minutes. Track usage per user, set limits per model, create pricing tiers—all without storing 
-prompts or API keys.
+Add usage limits to your AI app in 5 minutes. Track usage per user, set limits per model, create pricing tiers—all without storing prompts or API keys.
 
 ```
 Your App → AI Ratelimit → OpenAI / Anthropic / Google / Any AI
@@ -93,14 +92,25 @@ const response = await openai.chat.completions.create({
 
 ## Required Headers
 
-| Header | Description | Example |
-|--------|-------------|---------|
-| `Authorization` | Your AI provider API key | `Bearer sk-xxx` |
-| `x-project-key` | Your project key from dashboard | `pk_abc123` |
-| `x-identity` | Your user's ID (from your app) | `user_abc`, `session_xyz` |
-| `x-tier` | Pricing tier | `free`, `pro` |
+| Header | Description | Required | Example |
+|--------|-------------|----------|---------|
+| `x-project-key` | Your project key from dashboard | ✅ Always | `pk_abc123` |
+| `x-identity` | Your user's ID (from your app) | ✅ Always | `user_abc`, `session_xyz` |
+| `Authorization` | Your AI provider API key | ⚡ Pass-through only | `Bearer sk-xxx` |
+| `x-tier` | Pricing tier | Optional | `free`, `pro` |
 
 > **`x-identity`** is whatever you use to identify users—a user ID, session ID, or device ID. Each identity gets its own usage limits.
+
+### Two Integration Modes
+
+**Pass-through Mode** (server-side apps):
+- Pass your AI provider API key in the `Authorization` header
+- We forward it to OpenAI/Anthropic/Google, never store it
+
+**Stored Keys Mode** (mobile apps):
+- Store your API keys in Dashboard -> Settings -> Provider Keys
+- Your app only needs `x-project-key`, no AI keys exposed in client code
+- Keys are encrypted at rest
 
 ## Features
 
@@ -192,6 +202,9 @@ When limits are exceeded (HTTP 429):
 DATABASE_URL=postgresql://...
 JWT_SECRET=your-secret-key
 
+# Required for Stored Keys Mode (production)
+ENCRYPTION_KEY=your-32-char-key  # Generate with: openssl rand -hex 32
+
 # Optional
 PORT=3000
 RESEND_API_KEY=re_...  # For magic link emails
@@ -253,7 +266,6 @@ response = client.chat.completions.create(
 ## Resources
 
 - [Prompt Injection](docs/PROMPT.md) - Prompt injection protection
-- [Firebase Integration](docs/FIREBASE.md) - Use with Firebase Auth
 
 ## License
 
