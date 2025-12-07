@@ -108,7 +108,7 @@ const response = await openai.chat.completions.create({
 - We forward it to OpenAI/Anthropic/Google, never store it
 
 **Stored Keys Mode** (mobile apps):
-- Store your API keys in Dashboard -> Settings -> Provider Keys
+- Store your AI provider API keys in Dashboard settings
 - Your app only needs `x-project-key`, no AI keys exposed in client code
 - Keys are encrypted at rest
 
