@@ -22,7 +22,7 @@
           <div class="flex items-center gap-3">
             <div :class="[
               'w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold',
-              isConfigured(provider.id) ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-500'
+              isConfigured(provider.id) ? 'bg-green-300/10 text-green-300' : 'bg-gray-500/20 text-gray-500'
             ]">
               {{ provider.icon }}
             </div>
@@ -32,7 +32,7 @@
             </div>
           </div>
           <div class="flex items-center gap-2">
-            <span v-if="isConfigured(provider.id)" class="text-xs text-green-400 bg-green-500/10 px-2 py-1 rounded">
+            <span v-if="isConfigured(provider.id)" class="text-xs text-green-300 bg-green-300/10 px-2 py-1 rounded">
               Configured
             </span>
             <button
@@ -53,7 +53,7 @@
               <div class="flex items-center gap-2">
                 <span class="text-xs text-gray-500">API Key:</span>
                 <code class="text-xs text-gray-400 font-mono">
-                  {{ getProviderKeys(provider.id)?.apiKey || '••••••••' }}
+                  {{ maskKey(getProviderKeys(provider.id)?.apiKey) }}
                 </code>
               </div>
               <div v-if="isConfigured(provider.id) && getProviderKeys(provider.id)?.baseUrl" class="flex items-center gap-2">
@@ -87,7 +87,7 @@
   -d '{"model": "gpt-4o", "messages": [...]}'</code></pre>
         </div>
         <div class="flex items-center gap-2 text-xs text-gray-500">
-          <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
           </svg>
           <span>No <code class="bg-gray-500/20 px-1 rounded">Authorization</code> header needed, we use your stored key</span>
@@ -122,7 +122,7 @@
                 v-model="editForm.apiKey"
                 type="password"
                 :placeholder="isConfigured(editingProvider.id) ? 'Enter new key to update' : editingProvider.keyPlaceholder"
-                class="w-full px-3 py-2 bg-gray-500/10 border border-gray-500/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50"
+                class="w-full px-3 py-2 bg-gray-500/10 border border-gray-500/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-300/10"
                 required
               />
               <p class="mt-1 text-xs text-gray-500">
@@ -242,6 +242,18 @@ const saving = ref(false)
 
 const getProviderKeys = (providerId: string) => {
   return props.providerKeys?.[providerId]
+}
+
+// Always mask keys in the UI - never show full keys
+const maskKey = (key: string | undefined): string => {
+  if (!key) return '••••••••'
+  // If already masked (contains bullets), return as-is
+  if (key.includes('••')) return key
+  // Mask: show first 4 and last 4 chars
+  if (key.length > 12) {
+    return key.substring(0, 4) + '••••••••' + key.slice(-4)
+  }
+  return '••••••••'
 }
 
 const isConfigured = (providerId: string) => {
