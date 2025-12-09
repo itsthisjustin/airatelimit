@@ -101,7 +101,7 @@
                 >
                   <div
                     v-if="showSettingsDropdown"
-                    class="absolute right-0 mt-2 w-40 rounded-lg shadow-lg bg-black border border-gray-500/20 ring-1 ring-black ring-opacity-5 z-50"
+                    class="absolute right-0 mt-2 w-44 rounded-lg shadow-lg bg-black border border-gray-500/20 ring-1 ring-black ring-opacity-5 z-50"
                   >
                     <div class="py-1">
                       <button
@@ -124,7 +124,7 @@
                           <line x1="6.5" y1="10" x2="6.5" y2="14" stroke-width="2"/>
                           <line x1="17.5" y1="10" x2="17.5" y2="14" stroke-width="2"/>
                         </svg>
-                        <span>Flow Designer - Beta</span>
+                        <span>Flow Designer - <span class="text-xs text-yellow-300">Beta</span></span>
                       </button>
                       <button
                         @click="openDelete"
@@ -185,37 +185,11 @@
               class="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-300"
             ></span>
           </button>
-          <button
-            @click="activeTab = 'routing'"
-            :class="[
-              'px-4 py-2 text-sm font-medium transition-colors relative',
-              activeTab === 'routing' 
-                ? 'text-white' 
-                : 'text-gray-500 hover:text-gray-300'
-            ]"
-          >
-            Smart Routing
-            <!-- <span v-if="project?.routingEnabled" class="ml-1.5 w-1.5 h-1.5 bg-green-400 rounded-full inline-block"></span> -->
-            <span 
-              v-if="activeTab === 'routing'"
-              class="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-300"
-            ></span>
-          </button>
         </div>
 
         <!-- Cost Analytics Tab -->
         <div v-if="activeTab === 'costs'" class="pt-2">
           <CostDashboard :project-id="projectId" />
-        </div>
-
-        <!-- Smart Routing Tab -->
-        <div v-if="activeTab === 'routing'" class="pt-2">
-          <SettingsRoutingConfig
-            :project-id="projectId"
-            :routing-enabled="project?.routingEnabled"
-            :routing-config="project?.routingConfig"
-            @saved="loadProject"
-          />
         </div>
 
         <!-- Usage Tab Content -->
@@ -383,6 +357,7 @@ curl https://api.airatelimit.com/v1/chat/completions \
       @close="showSettingsModal = false"
       @update="handleUpdate"
       @update-provider-keys="handleProviderKeysUpdate"
+      @routing-saved="loadProject"
     />
 
     <!-- Delete Confirmation Dialog -->
@@ -429,7 +404,7 @@ const error = ref('')
 const showDeleteConfirm = ref(false)
 const showSettingsModal = ref(false)
 const showSettingsDropdown = ref(false)
-const activeTab = ref<'usage' | 'costs' | 'routing'>('usage')
+const activeTab = ref<'usage' | 'costs'>('usage')
 const settingsDropdownRef = ref(null)
 const confettiRef = ref<any>(null)
 const previousRequestCount = ref<number | null>(null)

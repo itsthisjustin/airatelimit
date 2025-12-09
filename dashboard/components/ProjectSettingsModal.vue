@@ -77,6 +77,13 @@
                     Privacy
                   </button>
                   <button
+                    @click="configTab = 'routing'"
+                    :class="configTab === 'routing' ? 'border-blue-300 text-blue-300' : 'border-transparent text-gray-400 hover:text-gray-400 hover:border-gray-300'"
+                    class="whitespace-nowrap py-3 px-6 border-b-2 font-medium text-sm"
+                  >
+                    Routing
+                  </button>
+                  <button
                     @click="configTab = 'api'"
                     :class="configTab === 'api' ? 'border-blue-300 text-blue-300' : 'border-transparent text-gray-400 hover:text-gray-400 hover:border-gray-300'"
                     class="whitespace-nowrap py-3 px-6 border-b-2 font-medium text-sm"
@@ -145,6 +152,15 @@
                 :provider-keys="editForm.providerKeys"
                 @update="handleProviderKeysUpdate"
               />
+
+              <div v-show="configTab === 'routing'" class="px-6 pb-6">
+                <RoutingConfig
+                  :project-id="project?.id"
+                  :routing-enabled="project?.routingEnabled"
+                  :routing-config="project?.routingConfig"
+                  @saved="handleRoutingSaved"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -161,6 +177,7 @@ import SecurityTab from './settings/SecurityTab.vue'
 import PrivacyTab from './settings/PrivacyTab.vue'
 import ApiAccessTab from './settings/ApiAccessTab.vue'
 import ProviderKeysTab from './settings/ProviderKeysTab.vue'
+import RoutingConfig from './settings/RoutingConfig.vue'
 
 const props = defineProps<{
   isOpen: boolean
@@ -207,6 +224,7 @@ const emit = defineEmits<{
   (e: 'close'): void
   (e: 'update'): void
   (e: 'update-provider-keys'): void
+  (e: 'routing-saved'): void
 }>()
 
 const configTab = ref('basic')
@@ -244,6 +262,10 @@ const hasProviderKeys = computed(() => {
 const handleProviderKeysUpdate = (providerKeys: Record<string, { apiKey: string; baseUrl?: string }>) => {
   props.editForm.providerKeys = providerKeys
   emit('update-provider-keys')
+}
+
+const handleRoutingSaved = () => {
+  emit('routing-saved')
 }
 
 // Reset tab when modal closes
