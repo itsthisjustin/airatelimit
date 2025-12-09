@@ -382,6 +382,7 @@ curl https://api.airatelimit.com/v1/chat/completions \
       :update-success="updateSuccess"
       @close="showSettingsModal = false"
       @update="handleUpdate"
+      @update-provider-keys="handleProviderKeysUpdate"
     />
 
     <!-- Delete Confirmation Dialog -->
@@ -797,6 +798,28 @@ const handleUpdate = async () => {
     }, 1500)
   } catch (err: any) {
     updateError.value = err.message || 'Failed to update project'
+  } finally {
+    updating.value = false
+  }
+}
+
+// Separate handler for provider keys - doesn't close modal
+const handleProviderKeysUpdate = async () => {
+  updating.value = true
+  updateError.value = ''
+
+  try {
+    await api(`/projects/${projectId}`, {
+      method: 'PATCH',
+      body: {
+        providerKeys: editForm.value.providerKeys
+      },
+    })
+
+    await loadProject()
+    // Don't close modal - user may want to configure more providers
+  } catch (err: any) {
+    updateError.value = err.message || 'Failed to save provider keys'
   } finally {
     updating.value = false
   }

@@ -206,6 +206,7 @@ const changes = computed(() => {
 const emit = defineEmits<{
   (e: 'close'): void
   (e: 'update'): void
+  (e: 'update-provider-keys'): void
 }>()
 
 const configTab = ref('basic')
@@ -242,7 +243,7 @@ const hasProviderKeys = computed(() => {
 
 const handleProviderKeysUpdate = (providerKeys: Record<string, { apiKey: string; baseUrl?: string }>) => {
   props.editForm.providerKeys = providerKeys
-  emit('update')
+  emit('update-provider-keys')
 }
 
 // Reset tab when modal closes
