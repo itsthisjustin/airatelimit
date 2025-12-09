@@ -9,7 +9,7 @@
       </p>
       <div class="mt-3 p-3 bg-gray-500/5 border border-gray-500/10 rounded-lg font-mono text-xs text-gray-300">
         <div class="text-gray-500 mb-1">// API Usage:</div>
-        <div><span class="text-emerald-400">POST</span> /api/projects/<span class="text-blue-300">{{ projectKey || 'pk_xxx' }}</span>/identities</div>
+        <div><span class="text-emerald-400">POST</span> /projects/<span class="text-blue-300">{{ projectKey || 'pk_xxx' }}</span>/identities</div>
         <div class="text-gray-500 mt-1">{ "identity": "user-123", "requestLimit": 1000 }</div>
       </div>
     </div>
@@ -310,7 +310,7 @@ const loadIdentities = async () => {
   
   loading.value = true
   try {
-    const result = await api(`/api/projects/${props.projectKey}/identities`)
+    const result = await api(`/projects/${props.projectKey}/identities`)
     identities.value = result.items
     total.value = result.total
   } catch (e) {
@@ -324,7 +324,7 @@ const loadMore = async () => {
   if (!props.projectKey) return
   
   try {
-    const result = await api(`/api/projects/${props.projectKey}/identities?offset=${identities.value.length}`)
+    const result = await api(`/projects/${props.projectKey}/identities?offset=${identities.value.length}`)
     identities.value.push(...result.items)
   } catch (e) {
     console.error('Failed to load more identities:', e)
@@ -371,7 +371,7 @@ const saveIdentity = async () => {
       }
     }
 
-    await api(`/api/projects/${props.projectKey}/identities`, {
+    await api(`/projects/${props.projectKey}/identities`, {
       method: 'POST',
       body: {
         identity: form.value.identity,
@@ -393,7 +393,7 @@ const saveIdentity = async () => {
 
 const toggleEnabled = async (identity: IdentityLimit) => {
   try {
-    await api(`/api/projects/${props.projectKey}/identities/${encodeURIComponent(identity.identity)}`, {
+    await api(`/projects/${props.projectKey}/identities/${encodeURIComponent(identity.identity)}`, {
       method: 'PUT',
       body: {
         enabled: !identity.enabled,
@@ -411,7 +411,7 @@ const deleteIdentity = async (identity: IdentityLimit) => {
   }
 
   try {
-    await api(`/api/projects/${props.projectKey}/identities/${encodeURIComponent(identity.identity)}`, {
+    await api(`/projects/${props.projectKey}/identities/${encodeURIComponent(identity.identity)}`, {
       method: 'DELETE',
     })
     identities.value = identities.value.filter(i => i.identity !== identity.identity)

@@ -167,7 +167,7 @@
             Usage
             <span 
               v-if="activeTab === 'usage'"
-              class="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400"
+              class="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-300"
             ></span>
           </button>
           <button
@@ -182,7 +182,7 @@
             Cost Analytics
             <span 
               v-if="activeTab === 'costs'"
-              class="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400"
+              class="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-300"
             ></span>
           </button>
           <button
@@ -195,10 +195,10 @@
             ]"
           >
             Smart Routing
-            <span v-if="project?.routingEnabled" class="ml-1.5 w-1.5 h-1.5 bg-green-400 rounded-full inline-block"></span>
+            <!-- <span v-if="project?.routingEnabled" class="ml-1.5 w-1.5 h-1.5 bg-green-400 rounded-full inline-block"></span> -->
             <span 
               v-if="activeTab === 'routing'"
-              class="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400"
+              class="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-300"
             ></span>
           </button>
         </div>

@@ -105,7 +105,7 @@
           <label class="text-sm font-medium text-gray-300">Model Mappings</label>
           <button
             @click="addMapping"
-            class="text-xs text-blue-400 hover:text-blue-300"
+            class="text-xs text-blue-300 hover:text-blue-400"
           >
             + Add Mapping
           </button>
@@ -132,7 +132,7 @@
           />
           <button
             @click="removeMapping(index)"
-            class="text-red-400 hover:text-red-300 p-2"
+            class="text-red-400 hover:text-red-500 p-2"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -157,7 +157,7 @@
                 v-model="localConfig.tierOverrides.free"
                 type="text"
                 placeholder="gpt-4o-mini"
-                class="flex-1 bg-gray-500/10 border border-gray-500/20 rounded px-2 py-1 text-white font-mono focus:outline-none focus:border-blue-500"
+                class="flex-1 bg-gray-500/10 border border-gray-500/10 rounded px-2 py-1 text-white font-mono focus:outline-none focus:border-blue-500"
               />
             </div>
           </div>
@@ -170,9 +170,9 @@
       <button
         @click="save"
         :disabled="saving"
-        class="px-4 py-2 bg-white text-black text-sm font-medium rounded-lg hover:bg-gray-200 disabled:opacity-50 transition-colors"
+        class="px-4 py-2 bg-blue-300 text-black text-sm font-medium rounded-lg hover:bg-blue-400 disabled:opacity-50 transition-colors"
       >
-        {{ saving ? 'Saving...' : 'Save Routing Config' }}
+        {{ saving ? 'Saving...' : 'Save' }}
       </button>
     </div>
   </div>
@@ -244,7 +244,7 @@ const save = async () => {
       }
     }
 
-    await api(`/api/projects/${props.projectId}/routing`, {
+    await api(`/projects/${props.projectId}/routing`, {
       method: 'PUT',
       body: {
         routingEnabled: localConfig.value.enabled,
@@ -262,10 +262,10 @@ const save = async () => {
       },
     })
 
-    addToast('Routing configuration saved', 'success')
+    addToast({ type: 'success', message: 'Routing configuration saved' })
     emit('saved')
   } catch (error: any) {
-    addToast(error.message || 'Failed to save', 'error')
+    addToast({ type: 'error', message: error.message || 'Failed to save' })
   } finally {
     saving.value = false
   }
