@@ -778,6 +778,11 @@ const handleUpdate = async () => {
     // Upgrade URL for deep links
     payload.upgradeUrl = editForm.value.upgradeUrl || null
 
+    // Provider Keys (for stored keys mode)
+    if (editForm.value.providerKeys) {
+      payload.providerKeys = editForm.value.providerKeys
+    }
+
     await api(`/projects/${projectId}`, {
       method: 'PATCH',
       body: payload,
