@@ -90,9 +90,9 @@
               <span class="text-gray-300 font-mono text-xs">{{ model.model || 'unknown' }}</span>
               <span class="text-white font-medium">${{ formatCost(model.cost) }}</span>
             </div>
-            <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+            <div class="h-2 bg-gray-500/10 border border-gray-500/10 rounded-full overflow-hidden">
               <div 
-                class="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-500"
+                class="h-full bg-blue-300 rounded-full transition-all duration-500"
                 :style="{ width: `${model.percentOfTotal}%` }"
               ></div>
             </div>
