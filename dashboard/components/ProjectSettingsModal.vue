@@ -46,7 +46,7 @@
                     class="whitespace-nowrap py-3 px-6 border-b-2 font-medium text-sm"
                   >
                     Provider Keys
-                    <span v-if="hasProviderKeys" class="ml-1.5 w-1.5 h-1.5 bg-green-400 rounded-full inline-block"></span>
+                    <!-- <span v-if="hasProviderKeys" class="ml-1.5 w-1.5 h-1.5 bg-green-400 rounded-full inline-block"></span> -->
                   </button>
                   <button
                     @click="configTab = 'tiers'"

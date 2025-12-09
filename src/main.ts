@@ -50,10 +50,13 @@ async function bootstrap() {
   // ====================================
   const rateLimitMiddleware = app.get(ProxyRateLimitMiddleware);
   // Apply rate limiting to proxy endpoints only (not dashboard APIs)
-  app.use('/api/v1', rateLimitMiddleware.use.bind(rateLimitMiddleware));
+  // Note: Proxy routes are at /v1 (excluded from /api prefix for SDK compatibility)
+  app.use('/v1', rateLimitMiddleware.use.bind(rateLimitMiddleware));
 
-  // Set global API prefix
-  app.setGlobalPrefix('api');
+  // Set global API prefix (exclude v1 proxy routes for OpenAI SDK compatibility)
+  app.setGlobalPrefix('api', {
+    exclude: ['v1/(.*)'],  // Proxy routes at /v1/* should not have /api prefix
+  });
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
