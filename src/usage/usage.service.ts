@@ -562,12 +562,13 @@ export class UsageService {
     totalSaved: number;
     blockedRequests: number;
   }> {
-    const counters = await this.usageRepository.find({
-      where: {
-        projectId,
-        periodStart,
-      },
-    });
+    // Convert to date string for PostgreSQL DATE column comparison
+    const periodStartStr = periodStart.toISOString().split('T')[0];
+    
+    const counters = await this.usageRepository.query(
+      `SELECT * FROM usage_counters WHERE "projectId" = $1 AND "periodStart" = $2`,
+      [projectId, periodStartStr],
+    );
 
     const totalRequests = counters.reduce((sum, c) => sum + c.requestsUsed, 0);
     const totalTokens = counters.reduce((sum, c) => sum + c.tokensUsed, 0);
@@ -676,17 +677,15 @@ export class UsageService {
       tokensUsed: number;
     }>
   > {
-    const counters = await this.usageRepository.find({
-      where: {
-        projectId,
-        periodStart,
-      },
-      order: {
-        requestsUsed: 'DESC',
-      },
-    });
+    // Convert to date string for PostgreSQL DATE column comparison
+    const periodStartStr = periodStart.toISOString().split('T')[0];
+    
+    const counters = await this.usageRepository.query(
+      `SELECT * FROM usage_counters WHERE "projectId" = $1 AND "periodStart" = $2 ORDER BY "requestsUsed" DESC`,
+      [projectId, periodStartStr],
+    );
 
-    return counters.map((c) => ({
+    return counters.map((c: any) => ({
       identity: c.identity,
       model: c.model,
       requestsUsed: c.requestsUsed,
@@ -700,15 +699,16 @@ export class UsageService {
   ): Promise<
     Array<{ model: string; requestsUsed: number; tokensUsed: number }>
   > {
-    const counters = await this.usageRepository.find({
-      where: {
-        projectId,
-        periodStart,
-      },
-    });
+    // Convert to date string for PostgreSQL DATE column comparison
+    const periodStartStr = periodStart.toISOString().split('T')[0];
+    
+    const counters = await this.usageRepository.query(
+      `SELECT * FROM usage_counters WHERE "projectId" = $1 AND "periodStart" = $2`,
+      [projectId, periodStartStr],
+    );
 
     // Aggregate by model
-    const byModel = counters.reduce(
+    const byModel = (counters as any[]).reduce(
       (acc, c) => {
       if (!acc[c.model]) {
         acc[c.model] = { model: c.model, requestsUsed: 0, tokensUsed: 0 };
@@ -723,9 +723,8 @@ export class UsageService {
       >,
     );
 
-    return Object.values(byModel).sort(
-      (a, b) => b.requestsUsed - a.requestsUsed,
-    );
+    const result = Object.values(byModel) as Array<{ model: string; requestsUsed: number; tokensUsed: number }>;
+    return result.sort((a, b) => b.requestsUsed - a.requestsUsed);
   }
 
   async getUsageHistory(
