@@ -56,20 +56,21 @@
           :d="linePath"
           fill="none"
           stroke="#93c5fd"
-          stroke-width="2"
+          stroke-width="2.5"
           stroke-linecap="round"
           stroke-linejoin="round"
         />
         
-        <!-- Data points -->
+        <!-- Data points - show when value > 0 -->
         <circle
           v-for="(point, i) in points"
           :key="i"
           :cx="point.x + '%'"
           :cy="point.y + '%'"
-          r="3"
+          r="4"
           fill="#93c5fd"
-          class="opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
+          :class="chartData[i]?.value > 0 ? 'opacity-100' : 'opacity-0 hover:opacity-50'"
+          class="transition-opacity cursor-pointer"
           @mouseenter="hoveredPoint = i"
           @mouseleave="hoveredPoint = null"
         />
