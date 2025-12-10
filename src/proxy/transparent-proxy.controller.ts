@@ -1215,9 +1215,22 @@ export class TransparentProxyController {
         identity,
         session,
         error: error.message,
+        details: error.response?.data,
       });
       if (!streamEnded) {
+        // Forward the error to the client instead of silently ending
+        const errorMessage = error.response?.data?.error?.message 
+          || error.message 
+          || 'Failed to get response from AI provider';
+        res.write(`data: ${JSON.stringify({ 
+          error: { 
+            message: errorMessage,
+            type: 'provider_error',
+            code: error.response?.status || 500
+          } 
+        })}\n\n`);
         res.end();
+        streamEnded = true;
       }
     } finally {
       clearTimeout(timeout);

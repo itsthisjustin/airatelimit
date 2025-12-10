@@ -340,14 +340,37 @@ export class TransparentProxyService {
         }
       }
     } catch (error) {
+      // Extract error details from provider response
+      let errorMessage = error.message || 'Failed to stream from AI provider';
+      let errorDetails = null;
+      
+      // Try to extract error from response data (may be a buffer)
+      if (error.response?.data) {
+        try {
+          const data = error.response.data;
+          if (Buffer.isBuffer(data)) {
+            errorDetails = JSON.parse(data.toString());
+          } else if (typeof data === 'string') {
+            errorDetails = JSON.parse(data);
+          } else {
+            errorDetails = data;
+          }
+          errorMessage = errorDetails?.error?.message || errorMessage;
+        } catch (e) {
+          // Couldn't parse error response
+        }
+      }
+      
       console.error('Transparent proxy stream error:', {
         status: error.response?.status,
-        message: error.response?.data?.error?.message,
+        message: errorMessage,
+        details: errorDetails,
       });
 
       throw new BadGatewayException({
         error: 'provider_error',
-        message: error.message || 'Failed to stream from AI provider',
+        message: errorMessage,
+        status: error.response?.status,
       });
     }
   }
