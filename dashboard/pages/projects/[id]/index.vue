@@ -692,13 +692,11 @@ const handleUpdate = async () => {
       limitType: editForm.value.limitType,
     }
 
-    // Basic limits
-    if (editForm.value.dailyRequestLimit !== null) {
-      payload.dailyRequestLimit = editForm.value.dailyRequestLimit
-    }
-    if (editForm.value.dailyTokenLimit !== null) {
-      payload.dailyTokenLimit = editForm.value.dailyTokenLimit
-    }
+    // Basic limits - always send, convert empty/NaN to null for unlimited
+    const requestLimit = editForm.value.dailyRequestLimit as number | null | string
+    const tokenLimit = editForm.value.dailyTokenLimit as number | null | string
+    payload.dailyRequestLimit = (requestLimit === '' || requestLimit === null || Number.isNaN(requestLimit)) ? null : Number(requestLimit)
+    payload.dailyTokenLimit = (tokenLimit === '' || tokenLimit === null || Number.isNaN(tokenLimit)) ? null : Number(tokenLimit)
     
     // Parse limit message as JSON
     if (editForm.value.limitMessage) {
