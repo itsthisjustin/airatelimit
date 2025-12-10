@@ -692,11 +692,12 @@ const handleUpdate = async () => {
       limitType: editForm.value.limitType,
     }
 
+    // Helper to convert empty/NaN to null for unlimited
+    const cleanLimit = (val: any) => (val === '' || val === null || Number.isNaN(val)) ? null : Number(val)
+    
     // Basic limits - always send, convert empty/NaN to null for unlimited
-    const requestLimit = editForm.value.dailyRequestLimit as number | null | string
-    const tokenLimit = editForm.value.dailyTokenLimit as number | null | string
-    payload.dailyRequestLimit = (requestLimit === '' || requestLimit === null || Number.isNaN(requestLimit)) ? null : Number(requestLimit)
-    payload.dailyTokenLimit = (tokenLimit === '' || tokenLimit === null || Number.isNaN(tokenLimit)) ? null : Number(tokenLimit)
+    payload.dailyRequestLimit = cleanLimit(editForm.value.dailyRequestLimit)
+    payload.dailyTokenLimit = cleanLimit(editForm.value.dailyTokenLimit)
     
     // Parse limit message as JSON
     if (editForm.value.limitMessage) {
@@ -714,8 +715,8 @@ const handleUpdate = async () => {
     payload.tiers = {}
     for (const [tierName, tier] of Object.entries(editForm.value.tiers)) {
       payload.tiers[tierName] = {
-        requestLimit: (tier as any).requestLimit,
-        tokenLimit: (tier as any).tokenLimit,
+        requestLimit: cleanLimit((tier as any).requestLimit),
+        tokenLimit: cleanLimit((tier as any).tokenLimit),
         modelLimits: (tier as any).modelLimits || {},
       }
       
@@ -746,8 +747,8 @@ const handleUpdate = async () => {
 
     // Session limits
     payload.sessionLimitsEnabled = editForm.value.sessionLimitsEnabled
-    payload.sessionRequestLimit = editForm.value.sessionRequestLimit || null
-    payload.sessionTokenLimit = editForm.value.sessionTokenLimit || null
+    payload.sessionRequestLimit = cleanLimit(editForm.value.sessionRequestLimit)
+    payload.sessionTokenLimit = cleanLimit(editForm.value.sessionTokenLimit)
 
     // Upgrade URL for deep links
     payload.upgradeUrl = editForm.value.upgradeUrl || null
