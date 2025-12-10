@@ -47,7 +47,7 @@ Join our Discord community for discussions, support, and updates:
 
 **Railway (Recommended):**
 
-📖 **[Railway Deployment](./docs/DEPLOYMENT.md)**
+**[Deployment](./docs/DEPLOYMENT.md)**
 
 Quick steps:
 1. Push to GitHub
