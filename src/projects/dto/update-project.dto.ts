@@ -6,6 +6,7 @@ import {
   IsIn,
   IsArray,
   IsBoolean,
+  ValidateIf,
 } from 'class-validator';
 
 export class UpdateProjectDto {
@@ -34,17 +35,19 @@ export class UpdateProjectDto {
   providerKeys?: Record<string, { apiKey: string; baseUrl?: string }>;
 
   @IsOptional()
+  @ValidateIf((o) => o.dailyRequestLimit !== null && o.dailyRequestLimit !== '')
   @IsInt()
-  dailyRequestLimit?: number;
+  dailyRequestLimit?: number | null;
 
   @IsOptional()
+  @ValidateIf((o) => o.dailyTokenLimit !== null && o.dailyTokenLimit !== '')
   @IsInt()
-  dailyTokenLimit?: number;
+  dailyTokenLimit?: number | null;
 
   // Limit period
   @IsOptional()
-  @IsIn(['daily', 'weekly', 'monthly'])
-  limitPeriod?: 'daily' | 'weekly' | 'monthly';
+  @IsIn(['hourly', 'daily', 'weekly', 'monthly'])
+  limitPeriod?: 'hourly' | 'daily' | 'weekly' | 'monthly';
 
   // Limit type
   @IsOptional()
@@ -136,12 +139,14 @@ export class UpdateProjectDto {
   sessionLimitsEnabled?: boolean;
 
   @IsOptional()
+  @ValidateIf((o) => o.sessionRequestLimit !== null && o.sessionRequestLimit !== '')
   @IsInt()
-  sessionRequestLimit?: number;
+  sessionRequestLimit?: number | null;
 
   @IsOptional()
+  @ValidateIf((o) => o.sessionTokenLimit !== null && o.sessionTokenLimit !== '')
   @IsInt()
-  sessionTokenLimit?: number;
+  sessionTokenLimit?: number | null;
 
   // Visual Flow Designer configuration
   @IsOptional()

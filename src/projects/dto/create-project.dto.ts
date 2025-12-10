@@ -5,6 +5,7 @@ import {
   IsObject,
   IsIn,
   IsArray,
+  ValidateIf,
 } from 'class-validator';
 
 export class CreateProjectDto {
@@ -18,17 +19,19 @@ export class CreateProjectDto {
   openaiApiKey: string;
 
   @IsOptional()
+  @ValidateIf((o) => o.dailyRequestLimit !== null && o.dailyRequestLimit !== '')
   @IsInt()
-  dailyRequestLimit?: number;
+  dailyRequestLimit?: number | null;
 
   @IsOptional()
+  @ValidateIf((o) => o.dailyTokenLimit !== null && o.dailyTokenLimit !== '')
   @IsInt()
-  dailyTokenLimit?: number;
+  dailyTokenLimit?: number | null;
 
   // Limit period
   @IsOptional()
-  @IsIn(['daily', 'weekly', 'monthly'])
-  limitPeriod?: 'daily' | 'weekly' | 'monthly';
+  @IsIn(['hourly', 'daily', 'weekly', 'monthly'])
+  limitPeriod?: 'hourly' | 'daily' | 'weekly' | 'monthly';
 
   // Limit type
   @IsOptional()

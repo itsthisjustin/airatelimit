@@ -117,14 +117,18 @@ export class UserUsageController {
     );
   }
 
-  private getPeriodStart(limitPeriod: 'daily' | 'weekly' | 'monthly'): Date {
+  private getPeriodStart(limitPeriod: 'hourly' | 'daily' | 'weekly' | 'monthly'): Date {
     const now = new Date();
     const year = now.getUTCFullYear();
     const month = now.getUTCMonth();
     const date = now.getUTCDate();
+    const hour = now.getUTCHours();
     const day = now.getUTCDay(); // 0 = Sunday, 1 = Monday, etc.
 
     switch (limitPeriod) {
+      case 'hourly':
+        return new Date(Date.UTC(year, month, date, hour));
+
       case 'daily':
         return new Date(Date.UTC(year, month, date));
 

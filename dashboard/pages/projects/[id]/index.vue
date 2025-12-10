@@ -498,7 +498,7 @@ const toggleProjectKeyVisibility = () => {
 
 const editForm = ref({
   name: '',
-  limitPeriod: 'daily' as 'daily' | 'weekly' | 'monthly',
+  limitPeriod: 'daily' as 'hourly' | 'daily' | 'weekly' | 'monthly',
   limitType: 'both' as 'requests' | 'tokens' | 'both',
   dailyRequestLimit: null as number | null,
   dailyTokenLimit: null as number | null,

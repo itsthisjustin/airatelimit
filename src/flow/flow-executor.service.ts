@@ -416,6 +416,9 @@ export class FlowExecutorService {
   private getPeriodStart(period: string): Date {
     const now = new Date();
     switch (period) {
+      case 'hourly':
+      case 'hour':
+        return new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours());
       case 'daily':
       case 'day':
         return new Date(now.getFullYear(), now.getMonth(), now.getDate());

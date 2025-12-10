@@ -79,10 +79,10 @@ export class Project {
   // Limit period configuration
   @Column({ 
     type: 'enum', 
-    enum: ['daily', 'weekly', 'monthly'], 
+    enum: ['hourly', 'daily', 'weekly', 'monthly'], 
     default: 'daily',
   })
-  limitPeriod: 'daily' | 'weekly' | 'monthly';
+  limitPeriod: 'hourly' | 'daily' | 'weekly' | 'monthly';
 
   // Limit type configuration
   @Column({ 

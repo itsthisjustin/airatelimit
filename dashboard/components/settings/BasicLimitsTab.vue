@@ -39,6 +39,7 @@
             v-model="editForm.limitPeriod"
             class="w-full px-4 py-2.5 text-white bg-gray-500/10 border border-gray-500/20 rounded-lg focus:ring-2 focus:ring-blue-300/50 focus:border-transparent appearance-none cursor-pointer pr-10 transition-all hover:bg-gray-500/20"
           >
+            <option value="hourly">Hourly</option>
             <option value="daily">Daily</option>
             <option value="weekly">Weekly</option>
             <option value="monthly">Monthly</option>
@@ -49,7 +50,7 @@
             </svg>
           </div>
         </div>
-        <p class="text-xs text-gray-400 mt-1">Reset limits daily, weekly, or monthly</p>
+        <p class="text-xs text-gray-400 mt-1">Reset limits hourly, daily, weekly, or monthly</p>
       </div>
 
       <!-- Limit Type -->
