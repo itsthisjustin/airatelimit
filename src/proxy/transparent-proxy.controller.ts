@@ -91,14 +91,43 @@ export class TransparentProxyController {
     }
 
     // ====================================
+    // NATIVE FORMAT SUPPORT
+    // Detect and transform native SDK formats to OpenAI format
+    // ====================================
+    let workingBody = body;
+    let responseFormat: 'openai' | 'gemini' | 'anthropic' = 'openai';
+
+    // Check for native Gemini format (uses 'contents' instead of 'messages')
+    if (this.isNativeGeminiFormat(body)) {
+      const { transformed, originalFormat } = this.transformGeminiToOpenAI(body);
+      workingBody = transformed;
+      responseFormat = originalFormat;
+      console.log('Transformed native Gemini format to OpenAI format:', {
+        originalContentsCount: body.contents?.length || 0,
+        transformedMessagesCount: transformed.messages?.length || 0,
+        model: transformed.model,
+      });
+    }
+    // Check for native Anthropic format (has top-level 'system' string)
+    else if (this.isNativeAnthropicFormat(body)) {
+      workingBody = this.transformAnthropicNativeToOpenAI(body);
+      responseFormat = 'anthropic';
+      console.log('Transformed native Anthropic format to OpenAI format:', {
+        hasTopLevelSystem: !!body.system,
+        messagesCount: workingBody.messages?.length || 0,
+        model: workingBody.model,
+      });
+    }
+
+    // ====================================
     // SECURITY: Validate request body
     // ====================================
-    this.validateChatCompletionsBody(body);
+    this.validateChatCompletionsBody(workingBody);
 
     const startTime = Date.now();
-    let model = body.model || 'unknown';
+    let model = workingBody.model || 'unknown';
     const originalModel = model; // Keep track of original for logging
-    const isStreaming = body.stream === true;
+    const isStreaming = workingBody.stream === true;
     const sessionId = session || '';
 
     try {
@@ -169,16 +198,16 @@ export class TransparentProxyController {
           }
           
           model = routedModel;
-          body.model = routedModel;
+          workingBody.model = routedModel;
           provider = newProvider;
         }
       }
 
       // PRIVACY: Anonymize PII if enabled ("Tofu Box")
-      let processedBody = body;
-      if (project.anonymizationEnabled && body.messages) {
+      let processedBody = workingBody;
+      if (project.anonymizationEnabled && workingBody.messages) {
         const anonymizationResult = this.anonymizationService.anonymizeMessages(
-          body.messages,
+          workingBody.messages,
           { enabled: true, ...project.anonymizationConfig },
         );
 
@@ -189,14 +218,14 @@ export class TransparentProxyController {
             identity,
             session: sessionId,
             piiTypesDetected: this.extractPiiTypes(
-              body.messages,
+              workingBody.messages,
               project.anonymizationConfig,
             ),
             replacementCount: anonymizationResult.totalReplacements,
             endpoint: 'chat/completions',
           });
 
-          processedBody = { ...body, messages: anonymizationResult.messages };
+          processedBody = { ...workingBody, messages: anonymizationResult.messages };
 
           console.log('PII anonymized:', {
             projectId: project.id,
@@ -387,6 +416,7 @@ export class TransparentProxyController {
           sessionId,
           model,
           periodStart,
+          responseFormat,
         );
       } else {
         // Handle regular response
@@ -427,10 +457,17 @@ export class TransparentProxyController {
           tokensUsed: actualTokens,
           costUsd: cost.toFixed(6),
           latency: Date.now() - startTime,
+          responseFormat,
         });
 
-        // Return the exact provider response
-        res.json(providerResponse);
+        // Return response, transforming to native format if needed
+        if (responseFormat === 'gemini') {
+          res.json(this.transformOpenAIToGemini(providerResponse));
+        } else if (responseFormat === 'anthropic') {
+          res.json(this.transformOpenAIToAnthropic(providerResponse));
+        } else {
+          res.json(providerResponse);
+        }
       }
     } catch (error) {
       if (error instanceof HttpException) {
@@ -1159,6 +1196,7 @@ export class TransparentProxyController {
     session: string,
     model: string,
     periodStart: Date,
+    responseFormat: 'openai' | 'gemini' | 'anthropic' = 'openai',
   ) {
     // Set SSE headers
     res.setHeader('Content-Type', 'text/event-stream');
@@ -1202,8 +1240,15 @@ export class TransparentProxyController {
           outputTokens = chunk.usage.completion_tokens || outputTokens;
         }
 
-        // Forward the chunk exactly as received
-        res.write(`data: ${JSON.stringify(chunk)}\n\n`);
+        // Forward the chunk, transforming to native format if needed
+        let outputChunk = chunk;
+        if (responseFormat === 'gemini') {
+          outputChunk = this.transformStreamChunkToGemini(chunk);
+        } else if (responseFormat === 'anthropic') {
+          outputChunk = this.transformStreamChunkToAnthropic(chunk);
+          if (!outputChunk) continue; // Skip null chunks (non-content events)
+        }
+        res.write(`data: ${JSON.stringify(outputChunk)}\n\n`);
       }
 
       if (!streamEnded) {
@@ -1583,5 +1628,290 @@ export class TransparentProxyController {
     };
     
     return cheaperModels[model] || null;
+  }
+
+  // ====================================
+  // GOOGLE NATIVE FORMAT SUPPORT
+  // Transforms native Gemini SDK format to OpenAI format
+  // ====================================
+
+  /**
+   * Detect if request is in native Gemini format
+   * Native format uses 'contents' array, OpenAI uses 'messages' array
+   */
+  private isNativeGeminiFormat(body: any): boolean {
+    return body.contents && Array.isArray(body.contents) && !body.messages;
+  }
+
+  /**
+   * Transform native Gemini format to OpenAI format
+   * 
+   * Native Gemini:
+   * {
+   *   "systemInstruction": { "parts": [{ "text": "You are helpful" }] },
+   *   "contents": [
+   *     { "role": "user", "parts": [{ "text": "Hello" }] },
+   *     { "role": "model", "parts": [{ "text": "Hi!" }] }
+   *   ],
+   *   "generationConfig": { "temperature": 0.7, "maxOutputTokens": 1000 }
+   * }
+   * 
+   * OpenAI format:
+   * {
+   *   "model": "gemini-2.0-flash",
+   *   "messages": [
+   *     { "role": "system", "content": "You are helpful" },
+   *     { "role": "user", "content": "Hello" },
+   *     { "role": "assistant", "content": "Hi!" }
+   *   ],
+   *   "temperature": 0.7,
+   *   "max_tokens": 1000
+   * }
+   */
+  private transformGeminiToOpenAI(body: any): { transformed: any; originalFormat: 'gemini' } {
+    const messages: Array<{ role: string; content: string }> = [];
+
+    // Handle systemInstruction → system message
+    if (body.systemInstruction) {
+      const systemText = this.extractTextFromParts(body.systemInstruction.parts);
+      if (systemText) {
+        messages.push({ role: 'system', content: systemText });
+      }
+    }
+
+    // Handle contents → messages
+    for (const content of body.contents || []) {
+      const text = this.extractTextFromParts(content.parts);
+      if (text) {
+        messages.push({
+          // Gemini uses 'model' for assistant, OpenAI uses 'assistant'
+          role: content.role === 'model' ? 'assistant' : content.role,
+          content: text,
+        });
+      }
+    }
+
+    // Build OpenAI-compatible request
+    const transformed: any = {
+      model: body.model || 'gemini-2.0-flash',
+      messages,
+      stream: body.stream ?? false,
+    };
+
+    // Map generationConfig to OpenAI params
+    if (body.generationConfig) {
+      const gc = body.generationConfig;
+      if (gc.temperature !== undefined) transformed.temperature = gc.temperature;
+      if (gc.topP !== undefined) transformed.top_p = gc.topP;
+      if (gc.topK !== undefined) transformed.top_k = gc.topK;
+      if (gc.maxOutputTokens !== undefined) transformed.max_tokens = gc.maxOutputTokens;
+      if (gc.stopSequences) transformed.stop = gc.stopSequences;
+    }
+
+    // Map safetySettings (just pass through for now)
+    // Could be used for content filtering in the future
+
+    return { transformed, originalFormat: 'gemini' };
+  }
+
+  /**
+   * Extract text from Gemini parts array
+   * Parts can contain: { text: "..." }, { inlineData: {...} }, etc.
+   */
+  private extractTextFromParts(parts: any[] | undefined): string {
+    if (!parts || !Array.isArray(parts)) return '';
+    
+    return parts
+      .filter(part => part.text)
+      .map(part => part.text)
+      .join('');
+  }
+
+  /**
+   * Transform OpenAI response to native Gemini format
+   */
+  private transformOpenAIToGemini(response: any): any {
+    const choice = response.choices?.[0];
+    if (!choice) return response;
+
+    return {
+      candidates: [{
+        content: {
+          parts: [{ text: choice.message?.content || choice.delta?.content || '' }],
+          role: 'model',
+        },
+        finishReason: this.mapFinishReason(choice.finish_reason),
+        index: choice.index || 0,
+      }],
+      usageMetadata: response.usage ? {
+        promptTokenCount: response.usage.prompt_tokens,
+        candidatesTokenCount: response.usage.completion_tokens,
+        totalTokenCount: response.usage.total_tokens,
+      } : undefined,
+      modelVersion: response.model,
+    };
+  }
+
+  /**
+   * Transform OpenAI streaming chunk to native Gemini format
+   */
+  private transformStreamChunkToGemini(chunk: any): any {
+    const choice = chunk.choices?.[0];
+    if (!choice) return chunk;
+
+    return {
+      candidates: [{
+        content: {
+          parts: [{ text: choice.delta?.content || '' }],
+          role: 'model',
+        },
+        finishReason: choice.finish_reason ? this.mapFinishReason(choice.finish_reason) : undefined,
+        index: choice.index || 0,
+      }],
+    };
+  }
+
+  /**
+   * Map OpenAI finish_reason to Gemini finishReason
+   */
+  private mapFinishReason(reason: string | null): string {
+    const mapping: Record<string, string> = {
+      'stop': 'STOP',
+      'length': 'MAX_TOKENS',
+      'content_filter': 'SAFETY',
+      'tool_calls': 'STOP',
+      'function_call': 'STOP',
+    };
+    return reason ? (mapping[reason] || 'STOP') : 'STOP';
+  }
+
+  // ====================================
+  // ANTHROPIC NATIVE FORMAT SUPPORT
+  // Transforms native Anthropic SDK format to OpenAI format
+  // ====================================
+
+  /**
+   * Detect if request is in native Anthropic format
+   * Native format has a top-level 'system' string (not in messages array)
+   * 
+   * Native Anthropic:
+   * {
+   *   "model": "claude-3-5-sonnet",
+   *   "max_tokens": 1024,
+   *   "system": "You are helpful",
+   *   "messages": [{"role": "user", "content": "Hello"}]
+   * }
+   */
+  private isNativeAnthropicFormat(body: any): boolean {
+    // Has top-level 'system' as a string AND has messages array
+    // (OpenAI format puts system in the messages array)
+    return (
+      typeof body.system === 'string' &&
+      body.messages &&
+      Array.isArray(body.messages)
+    );
+  }
+
+  /**
+   * Transform native Anthropic format to OpenAI format
+   * Moves top-level 'system' into messages array as first message
+   */
+  private transformAnthropicNativeToOpenAI(body: any): any {
+    const messages = [...(body.messages || [])];
+
+    // Insert system message at the beginning
+    if (body.system) {
+      messages.unshift({
+        role: 'system',
+        content: body.system,
+      });
+    }
+
+    // Build OpenAI-compatible request
+    const transformed: any = {
+      model: body.model,
+      messages,
+      stream: body.stream ?? false,
+    };
+
+    // Map Anthropic params to OpenAI params
+    if (body.max_tokens !== undefined) transformed.max_tokens = body.max_tokens;
+    if (body.temperature !== undefined) transformed.temperature = body.temperature;
+    if (body.top_p !== undefined) transformed.top_p = body.top_p;
+    if (body.top_k !== undefined) transformed.top_k = body.top_k;
+    if (body.stop_sequences) transformed.stop = body.stop_sequences;
+
+    return transformed;
+  }
+
+  /**
+   * Transform OpenAI response to native Anthropic format
+   */
+  private transformOpenAIToAnthropic(response: any): any {
+    const choice = response.choices?.[0];
+    if (!choice) return response;
+
+    return {
+      id: response.id,
+      type: 'message',
+      role: 'assistant',
+      content: [{
+        type: 'text',
+        text: choice.message?.content || '',
+      }],
+      model: response.model,
+      stop_reason: this.mapFinishReasonToAnthropic(choice.finish_reason),
+      stop_sequence: null,
+      usage: {
+        input_tokens: response.usage?.prompt_tokens || 0,
+        output_tokens: response.usage?.completion_tokens || 0,
+      },
+    };
+  }
+
+  /**
+   * Transform OpenAI streaming chunk to native Anthropic format
+   */
+  private transformStreamChunkToAnthropic(chunk: any): any {
+    const choice = chunk.choices?.[0];
+    if (!choice) return chunk;
+
+    // Anthropic uses different event types for streaming
+    if (choice.delta?.content) {
+      return {
+        type: 'content_block_delta',
+        index: 0,
+        delta: {
+          type: 'text_delta',
+          text: choice.delta.content,
+        },
+      };
+    }
+
+    if (choice.finish_reason) {
+      return {
+        type: 'message_delta',
+        delta: {
+          stop_reason: this.mapFinishReasonToAnthropic(choice.finish_reason),
+        },
+        usage: {
+          output_tokens: chunk.usage?.completion_tokens || 0,
+        },
+      };
+    }
+
+    return null;
+  }
+
+  /**
+   * Map OpenAI finish_reason to Anthropic stop_reason
+   */
+  private mapFinishReasonToAnthropic(reason: string | null): string {
+    const mapping: Record<string, string> = {
+      'stop': 'end_turn',
+      'length': 'max_tokens',
+      'content_filter': 'content_filter',
+    };
+    return reason ? (mapping[reason] || 'end_turn') : 'end_turn';
   }
 }
