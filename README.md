@@ -286,6 +286,7 @@ response = client.chat.completions.create(
 
 ## Resources
 
+- [Remote Config](docs/REMOTE-CONFIG.md) - Switch AI providers without app updates
 - [Prompt Injection](docs/PROMPT.md) - Prompt injection protection
 
 ## License
