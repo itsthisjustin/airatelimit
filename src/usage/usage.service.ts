@@ -108,12 +108,19 @@ export class UsageService {
     );
 
     // Determine which limits to check
-    const shouldCheckRequests =
+    // SMART DETECTION: If tier/identity has a limit set, check it regardless of project.limitType
+    // This allows tier limits to work independently without requiring Basic Limits configuration
+    const hasTierRequestLimit = limits.requestLimit !== null && limits.requestLimit !== undefined && limits.requestLimit > 0;
+    const hasTierTokenLimit = limits.tokenLimit !== null && limits.tokenLimit !== undefined && limits.tokenLimit > 0;
+    
+    // Check request limits if: tier has it set, OR project limitType includes requests
+    const shouldCheckRequests = hasTierRequestLimit || 
       project.limitType === 'requests' || project.limitType === 'both';
-    const shouldCheckTokens =
+    // Check token limits if: tier has it set, OR project limitType includes tokens  
+    const shouldCheckTokens = hasTierTokenLimit ||
       project.limitType === 'tokens' || project.limitType === 'both';
 
-    // Effective limits (null = unlimited, so we use a very high number for SQL)
+    // Effective limits (null = unlimited)
     const effectiveRequestLimit =
       shouldCheckRequests && limits.requestLimit !== null && limits.requestLimit
       ? limits.requestLimit 
