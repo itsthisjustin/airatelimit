@@ -193,18 +193,11 @@ export class UsageService {
       ],
     );
 
-    // DEBUG: Log UPDATE result
+    // DEBUG: Log UPDATE result - log raw to see actual field names
     console.log('Limit UPDATE result:', {
       rowsReturned: updateResult.length,
       allowed: updateResult.length > 0,
-      allRows: updateResult.map((r: any) => ({
-        id: r.id,
-        identity: r.identity,
-        model: r.model,
-        session: r.session,
-        requestsUsed: r.requestsUsed,
-        tokensUsed: r.tokensUsed,
-      })),
+      rawRows: JSON.stringify(updateResult),
     });
 
     // If UPDATE returned a row, the request was allowed
