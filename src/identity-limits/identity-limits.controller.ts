@@ -19,6 +19,7 @@ import {
   UpdateIdentityLimitDto,
 } from './identity-limits.service';
 import { ProjectsService } from '../projects/projects.service';
+import { UsageService } from '../usage/usage.service';
 
 /**
  * Identity Limits Controller
@@ -38,6 +39,7 @@ export class IdentityLimitsController {
   constructor(
     private readonly identityLimitsService: IdentityLimitsService,
     private readonly projectsService: ProjectsService,
+    private readonly usageService: UsageService,
   ) {}
 
   /**
@@ -260,6 +262,73 @@ export class IdentityLimitsController {
       unlimitedUntil: identityLimit?.unlimitedUntil || null,
       isCurrentlyUnlimited: isUnlimited,
     };
+  }
+
+  /**
+   * Reset usage counters for an identity
+   * Clears tokens and/or requests used in the current period
+   * 
+   * Use case: After a Stripe payment, reset the user's usage so they start fresh
+   * 
+   * POST /api/projects/:projectKey/identities/:identity/reset
+   */
+  @Post(':identity/reset')
+  async resetUsage(
+    @Param('projectKey') projectKey: string,
+    @Param('identity') identity: string,
+    @Body() body: { resetTokens?: boolean; resetRequests?: boolean; reason?: string },
+    @Req() request?: any,
+  ) {
+    const project = await this.getProject(projectKey, request);
+    
+    // Default to resetting both if not specified
+    const resetTokens = body.resetTokens !== false;
+    const resetRequests = body.resetRequests !== false;
+    
+    // Get current period start
+    const periodStart = this.getPeriodStart(project.limitPeriod || 'daily');
+    
+    const result = await this.usageService.resetUsage({
+      projectId: project.id,
+      identity,
+      resetTokens,
+      resetRequests,
+      periodStart,
+    });
+
+    return {
+      identity,
+      tokensReset: result.tokensReset,
+      requestsReset: result.requestsReset,
+      message: `Reset ${resetTokens ? result.tokensReset + ' tokens' : ''}${resetTokens && resetRequests ? ' and ' : ''}${resetRequests ? result.requestsReset + ' requests' : ''} for ${identity}`,
+      period: project.limitPeriod || 'daily',
+    };
+  }
+
+  /**
+   * Get period start date based on limit period
+   */
+  private getPeriodStart(limitPeriod: 'hourly' | 'daily' | 'weekly' | 'monthly'): Date {
+    const now = new Date();
+    const year = now.getUTCFullYear();
+    const month = now.getUTCMonth();
+    const date = now.getUTCDate();
+    const hour = now.getUTCHours();
+    const day = now.getUTCDay();
+
+    switch (limitPeriod) {
+      case 'hourly':
+        return new Date(Date.UTC(year, month, date, hour));
+      case 'daily':
+        return new Date(Date.UTC(year, month, date));
+      case 'weekly':
+        const daysToMonday = (day + 6) % 7;
+        return new Date(Date.UTC(year, month, date - daysToMonday));
+      case 'monthly':
+        return new Date(Date.UTC(year, month, 1));
+      default:
+        return new Date(Date.UTC(year, month, date));
+    }
   }
 
   private formatIdentityLimit(limit: any) {

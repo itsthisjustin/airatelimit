@@ -621,6 +621,54 @@ export class UsageService {
     });
   }
 
+  /**
+   * Reset usage counters for an identity
+   * Allows resetting tokens, requests, or both for the current period
+   */
+  async resetUsage(params: {
+    projectId: string;
+    identity: string;
+    resetTokens?: boolean;
+    resetRequests?: boolean;
+    periodStart: Date;
+  }): Promise<{ tokensReset: number; requestsReset: number }> {
+    const { projectId, identity, resetTokens = true, resetRequests = true, periodStart } = params;
+    const periodStartStr = periodStart.toISOString().split('T')[0];
+
+    // Get current usage before reset
+    const currentUsage = await this.usageRepository.query(
+      `SELECT COALESCE(SUM("tokensUsed"), 0) as tokens, COALESCE(SUM("requestsUsed"), 0) as requests
+       FROM usage_counters 
+       WHERE "projectId" = $1 AND identity = $2 AND "periodStart" = $3`,
+      [projectId, identity, periodStartStr],
+    );
+
+    const tokensBeforeReset = parseInt(currentUsage[0]?.tokens || '0', 10);
+    const requestsBeforeReset = parseInt(currentUsage[0]?.requests || '0', 10);
+
+    // Build dynamic SET clause
+    const setClauses: string[] = ['"updatedAt" = NOW()'];
+    if (resetTokens) {
+      setClauses.push('"tokensUsed" = 0', '"inputTokens" = 0', '"outputTokens" = 0');
+    }
+    if (resetRequests) {
+      setClauses.push('"requestsUsed" = 0');
+    }
+
+    // Reset usage for all models/sessions for this identity in this period
+    await this.usageRepository.query(
+      `UPDATE usage_counters 
+       SET ${setClauses.join(', ')}
+       WHERE "projectId" = $1 AND identity = $2 AND "periodStart" = $3`,
+      [projectId, identity, periodStartStr],
+    );
+
+    return {
+      tokensReset: resetTokens ? tokensBeforeReset : 0,
+      requestsReset: resetRequests ? requestsBeforeReset : 0,
+    };
+  }
+
   async getSummaryForProject(
     projectId: string,
     periodStart: Date,
