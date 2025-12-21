@@ -130,6 +130,22 @@ export class UsageService {
       ? limits.tokenLimit 
       : null;
 
+    // DEBUG: Log limit check details
+    console.log('Limit check:', {
+      projectId: project.id,
+      identity,
+      tier,
+      limits,
+      hasTierRequestLimit,
+      hasTierTokenLimit,
+      shouldCheckRequests,
+      shouldCheckTokens,
+      effectiveRequestLimit,
+      effectiveTokenLimit,
+      requestedTokens,
+      requestedRequests,
+    });
+
     // Format periodStart as date string for PostgreSQL
     const periodStartStr = periodStart.toISOString().split('T')[0];
 
