@@ -1231,6 +1231,9 @@ export class TransparentProxyController {
     let inputTokens = 0;
     let outputTokens = 0;
     let streamEnded = false;
+    
+    // Track streamed content for token estimation (when provider doesn't return usage)
+    let totalStreamedChars = 0;
 
     // ====================================
     // SECURITY: Streaming timeout (5 minutes)
@@ -1258,10 +1261,16 @@ export class TransparentProxyController {
       )) {
         if (streamEnded) break;
 
-        // Track tokens from usage field if available
+        // Track tokens from usage field if available (OpenAI provides this)
         if (chunk.usage) {
           inputTokens = chunk.usage.prompt_tokens || inputTokens;
           outputTokens = chunk.usage.completion_tokens || outputTokens;
+        }
+        
+        // Track content length for token estimation (for providers that don't return usage)
+        const deltaContent = chunk.choices?.[0]?.delta?.content;
+        if (deltaContent && typeof deltaContent === 'string') {
+          totalStreamedChars += deltaContent.length;
         }
 
         // Forward the chunk, transforming to native format if needed
@@ -1283,12 +1292,35 @@ export class TransparentProxyController {
       }
 
       // Finalize usage tracking with cost
-      const totalTokens = inputTokens + outputTokens;
+      // Use actual tokens if available, otherwise estimate from content length
+      let finalInputTokens = inputTokens;
+      let finalOutputTokens = outputTokens;
+      
+      if (inputTokens === 0 && outputTokens === 0 && totalStreamedChars > 0) {
+        // Provider didn't return usage stats - estimate tokens
+        // Rough estimate: ~4 characters per token for English text
+        finalOutputTokens = Math.ceil(totalStreamedChars / 4);
+        
+        // Estimate input tokens from request body
+        const inputChars = this.estimateInputChars(body);
+        finalInputTokens = Math.ceil(inputChars / 4);
+        
+        console.log('Token estimation (streaming):', {
+          projectId: project.id,
+          identity,
+          model,
+          outputChars: totalStreamedChars,
+          estimatedOutputTokens: finalOutputTokens,
+          estimatedInputTokens: finalInputTokens,
+        });
+      }
+      
+      const totalTokens = finalInputTokens + finalOutputTokens;
       if (totalTokens > 0) {
         const cost = this.pricingService.calculateCost(
           model,
-          inputTokens,
-          outputTokens,
+          finalInputTokens,
+          finalOutputTokens,
         );
         await this.usageService.finalizeUsageWithCost({
           project,
@@ -1296,8 +1328,8 @@ export class TransparentProxyController {
           model,
           session,
           periodStart,
-          inputTokens,
-          outputTokens,
+          inputTokens: finalInputTokens,
+          outputTokens: finalOutputTokens,
           cost,
         });
       }
@@ -1379,6 +1411,31 @@ export class TransparentProxyController {
     const text = Array.isArray(input) ? input.join(' ') : input;
     // Rough estimate: ~4 characters per token
     return Math.ceil(text.length / 4);
+  }
+
+  /**
+   * Estimate input character count from request body (for token estimation)
+   */
+  private estimateInputChars(body: any): number {
+    if (!body.messages || !Array.isArray(body.messages)) {
+      return 0;
+    }
+    
+    let totalChars = 0;
+    for (const msg of body.messages) {
+      if (typeof msg.content === 'string') {
+        totalChars += msg.content.length;
+      } else if (Array.isArray(msg.content)) {
+        // Handle multi-modal content
+        for (const part of msg.content) {
+          if (part.type === 'text' && part.text) {
+            totalChars += part.text.length;
+          }
+        }
+      }
+    }
+    
+    return totalChars;
   }
 
   // ====================================
